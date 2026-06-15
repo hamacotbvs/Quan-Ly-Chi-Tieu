@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ứng dụng Quản lý Chi tiêu Nâng cấp</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            width: 400px;
+        }
+        h2 { text-align: center; color: #2c3e50; margin-top: 0; }
+        
+        /* Màu xanh dương đại diện cho tài chính trung lập */
+        .thong-tin-vi {
+            background: #34495e;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        button:hover { background-color: #27ae60; }
+        .danh-sach { margin-top: 25px; }
+        h3 { border-bottom: 2px solid #eee; padding-bottom: 5px; color: #7f8c8d; }
+        
+        /* CSS để làm đẹp cho các dòng lịch sử */
+        .khoan-chi {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 15px;
+        }
+        /* Màu sắc phân biệt Thu/Chi */
+        .tien-thu { color: #2ecc71; font-weight: bold; }
+        .tien-chi { color: #e74c3c; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Quản Lý Dòng Tiền</h2>
+        
+        <div class="thong-tin-vi">
+            Số dư: <span id="so-du">0</span> đ
+        </div>
+
+        <div class="form-group">
+            <label for="loai-giao-dich">Loại giao dịch:</label>
+            <select id="loai-giao-dich">
+                <option value="chi">Chi tiêu (Khoản ra)</option>
+                <option value="thu">Thu nhập (Khoản vào)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ten-khoan-chi">Tên giao dịch:</label>
+            <input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Tiền lương, Mua cafe...">
+        </div>
+
+        <div class="form-group">
+            <label for="so-tien">Số tiền (đ):</label>
+            <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
+        </div>
+
+        <button id="nut-them">Cập nhật ví</button>
+
+        <div class="danh-sach">
+            <h3>Lịch sử dòng tiền</h3>
+            <div id="lich-su"></div>
+        </div>
+    </div>
+
+    <script>
+        let tongSoDu = 0;
+
+        const idNutThem = document.getElementById('nut-them');
+        const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
+        const idTen = document.getElementById('ten-khoan-chi');
+        const idSoTien = document.getElementById('so-tien');
+        const idHienThiSoDu = document.getElementById('so-du');
+        const idVungLichSu = document.getElementById('lich-su');
+
+        idNutThem.addEventListener('click', function() {
+            const loai = idLoaiGiaoDich.value; // Lấy giá trị 'thu' hoặc 'chi'
+            const ten = idTen.value.trim();
+            const soTien = parseInt(idSoTien.value);
+
+            if (ten === '' || isNaN(soTien) || soTien <= 0) {
+                alert('Vui lòng nhập đầy đủ thông tin hợp lệ!');
+                return;
+            }
+
+            // BIẾN THỂ LOGIC KINH DOANH: Kiểm tra Thu hay Chi để tính toán
+            let kyTuDau = '';
+            let lopMauSac = '';
+
+            if (loai === 'thu') {
+                tongSoDu = tongSoDu + soTien; // Thu thì cộng vào
+                kyTuDau = '+';
+                lopMauSac = 'tien-thu';     // Hiện màu xanh
+            } else {
+                tongSoDu = tongSoDu - soTien; // Chi thì trừ đi
+                kyTuDau = '-';
+                lopMauSac = 'tien-chi';     // Hiện màu đỏ
+            }
+            
+            // Cập nhật lại số tiền trên màn hình
+            idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
+
+            // Tạo dòng lịch sử mới với màu sắc tương ứng
+            const dongMoi = document.createElement('div');
+            dongMoi.classList.add('khoan-chi');
+            dongMoi.innerHTML = `
+                <span>${ten}</span>
+                <span class="${lopMauSac}">${kyTuDau}${soTien.toLocaleString('vi-VN')} đ</span>
+            `;
+
+            // Đẩy dòng mới lên đầu danh sách lịch sử để dễ nhìn
+            idVungLichSu.insertBefore(dongMoi, idVungLichSu.firstChild);
+
+            // Dọn dẹp ô nhập
+            idTen.value = '';
+            idSoTien.value = '';
+        });
+    </script>
+</body>
+</html>
