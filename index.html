@@ -1,10 +1,474 @@
-// Lắng nghe dữ liệu thời gian thực tự động từ Firebase Cloud
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ứng dụng Quản lý Chi Tiêu</title>
+    
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+
+    /* ==========================================================================
+           NÚT RESET PHONG CÁCH MỚI (NỀN TRẮNG - ICON XANH HOÀNG GIA)
+           ========================================================================== */
+        .nut-reset-treo {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+            background-color: #ffffff; /* 👈 Nền trắng tinh */
+            border: 1px solid #edf2f4;
+            width: 40px;  /* Tăng nhẹ kích thước lên 40px cho dễ bấm */
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Đổ bóng mịn màng */
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Định cấu hình màu sắc cho icon SVG bên trong */
+        .nut-reset-treo svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: #0082C8; /* 👈 Màu xanh hoàng gia cho mũi tên */
+            stroke-width: 2.5; /* Độ dày của nét vẽ */
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.3s ease;
+        }
+
+        .nut-reset-treo:active {
+            transform: scale(0.92); /* Hiệu ứng lún nút khi nhấn */
+            background-color: #f8fafc; /* Nền xám cực nhẹ khi chạm ngón tay */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        /* ==========================================================================
+           CẤU HÌNH CHUNG & LAYOUT ỨNG DỤNG
+           ========================================================================== */
+
+        /* Cấu hình nền và căn giữa ứng dụng */
+           body {
+            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f7f9fa; /* Màu nền xám nhạt toàn màn hình máy tính */
+            color: #333;               /* Màu chữ mặc định (đen xám) */
+            margin: 0; padding: 0;     /* Xóa bỏ khoảng cách thừa ở rìa màn hình */
+            display: flex;
+            justify-content: center;   /* Đưa toàn bộ ứng dụng ra chính giữa màn hình */
+        }
+        
+        /* Khung mô phỏng ứng dụng điện thoại tiện lợi */
+        .app-container {
+            background-color: #f7f9fa;     /* Nền của ứng dụng là màu trắng */
+            width: 100%;
+            max-width: 450px;           /* Chiều rộng tối đa là 450px (chuẩn kích thước điện thoại) */
+            min-height: 100vh;          /* Chiều cao tối thiểu bằng 100% màn hình thiết bị */
+            box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ đổ xung quanh khung */
+            position: relative;
+            padding-bottom: 75px;       /* Đẩy nội dung bên trong lên 75px để không bị thanh menu đáy đè lên */
+            box-sizing: border-box;
+        }
+
+        /* Quản lý ẩn/hiện các Tab nội dung */
+        .tab-content {
+            display: none; /* Ẩn mặc định: Tất cả các tab (Home, Nhập số, Báo cáo) đều bị giấu đi */
+            padding: 20px; /* Tạo khoảng cách 20px từ rìa ứng dụng vào nội dung bên trong cho dễ nhìn */
+        }
+
+        .tab-content.active {
+            display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */
+        }
+
+        /* ==========================================================================
+           TAB 1: TRANG CHỦ (HOME) - KHU VỰC SỐ DƯ HIỆN TẠI
+           ========================================================================== */
+        /* Khung hiển thị số dư hiện tại */
+        .vi-tong-quan {
+            background-color: #0082C8; /* Màu xanh hoàng gia */
+            color: white;                            /* Chữ bên trong màu trắng */
+            padding: 20px;                           /* Khoảng cách từ chữ đến viền khung là 20px */
+            border-radius: 12px;                     /* Bo tròn 4 góc của khung (độ cong 12px) */
+            text-align: center;                      /* Căn giữa toàn bộ chữ bên trong */
+            margin-top: 10px; margin-bottom: 25px;   /* Tạo khoảng cách trống phía trên và dưới khung */
+            box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2); /* Tạo hiệu ứng đổ bóng màu xanh mờ giúp khung trông nổi lên bệ bề mặt */
+        }
+        .vi-tong-quan .nhan { 
+            font-size: 14px;      /* Chữ dòng "Số dư hiện tại" nhỏ vừa phải */
+            opacity: 0.9;         /* Làm mờ nhẹ chữ đi một chút (90%) để tạo độ phụ */
+            margin-bottom: 5px;   /* Cách dòng số tiền bên dưới 5px */
+        }
+        .vi-tong-quan .so-tien-vi { 
+            font-size: 28px;      /* Số tiền hiển thị rất to (28px) */
+            font-weight: 700;     /* In đậm số tiền để tạo điểm nhấn */
+        }
+
+        /* ==========================================================================
+           TAB 1: TRANG CHỦ (HOME) - KHU VỰC LỊCH SỬ GIAO DỊCH
+           ========================================================================== */
+        
+        /* Tạo nguyên khung nền màu trắng bo quanh toàn bộ khối lịch sử */
+        .danh-sach-lich-su { 
+            margin-top: 20px;                 /* Đẩy khối lịch sử cách xa khung ví phía trên một chút */
+            background-color: #ffffff;        /* 👈 Đổ nền màu TRẮNG tinh cho toàn bộ khối */
+            border-radius: 14px;              /* Bo tròn 4 góc của khung trắng */
+            padding: 16px;                    /* Tạo khoảng trống từ viền trắng dịch vào trong để nội dung dễ thở */
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); /* Đổ bóng siêu mờ nhẹ để khung nổi lên trên nền xám */
+            border: 1px solid #edf2f4;        /* Tạo đường viền mảnh xung quanh khung trắng */
+        }
+
+        .tieu-de-khoang { 
+            font-size: 16px; 
+            color: #7f8c8d;                   /* Màu chữ xám thanh lịch */
+            border-bottom: 1px solid #edf2f4; /* Tạo một đường kẻ ngang mờ ngăn cách ở dưới tiêu đề */
+            padding-bottom: 10px;             /* Khoảng cách từ chữ tiêu đề xuống đường kẻ */
+            margin-bottom: 5px; 
+            font-weight: 600;                 /* Chữ hơi in đậm một chút */
+        }
+        
+        /* Từng dòng giao dịch đơn lẻ */
+        .dong-giao-dich {
+            display: flex;
+            justify-content: space-between;   /* Đẩy phần tên sang sát lề trái, phần số tiền sang sát lề phải */
+            align-items: center;              /* Căn cho hai bên thẳng hàng nhau theo chiều dọc */
+            padding: 14px 0;                  /* Tăng nhẹ khoảng cách trên dưới giữa các hàng */
+            border-bottom: 1px solid #f8fafc; /* Đường kẻ ngang siêu mờ dưới mỗi giao dịch */
+        }
+        
+        /* Xóa đường kẻ ngang ở dòng giao dịch cuối cùng để không bị lỗi giao diện */
+        .dong-giao-dich:last-child {
+            border-bottom: none;
+        }
+        /* ==========================================================================
+           DÒNG TỔNG THEO NGÀY (TIÊU ĐỀ GOM NHÓM GIAO DỊCH)
+           ========================================================================== */
+        .nhom-ngay-tieude {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8fafc;        /* Nền xám siêu nhẹ để phân biệt */
+            padding: 8px 10px;
+            margin: 12px -10px 4px -10px;     /* Ăn gian lề ra một chút cho đẹp */
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;                   /* Màu chữ ngày tháng */
+        }
+        
+        .nhom-ngay-tong-tien {
+            font-size: 13px;
+            color: #475569;                   /* Màu chữ của số tổng */
+        }
+
+        .giao-dich-trai { 
+            display: flex; 
+            flex-direction: column;           /* Xếp tên giao dịch và tên danh mục theo hàng dọc (Tên ở trên, danh mục ở dưới) */
+        }
+        .giao-dich-ten { font-size: 15px; font-weight: 500; color: #2c3e50; } /* Tên khoản chi màu đen đậm */
+        .giao-dich-muc { font-size: 12px; color: #95a5a6; margin-top: 4px; }   /* Biểu tượng 📂 và tên danh mục nhỏ hơn, màu xám mờ */
+        .giao-dich-phai { font-weight: 600; font-size: 15px; }                 /* Số tiền bên phải được in đậm */
+        
+        /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
+        .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
+        .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
+
+
+        /* ==========================================================================
+           TAB 2: NHẬP LIỆU (+) - CSS
+           ========================================================================== */
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #555; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 15px;
+            background-color: #fff;
+            transition: border 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: #3498db; outline: none; }
+        
+        /* Nút Lưu giao dịch */
+        .nut-bam-luu {
+            width: 100%;
+            padding: 14px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+        }
+        .nut-bam-luu:hover { background-color: #2980b9; }
+
+        /* ==========================================================================
+           TAB 3: BÁO CÁO (REPORT) - CSS
+           ========================================================================== */
+        .the-bao-cao {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f4;
+        }
+        .thong-ke-dong { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
+        .thong-ke-so { font-weight: bold; }
+        
+        /* Thanh đồ họa tiến trình (Progress Bar) so sánh trực quan */
+        .thanh-phan-tram-khung { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
+        .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
+        .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
+
+        /* ==========================================================================
+           NAVIGATION: THANH MENU ĐÁY ỨNG DỤNG (TAB BAR) - CSS
+           ========================================================================== */
+        .menu-day-app {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 450px;
+            height: 65px;
+            background-color: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .nut-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            width: 33.33%;
+            height: 100%;
+            font-size: 11px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nut-tab .icon { font-size: 22px; margin-bottom: 2px; }
+        
+        /* Khi Tab được người dùng nhấn vào chọn */
+        .nut-tab.active { color: #3498db; font-weight: 600; }
+        
+        /* Nút thêm (+) ở giữa làm nổi bật hẳn lên */
+        .nut-tab-them-trung-tam .icon {
+            font-size: 28px;
+            background-color: #3498db;
+            color: white;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            margin-bottom: -5px;
+            transition: transform 0.2s;
+        }
+        .nut-tab-them-trung-tam.active .icon { background-color: #2c3e50; transform: scale(1.05); }
+
+        .trang-thai-trong { text-align: center; color: #94a3b8; font-style: italic; padding: 30px 0; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <button id="nut-lam-moi-app" class="nut-reset-treo" title="Tải lại ứng dụng">
+            <svg viewBox="0 0 24 24">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/>
+            </svg>
+        </button>
+      
+        <div id="tab-home" class="tab-content active">
+            <div class="vi-tong-quan">
+                <div class="nhan">Số dư hiện tại</div>
+                <div class="so-tien-vi"><span id="so-du">0</span> đ</div>
+            </div>
+
+            <div class="danh-sach-lich-su">
+                <div class="tieu-de-khoang">Lịch sử dòng tiền gần đây</div>
+                <div id="lich-su-giao-dich">
+                    <div class="trang-thai-trong">Đang đồng bộ dữ liệu đám mây...</div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="tab-add" class="tab-content">
+            <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
+            
+            <div class="form-group">
+                <label>Loại dòng tiền:</label>
+                <select id="loai-giao-dich">
+                    <option value="chi">💸 Chi tiêu (Khoản ra)</option>
+                    <option value="thu">💰 Thu nhập (Khoản vào)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Tên khoản thu / chi:</label>
+                <input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng...">
+            </div>
+
+            <div class="form-group">
+                <label>Phân loại danh mục:</label>
+                <select id="danh-muc-giao-dich">
+                    <option value="Ăn uống">🍔 Ăn uống</option>
+                    <option value="Di chuyển">🚗 Di chuyển</option>
+                    <option value="Mua sắm">🛍️ Mua sắm</option>
+                    <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
+                    <option value="Giải trí">🎬 Giải trí & Cà phê</option>
+                    <option value="Thu nhập">💰 Khoản thu nhập</option>
+                    <option value="Khác">✨ Khác</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Số tiền (đ):</label>
+                <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
+            </div>
+
+            <button id="nut-ghi-de" class="nut-bam-luu">Cập nhật ví</button>
+        </div>
+
+
+        <div id="tab-report" class="tab-content">
+            <div class="tieu-de-khoang" style="margin-top: 10px;">Tổng quan chu kỳ tài chính</div>
+            
+            <div class="the-bao-cao">
+                <div class="thong-ke-dong">
+                    <span>Tổng thu nhập (vào):</span>
+                    <span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span>
+                </div>
+                <div class="thanh-phan-tram-khung">
+                    <div id="thanh-thu-ti-le" class="thanh-tien-vao"></div>
+                </div>
+            </div>
+
+            <div class="the-bao-cao">
+                <div class="thong-ke-dong">
+                    <span>Tổng chi tiêu (ra):</span>
+                    <span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span>
+                </div>
+                <div class="thanh-phan-tram-khung">
+                    <div id="thanh-chi-ti-le" class="thanh-tien-ra"></div>
+                </div>
+            </div>
+        </div>
+
+
+        <nav class="menu-day-app">
+            <button class="nut-tab active" data-target="home">
+                <span class="icon">🏠</span>
+                <span>Trang chủ</span>
+            </button>
+            <button class="nut-tab nut-tab-them-trung-tam" data-target="add">
+                <span class="icon">＋</span>
+            </button>
+            <button class="nut-tab" data-target="report">
+                <span class="icon">📊</span>
+                <span>Báo cáo</span>
+            </button>
+        </nav>
+    </div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Cấu hình Firebase kết nối với Cơ sở dữ liệu đám mây
+        const firebaseConfig = {
+            apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
+            authDomain: "quanlychitieu-af553.firebaseapp.com",
+            projectId: "quanlychitieu-af553",
+            storageBucket: "quanlychitieu-af553.firebasestorage.app",
+            messagingSenderId: "800322270032",
+            appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
+            measurementId: "G-3NQYVR3VFB"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const boChonBoSuuTap = collection(db, "giao_dich_business");
+
+        // --------------------------------------------------------------------------
+        // LOGIC CHUYỂN ĐỔI TAB QUA LẠI
+        // --------------------------------------------------------------------------
+        const cacNutTab = document.querySelectorAll('.nut-tab');
+        const cacVungNoiDung = document.querySelectorAll('.tab-content');
+
+        cacNutTab.forEach(nut => {
+            nut.addEventListener('click', () => {
+                const mucTieu = nut.getAttribute('data-target');
+                
+                // Cập nhật trạng thái active trên giao diện thanh menu đáy
+                cacNutTab.forEach(b => b.classList.remove('active'));
+                nut.classList.add('active');
+                
+                // Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
+                cacVungNoiDung.forEach(content => content.classList.remove('active'));
+                document.getElementById(`tab-${mucTieu}`).classList.add('active');
+            });
+        });
+
+        // --------------------------------------------------------------------------
+        // DOM ELEMENTS - ĐỊNH DANH CÁC BIẾN GIAO DIỆN
+        // --------------------------------------------------------------------------
+        const idNutGhiDe = document.getElementById('nut-ghi-de');
+        const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
+        const idTen = document.getElementById('ten-khoan-chi');
+        const idDanhMuc = document.getElementById('danh-muc-giao-dich');
+        const idSoTien = document.getElementById('so-tien');
+        const idHienThiSoDu = document.getElementById('so-du');
+        const idVungLichSu = document.getElementById('lich-su-giao-dich');
+
+        // Các biến hiển thị của Tab Báo Cáo
+        const idBcThu = document.getElementById('bao-cao-thu');
+        const idBcChi = document.getElementById('bao-cao-chi');
+        const idThanhThu = document.getElementById('thanh-thu-ti-le');
+        const idThanhChi = document.getElementById('thanh-chi-ti-le');
+
+        // Mẹo UX: Tự động đổi nhanh danh mục mặc định khi người dùng thay đổi loại dòng tiền
+        idLoaiGiaoDich.addEventListener('change', () => {
+            idDanhMuc.value = idLoaiGiaoDich.value === 'thu' ? 'Thu nhập' : 'Ăn uống';
+        });
+
+        // Cấu hình truy vấn sắp xếp dữ liệu theo thời gian mới nhất xếp lên đầu
+        const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
+        
+        // --------------------------------------------------------------------------
+        // LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT) FROM FIREBASE
+        // --------------------------------------------------------------------------
         onSnapshot(truyVanSapXep, (snapshot) => {
-            idVungLichSu.innerHTML = ''; 
+            idVungLichSu.innerHTML = ''; // Làm rỗng lịch sử cũ để render lại từ đầu
             let tongSoDu = 0;
             let tongThuNhap = 0;
             let tongChiTieu = 0;
 
+            // Xử lý trường hợp chưa có bất kỳ dữ liệu nào trong DB
             if (snapshot.empty) {
                 idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
                 idHienThiSoDu.innerText = "0";
@@ -15,88 +479,46 @@
                 return;
             }
 
-            // Bước 1: Gom nhóm và tính toán tổng số tiền theo từng ngày trước
-            const cacNhomNgay = {};
-            const danhSachGiaoDich = [];
-
+            // Duyệt qua từng bản ghi giao dịch lấy từ Cloud về
             snapshot.forEach((doc) => {
                 const giaoDich = doc.data();
-                danhSachGiaoDich.push(giaoDich); // Lưu lại mảng để tính toán tổng ví
+                let kyTuDau = '';
+                let lopMauSac = '';
 
-                // Chuyển timestamp thành chuỗi ngày định dạng: "Ngày DD/MM/YYYY"
-                const thoiGian = new Date(giaoDich.thoiGian);
-                const chuoiNgay = `Ngày ${String(thoiGian.getDate()).padStart(2, '0')}/${String(thoiGian.getMonth() + 1).padStart(2, '0')}/${thoiGian.getFullYear()}`;
-
-                if (!cacNhomNgay[chuoiNgay]) {
-                    cacNhomNgay[chuoiNgay] = {
-                        giaoDichs: [],
-                        tongTrongNgay: 0
-                    };
-                }
-
-                // Cộng dồn tính tổng của riêng ngày hôm đó (Thu tính Dương, Chi tính Âm)
+                // Tính toán cộng dồn số dư, tổng thu, tổng chi dựa vào loại giao dịch
                 if (giaoDich.loai === 'thu') {
-                    cacNhomNgay[chuoiNgay].tongTrongNgay += giaoDich.soTien;
                     tongSoDu += giaoDich.soTien;
                     tongThuNhap += giaoDich.soTien;
+                    kyTuDau = '+';
+                    lopMauSac = 'mau-thu';
                 } else {
-                    cacNhomNgay[chuoiNgay].tongTrongNgay -= giaoDich.soTien;
                     tongSoDu -= giaoDich.soTien;
                     tongChiTieu += giaoDich.soTien;
+                    kyTuDau = '-';
+                    lopMauSac = 'mau-chi';
                 }
 
-                cacNhomNgay[chuoiNgay].giaoDichs.push(giaoDich);
+                const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+
+                // Tạo cấu trúc HTML động cho từng dòng dòng tiền lịch sử
+                const dongMoi = document.createElement('div');
+                dongMoi.classList.add('dong-giao-dich');
+                dongMoi.innerHTML = `
+                    <div class="giao-dich-trai">
+                        <span class="giao-dich-ten">${giaoDich.ten}</span>
+                        <span class="giao-dich-muc">📂 ${hienThiDanhMuc}</span>
+                    </div>
+                    <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
+                `;
+                idVungLichSu.appendChild(dongMoi); 
             });
 
-            // Bước 2: Duyệt qua các nhóm ngày để render cấu trúc HTML ra màn hình
-            for (const [ngay, duLieuNgay] of Object.entries(cacNhomNgay)) {
-                
-                // Định dạng hiển thị số tiền tổng ngày (Ví dụ: Thu > Chi ra số dương, ngược lại ra số âm)
-                let textTongNgay = "";
-                if (duLieuNgay.tongTrongNgay > 0) {
-                    textTongNgay = `Tổng: +${duLieuNgay.tongTrongNgay.toLocaleString('vi-VN')} đ`;
-                } else if (duLieuNgay.tongTrongNgay < 0) {
-                    textTongNgay = `Tổng: ${duLieuNgay.tongTrongNgay.toLocaleString('vi-VN')} đ`;
-                } else {
-                    textTongNgay = `Tổng: 0 đ`;
-                }
-
-                // Tạo dòng tiêu đề ngày
-                const thanhTieuDeNgay = document.createElement('div');
-                thanhTieuDeNgay.classList.add('nhom-ngay-tieude');
-                thanhTieuDeNgay.innerHTML = `
-                    <span>📅 ${ngay}</span>
-                    <span class="nhom-ngay-tong-tien">${textTongNgay}</span>
-                `;
-                idVungLichSu.appendChild(thanhTieuDeNgay);
-
-                // Render các giao dịch con thuộc ngày đó
-                duLieuNgay.giaoDichs.forEach((giaoDich) => {
-                    let kyTuDau = giaoDich.loai === 'thu' ? '+' : '-';
-                    let lopMauSac = giaoDich.loai === 'thu' ? 'mau-thu' : 'mau-chi';
-                    const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
-
-                    const dongMoi = document.createElement('div');
-                    dongMoi.classList.add('dong-giao-dich');
-                    dongMoi.innerHTML = `
-                        <div class="giao-dich-trai">
-                            <span class="giao-dich-ten">${giaoDich.ten}</span>
-                            <span class="giao-dich-muc">📂 ${hienThiDanhMuc}</span>
-                        </div>
-                        <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
-                    `;
-                    idVungLichSu.appendChild(dongMoi);
-                });
-            }
-
-            // Cập nhật số tiền số dư ở Trang chủ
+            // Đưa số liệu sau khi tính toán lên giao diện trực quan (Tab Home & Tab Report)
             idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
-
-            // Cập nhật dữ liệu xử lý Tab Báo Cáo
             idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
             idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
 
-            // Thiết lập tỷ lệ phần trăm thanh Progress Bar đồ họa
+            // Tính toán tỷ lệ phần trăm để co dãn thanh đồ họa Progress Bar
             const maxTong = Math.max(tongThuNhap, tongChiTieu);
             if (maxTong > 0) {
                 idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
@@ -106,3 +528,59 @@
                 idThanhChi.style.width = "0%";
             }
         });
+
+        // --------------------------------------------------------------------------
+        // LOGIC SUBMIT FORM - THÊM GIAO DỊCH MỚI LÊN FIREBASE
+        // --------------------------------------------------------------------------
+        idNutGhiDe.addEventListener('click', async () => {
+            const loai = idLoaiGiaoDich.value; 
+            const ten = idTen.value.trim();
+            const danhMuc = idDanhMuc.value;
+            const soTien = parseInt(idSoTien.value);
+
+            // Kiểm tra dữ liệu đầu vào xem có hợp lệ hay không trước khi gửi
+            if (ten === '' || isNaN(soTien) || soTien <= 0) {
+                alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
+                return;
+            }
+
+            try {
+                // Đẩy dữ liệu transaction mới lên Firestore
+                await addDoc(boChonBoSuuTap, {
+                    ten: ten,
+                    soTien: soTien,
+                    loai: loai,
+                    danhMuc: danhMuc,
+                    thoiGian: Date.now() // Lưu mốc thời gian Unix hiện tại để sắp xếp
+                });
+
+                // Reset trống các ô input chuẩn bị cho lần nhập tiếp theo
+                idTen.value = '';
+                soTien.value = '';
+                
+                // Trải nghiệm người dùng mượt mà: Tự động click chuyển về Tab Home để thấy lịch sử cập nhật ngay
+                document.querySelector('[data-target="home"]').click();
+                
+            } catch (loi) {
+                console.error("Lỗi kết nối Firebase: ", loi);
+                alert("Không thể ghi nhận giao dịch lên đám mây!");
+            }
+        });
+        // --------------------------------------------------------------------------
+        // LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
+        // --------------------------------------------------------------------------
+        const idNutLamMoi = document.getElementById('nut-lam-moi-app');
+        
+        idNutLamMoi.addEventListener('click', () => {
+            const iconSvg = idNutLamMoi.querySelector('svg');
+            // Tạo hiệu ứng xoay tròn icon bên trong
+            iconSvg.style.transform = 'rotate(360deg)';
+            iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 350);
+        });
+    </script>
+</body>
+</html>
