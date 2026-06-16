@@ -500,6 +500,22 @@
                 alert("Không thể ghi nhận giao dịch lên đám mây!");
             }
         });
+// --------------------------------------------------------------------------
+        // LOGIC BẤM NÚT RESET ĐỂ TẢI LẠI TRANG (ÉP BUỘC HIỆN GIAO DIỆN MỚI)
+        // --------------------------------------------------------------------------
+        const idNutLamMoi = document.getElementById('nut-lam-moi-app');
+        
+        idNutLamMoi.addEventListener('click', () => {
+            // Thêm hiệu ứng xoay vòng tròn khi click
+            idNutLamMoi.style.transform = 'rotate(360deg)';
+            idNutLamMoi.style.transition = 'transform 0.5s ease';
+            
+            // Đợi hiệu ứng xoay chạy xong (0.3 giây) thì bắt đầu reload trang triệt để
+            setTimeout(() => {
+                // window.location.reload(true) buộc trình duyệt xóa cache cũ và tải lại file mới từ server
+                window.location.reload();
+            }, 300);
+        });
     </script>
 </body>
 </html>
