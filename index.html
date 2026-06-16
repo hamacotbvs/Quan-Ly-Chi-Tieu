@@ -11,6 +11,36 @@
     <link rel="manifest" href="manifest.json">
 
     <style>
+
+    /* ==========================================================================
+           NÚT RESET TREO GÓC TRÊN BÊN PHẢIỨNG DỤNG
+           ========================================================================== */
+        .nut-reset-treo {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1000; /* Luôn nổi lên trên cùng các thành phần khác */
+            background-color: rgba(255, 255, 255, 0.85); /* Nền trắng trong suốt nhẹ */
+            backdrop-filter: blur(4px); /* Làm mờ nhẹ nền phía sau (chuẩn iOS) */
+            border: 1px solid #e2e8f0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%; /* Làm nút tròn xoe */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: transform 0.2s, background-color 0.2s;
+            -webkit-tap-highlight-color: transparent; /* Xóa vệt đen khi chạm trên iPhone */
+        }
+
+        .nut-reset-treo:active {
+            transform: scale(0.9) rotate(-45deg); /* Hiệu ứng lún xuống và xoay nhẹ khi chạm ngón tay */
+            background-color: #ffffff;
+        }
+
         /* ==========================================================================
            CẤU HÌNH CHUNG & LAYOUT ỨNG DỤNG
            ========================================================================== */
