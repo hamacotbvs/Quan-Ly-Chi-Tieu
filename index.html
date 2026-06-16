@@ -72,6 +72,15 @@
         /* Màu sắc phân biệt Thu/Chi */
         .tien-thu { color: #2ecc71; font-weight: bold; }
         .tien-chi { color: #e74c3c; font-weight: bold; }
+        
+        /* CSS thông báo trạng thái kết nối */
+        .loading {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 15px 0;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -105,13 +114,34 @@
 
         <div class="danh-sach">
             <h3>Lịch sử dòng tiền</h3>
-            <div id="lich-su"></div>
+            <div id="lich-su">
+                <div class="loading">Đang đồng bộ với đám mây Firebase...</div>
+            </div>
         </div>
     </div>
 
-    <script>
-        let tongSoDu = 0;
+    <script type="module">
+        // Nhúng các thư viện tính năng từ máy chủ Google thông qua link (CDN)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // Cấu hình tài khoản dự án Firebase của riêng bạn
+        const firebaseConfig = {
+            apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
+            authDomain: "quanlychitieu-af553.firebaseapp.com",
+            projectId: "quanlychitieu-af553",
+            storageBucket: "quanlychitieu-af553.firebasestorage.app",
+            messagingSenderId: "800322270032",
+            appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
+            measurementId: "G-3NQYVR3VFB"
+        };
+
+        // Kích hoạt cổng kết nối kết nối
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const boChonBoSuuTap = collection(db, "giao_dich_business");
+
+        // Ánh xạ các phần tử giao diện giống mã nguồn cũ của bạn
         const idNutThem = document.getElementById('nut-them');
         const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
         const idTen = document.getElementById('ten-khoan-chi');
@@ -119,47 +149,79 @@
         const idHienThiSoDu = document.getElementById('so-du');
         const idVungLichSu = document.getElementById('lich-su');
 
-        idNutThem.addEventListener('click', function() {
-            const loai = idLoaiGiaoDich.value; // Lấy giá trị 'thu' hoặc 'chi'
+        // LẮNG NGHE DỮ LIỆU ĐỔ VỀ TỪ ĐÁM MÂY GOOGLE THEO THỜI GIAN THỰC (REALTIME)
+        // Sắp xếp thứ tự thời gian nhập mới nhất lên đầu trang
+        const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
+        
+        onSnapshot(truyVanSapXep, function(snapshot) {
+            idVungLichSu.innerHTML = ''; // Làm sạch vùng lịch sử cũ để nạp data mới
+            let tongSoDu = 0;
+
+            if (snapshot.empty) {
+                idVungLichSu.innerHTML = '<div class="loading">Chưa có dữ liệu. Ví của bạn đang trống!</div>';
+                idHienThiSoDu.innerText = "0";
+                return;
+            }
+
+            // Vòng lặp lấy từng bản ghi dữ liệu trên server truyền về
+            snapshot.forEach(function(doc) {
+                const giaoDich = doc.data();
+                let kyTuDau = '';
+                let lopMauSac = '';
+
+                // Giữ nguyên logic tính toán kinh doanh của bạn
+                if (giaoDich.loai === 'thu') {
+                    tongSoDu = tongSoDu + giaoDich.soTien;
+                    kyTuDau = '+';
+                    lopMauSac = 'tien-thu'; // Màu xanh
+                } else {
+                    tongSoDu = tongSoDu - giaoDich.soTien;
+                    kyTuDau = '-';
+                    lopMauSac = 'tien-chi'; // Màu đỏ
+                }
+
+                // Tự động dựng dòng lịch sử mới khớp với giao diện CSS của bạn
+                const dongMoi = document.createElement('div');
+                dongMoi.classList.add('khoan-chi');
+                dongMoi.innerHTML = `
+                    <span>${giaoDich.ten}</span>
+                    <span class="${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
+                `;
+                idVungLichSu.appendChild(dongMoi); 
+            });
+
+            // Đẩy số dư tổng sau khi tính toán lên ví
+            idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
+        });
+
+        // HÀNH ĐỘNG: GỬI DỮ LIỆU LÊN HỆ THỐNG DATABASE KHI ẤN NÚT
+        idNutThem.addEventListener('click', async function() {
+            const loai = idLoaiGiaoDich.value; 
             const ten = idTen.value.trim();
             const soTien = parseInt(idSoTien.value);
 
+            // Kiểm tra điều kiện đầu vào
             if (ten === '' || isNaN(soTien) || soTien <= 0) {
                 alert('Vui lòng nhập đầy đủ thông tin hợp lệ!');
                 return;
             }
 
-            // BIẾN THỂ LOGIC KINH DOANH: Kiểm tra Thu hay Chi để tính toán
-            let kyTuDau = '';
-            let lopMauSac = '';
+            try {
+                // Lệnh đẩy thẳng một đối tượng dữ liệu (Object) lên Cloud Firestore
+                await addDoc(boChonBoSuuTap, {
+                    ten: ten,
+                    soTien: soTien,
+                    loai: loai,
+                    thoiGian: Date.now() // Lưu mốc thời gian để Google sắp xếp lịch sử
+                });
 
-            if (loai === 'thu') {
-                tongSoDu = tongSoDu + soTien; // Thu thì cộng vào
-                kyTuDau = '+';
-                lopMauSac = 'tien-thu';     // Hiện màu xanh
-            } else {
-                tongSoDu = tongSoDu - soTien; // Chi thì trừ đi
-                kyTuDau = '-';
-                lopMauSac = 'tien-chi';     // Hiện màu đỏ
+                // Clear trống ô nhập để sẵn sàng cho lần nhập tiếp theo
+                idTen.value = '';
+                idSoTien.value = '';
+            } catch (loi) {
+                console.error("Lỗi đồng bộ dữ liệu: ", loi);
+                alert("Đã xảy ra lỗi khi kết nối với máy chủ!");
             }
-            
-            // Cập nhật lại số tiền trên màn hình
-            idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
-
-            // Tạo dòng lịch sử mới với màu sắc tương ứng
-            const dongMoi = document.createElement('div');
-            dongMoi.classList.add('khoan-chi');
-            dongMoi.innerHTML = `
-                <span>${ten}</span>
-                <span class="${lopMauSac}">${kyTuDau}${soTien.toLocaleString('vi-VN')} đ</span>
-            `;
-
-            // Đẩy dòng mới lên đầu danh sách lịch sử để dễ nhìn
-            idVungLichSu.insertBefore(dongMoi, idVungLichSu.firstChild);
-
-            // Dọn dẹp ô nhập
-            idTen.value = '';
-            idSoTien.value = '';
         });
     </script>
 </body>
