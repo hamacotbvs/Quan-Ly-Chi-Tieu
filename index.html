@@ -50,19 +50,25 @@
         /* ==========================================================================
            TAB 1: TRANG CHỦ (HOME) - CSS
            ========================================================================== */
-        /* Khung hiển thị số dư tổng quan */
+        /* Khung hiển thị số dư hiện tại */
         .vi-tong-quan {
-            background: linear-gradient(135deg, #1abc9c, #16a085);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin-top: 10px; 
-            margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2);
+            background: linear-gradient(135deg, #1abc9c, #16a085); /* Tạo màu nền gradient chéo từ xanh ngọc sang xanh lá đậm */
+            color: white;                            /* Chữ bên trong màu trắng */
+            padding: 20px;                           /* Khoảng cách từ chữ đến viền khung là 20px */
+            border-radius: 12px;                     /* Bo tròn 4 góc của khung (độ cong 12px) */
+            text-align: center;                      /* Căn giữa toàn bộ chữ bên trong */
+            margin-top: 10px; margin-bottom: 25px;   /* Tạo khoảng cách trống phía trên và dưới khung */
+            box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2); /* Tạo hiệu ứng đổ bóng màu xanh mờ giúp khung trông nổi lên bệ bề mặt */
         }
-        .vi-tong-quan .nhan { font-size: 14px; opacity: 0.9; margin-bottom: 5px; }
-        .vi-tong-quan .so-tien-vi { font-size: 28px; font-weight: 700; }
+        .vi-tong-quan .nhan { 
+            font-size: 14px;      /* Chữ dòng "Số dư hiện tại" nhỏ vừa phải */
+            opacity: 0.9;         /* Làm mờ nhẹ chữ đi một chút (90%) để tạo độ phụ */
+            margin-bottom: 5px;   /* Cách dòng số tiền bên dưới 5px */
+        }
+        .vi-tong-quan .so-tien-vi { 
+            font-size: 28px;      /* Số tiền hiển thị rất to (28px) */
+            font-weight: 700;     /* In đậm số tiền để tạo điểm nhấn */
+        }
 
         /* Danh sách lịch sử giao dịch */
         .danh-sach-lich-su { margin-top: 15px; }
