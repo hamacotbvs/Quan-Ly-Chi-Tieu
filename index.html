@@ -13,32 +13,44 @@
     <style>
 
     /* ==========================================================================
-           NÚT RESET TREO GÓC TRÊN BÊN PHẢIỨNG DỤNG
+           NÚT RESET PHONG CÁCH MỚI (NỀN TRẮNG - ICON XANH HOÀNG GIA)
            ========================================================================== */
         .nut-reset-treo {
             position: absolute;
             top: 15px;
             right: 15px;
-            z-index: 1000; /* Luôn nổi lên trên cùng các thành phần khác */
-            background-color: rgba(255, 255, 255, 0.85); /* Nền trắng trong suốt nhẹ */
-            backdrop-filter: blur(4px); /* Làm mờ nhẹ nền phía sau (chuẩn iOS) */
-            border: 1px solid #e2e8f0;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%; /* Làm nút tròn xoe */
+            z-index: 1000;
+            background-color: #ffffff; /* 👈 Nền trắng tinh */
+            border: 1px solid #edf2f4;
+            width: 40px;  /* Tăng nhẹ kích thước lên 40px cho dễ bấm */
+            height: 40px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            transition: transform 0.2s, background-color 0.2s;
-            -webkit-tap-highlight-color: transparent; /* Xóa vệt đen khi chạm trên iPhone */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Đổ bóng mịn màng */
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Định cấu hình màu sắc cho icon SVG bên trong */
+        .nut-reset-treo svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: #0082C8; /* 👈 Màu xanh hoàng gia cho mũi tên */
+            stroke-width: 2.5; /* Độ dày của nét vẽ */
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.3s ease;
         }
 
         .nut-reset-treo:active {
-            transform: scale(0.9) rotate(-45deg); /* Hiệu ứng lún xuống và xoay nhẹ khi chạm ngón tay */
-            background-color: #ffffff;
+            transform: scale(0.92); /* Hiệu ứng lún nút khi nhấn */
+            background-color: #f8fafc; /* Nền xám cực nhẹ khi chạm ngón tay */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
         }
 
         /* ==========================================================================
@@ -263,7 +275,11 @@
 
     <div class="app-container">
         
-        <button id="nut-lam-moi-app" class="nut-reset-treo" title="Tải lại ứng dụng">🔄</button>
+        <button id="nut-lam-moi-app" class="nut-reset-treo" title="Tải lại ứng dụng">
+            <svg viewBox="0 0 24 24">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/>
+            </svg>
+        </button>
       
         <div id="tab-home" class="tab-content active">
             <div class="vi-tong-quan">
