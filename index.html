@@ -370,7 +370,7 @@
     font-weight: bold;
     cursor: pointer;
 }
-        
+
     </style>
 </head>
 <body>
@@ -683,6 +683,43 @@
                 window.location.reload();
             }, 350);
         });
+
+// Thao tác click để vuốt (Dành riêng cho Cách 2)
+function toggleSwipe(element) {
+    element.classList.toggle('swiped');
+}
+
+// Hàm xử lý xóa giao dịch
+function xoaGiaoDich(id) {
+    // 1. Hiện bảng hỏi xác nhận cho chắc chắn
+    if (confirm("Bạn có chắc chắn muốn xóa giao dịch này không?")) {
+        
+        // 2. Lấy phần tử HTML của dòng giao dịch đó
+        // (Tìm nút bấm hoặc wrapper có chứa ID hoặc class tương ứng)
+        const item = document.querySelector(`[data-id="${id}"]`) || event.target.closest('.giao-dich-item');
+        
+        if (item) {
+            // Tạo hiệu ứng mờ dần và thu nhỏ trước khi xóa hẳn
+            item.style.transition = "all 0.3s ease";
+            item.style.opacity = "0";
+            item.style.transform = "scale(0.9)";
+            
+            setTimeout(() => {
+                item.remove(); // Xóa hẳn khỏi giao diện HTML
+                
+                /* =========================================================
+                   👉 ĐOẠN NÀY: Viết thêm code xóa trong Database của bạn ở đây
+                   Ví dụ nếu dùng LocalStorage:
+                   let danhSach = JSON.parse(localStorage.getItem('giaoDich')) || [];
+                   danhSach = danhSach.filter(gd => gd.id !== id);
+                   localStorage.setItem('giaoDich', JSON.stringify(danhSach));
+                   ========================================================= */
+                   
+                alert("Đã xóa giao dịch thành công!");
+            }, 300);
+        }
+    }
+}
     </script>
 </body>
 </html>
