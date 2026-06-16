@@ -239,56 +239,71 @@
            ========================================================================== */
         .menu-day-app {
             position: fixed;
-            bottom: 0;
+            bottom: 0;                    /* Ghim chặt thanh này nằm sát đáy màn hình */
             width: 100%;
-            max-width: 450px;
-            height: 65px;
-            background-color: #ffffff;
-            border-top: 1px solid #e2e8f0;
+            max-width: 450px;             /* Chiều rộng bằng khung điện thoại, không bị tràn ra máy tính */
+            height: 65px;                 /* Chiều cao của thanh menu là 65px vừa vặn ngón tay */
+            background-color: #ffffff;    /* Nền menu màu trắng tinh */
+            border-top: 1px solid #e2e8f0;/* Đường kẻ ngang siêu mảnh ở trên để tách biệt với nội dung app */
             display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 100;
+            justify-content: space-around;/* Chia đều khoảng cách cho 3 nút (Trang chủ, Thêm, Báo cáo) */
+            align-items: center;          /* Căn các nút thẳng hàng theo chiều dọc */
+            z-index: 100;                 /* Đảm bảo menu luôn nằm đè lên trên nội dung khi cuộn trang */
         }
         
         .nut-tab {
             display: flex;
-            flex-direction: column;
+            flex-direction: column;       /* Xếp icon ở trên, chữ ở dưới theo hàng dọc */
             align-items: center;
             justify-content: center;
-            background: none;
-            border: none;
-            color: #94a3b8;
+            background: none; border: none;/* Xóa bỏ viền và nền mặc định của thẻ button */
+            color: #94a3b8;               /* Màu chữ và icon mặc định là màu xám nhạt (ẩn đi) */
             cursor: pointer;
-            width: 33.33%;
+            width: 33.33%;                /* Mỗi nút chiếm chính xác 1/3 chiều rộng thanh menu */
             height: 100%;
-            font-size: 11px;
+            font-size: 11px;              /* Chữ tiêu đề tab nhỏ nhắn (11px) */
             font-weight: 500;
-            transition: color 0.2s;
+            transition: color 0.2s;       /* Hiệu ứng đổi màu mượt mà khi bấm */
         }
-        .nut-tab .icon { font-size: 22px; margin-bottom: 2px; }
+        .nut-tab .icon { 
+            font-size: 22px;              /* Icon to rõ ràng (22px) */
+            margin-bottom: 2px;           /* Cách chữ bên dưới một khoảng nhỏ 2px */
+        }
         
         /* Khi Tab được người dùng nhấn vào chọn */
-        .nut-tab.active { color: #3498db; font-weight: 600; }
+        .nut-tab.active { 
+            color: #3498db;               /* Chuyển chữ và icon sang màu XANH DƯƠNG sáng */
+            font-weight: 600;             /* Chữ in đậm lên để người dùng biết mình đang ở trang này */
+        }
         
         /* Nút thêm (+) ở giữa làm nổi bật hẳn lên */
         .nut-tab-them-trung-tam .icon {
-            font-size: 28px;
-            background-color: #3498db;
-            color: white;
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
+            font-size: 28px;              /* Dấu + được làm rất to (28px) */
+            background-color: #3498db;    /* Nền của riêng quả bóng này màu xanh dương */
+            color: white;                 /* Dấu + màu trắng tinh nằm giữa quả bóng */
+            width: 46px; height: 46px;    
+            border-radius: 50%;           /* Bo tròn tuyệt đối tạo thành hình quả bóng */
             display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
-            margin-bottom: -5px;
-            transition: transform 0.2s;
+            align-items: center; justify-content: center; /* Căn dấu + vào chính giữa rìa tròn */
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); /* Đổ bóng mờ màu xanh xung quanh giúp nút như bay lơ lửng */
+            margin-bottom: -5px;          /* Đẩy quả bóng nhô cao lên trên thanh menu một chút */
+            transition: transform 0.2s;   
         }
-        .nut-tab-them-trung-tam.active .icon { background-color: #2c3e50; transform: scale(1.05); }
 
-        .trang-thai-trong { text-align: center; color: #94a3b8; font-style: italic; padding: 30px 0; font-size: 14px; }
+        /* Khi người dùng đang ở tab Nhập số (+) */
+        .nut-tab-them-trung-tam.active .icon { 
+            background-color: #2c3e50;    /* Quả bóng tự động đổi từ màu Xanh sang màu XÁM ĐEN sang trọng */
+            transform: scale(1.05);       /* Phóng to quả bóng lên 5% để tạo hiệu ứng thị giác cực đẹp */
+        }
+
+        /* dòng chữ xuất hiện ở giữa màn hình khi tài khoản chưa có lịch sử thu chi */
+        .trang-thai-trong { 
+            text-align: center; 
+            color: #94a3b8;               /* Chữ màu xám ẩn */
+            font-style: italic;           /* In nghiêng điệu đà */
+            padding: 30px 0; 
+            font-size: 14px; 
+        }
     </style>
 </head>
 <body>
