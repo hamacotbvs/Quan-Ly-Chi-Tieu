@@ -332,6 +332,45 @@
             padding: 30px 0; 
             font-size: 14px; 
         }
+
+.giao-dich-wrapper {
+    overflow: hidden;
+    background: #ef4444; /* Nền đỏ ẩn phía dưới */
+    margin-bottom: 1px;
+}
+
+.giao-dich-item {
+    display: flex;
+    justify-content: space-between;
+    background: #ffffff;
+    padding: 15px;
+    transition: transform 0.3s ease;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Khi vuốt sang trái (thêm class .swiped bằng JS) */
+.giao-dich-item.swiped {
+    transform: translateX(-70px); /* Dịch dòng sang trái để lộ nút xóa */
+}
+
+.hanh-dong-xoa {
+    position: absolute;
+    right: -70px;
+    top: 0;
+    width: 70px;
+    height: 100%;
+    background-color: #ef4444;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+}
+        
     </style>
 </head>
 <body>
