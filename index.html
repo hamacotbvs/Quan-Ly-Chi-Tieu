@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ứng dụng Quản lý Chi tiêu Nâng cấp</title>
     
+    <!-- Cấu hình hiển thị Logo và Ứng dụng PWA -->
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
     <link rel="manifest" href="manifest.json">
@@ -28,8 +29,20 @@
             min-height: 100vh;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
             position: relative;
-            padding-bottom: 80px; /* Chừa khoảng trống an toàn cho thanh Menu đáy */
+            padding-bottom: 75px; /* Chừa không gian cho thanh Menu đáy */
             box-sizing: border-box;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         /* Quản lý các Tab nội dung */
@@ -45,10 +58,9 @@
         .vi-tong-quan {
             background: linear-gradient(135deg, #1abc9c, #16a085);
             color: white;
-            padding: 24px 20px;
+            padding: 20px;
             border-radius: 12px;
             text-align: center;
-            margin-top: 10px;
             margin-bottom: 25px;
             box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2);
         }
@@ -56,18 +68,18 @@
         .vi-tong-quan .so-tien-vi { font-size: 28px; font-weight: 700; }
 
         .danh-sach-lich-su { margin-top: 15px; }
-        .tieu-de-khoang { font-size: 16px; color: #7f8c8d; border-bottom: 1px solid #edf2f4; padding-bottom: 8px; margin-bottom: 15px; font-weight: 600; }
+        .tieu-de-khoang { font-size: 16px; color: #7f8c8d; border-bottom: 1px solid #edf2f4; padding-bottom: 8px; margin-bottom: 10px; font-weight: 600; }
         
         .dong-giao-dich {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 5px;
+            padding: 12px 5px;
             border-bottom: 1px solid #f1f5f9;
         }
         .giao-dich-trai { display: flex; flex-direction: column; }
         .giao-dich-ten { font-size: 15px; font-weight: 500; color: #2c3e50; }
-        .giao-dich-muc { font-size: 12px; color: #95a5a6; margin-top: 4px; }
+        .giao-dich-muc { font-size: 12px; color: #95a5a6; margin-top: 3px; }
         .giao-dich-phai { font-weight: 600; font-size: 15px; }
         .mau-thu { color: #2ecc71; }
         .mau-chi { color: #e74c3c; }
@@ -130,3 +142,310 @@
             border-top: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .nut-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            width: 33.33%;
+            height: 100%;
+            font-size: 11px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nut-tab .icon { font-size: 22px; margin-bottom: 2px; }
+        
+        /* Khi Tab được người dùng nhấn vào chọn */
+        .nut-tab.active { color: #3498db; font-weight: 600; }
+        
+        /* Nút thêm (+) ở giữa làm nổi bật lên */
+        .nut-tab-them-trung-tam .icon {
+            font-size: 28px;
+            background-color: #3498db;
+            color: white;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            margin-bottom: -5px;
+            transition: transform 0.2s;
+        }
+        .nut-tab-them-trung-tam.active .icon { background-color: #2c3e50; transform: scale(1.05); }
+
+        .trang-thai-trong { text-align: center; color: #94a3b8; font-style: italic; padding: 30px 0; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header id="app-header">Trang Chủ</header>
+
+        <!-- ================= TAB 1: TRANG CHỦ ================= -->
+        <div id="tab-home" class="tab-content active">
+            <div class="vi-tong-quan">
+                <div class="nhan">Số dư hiện tại</div>
+                <div class="so-tien-vi"><span id="so-du">0</span> đ</div>
+            </div>
+
+            <div class="danh-sach-lich-su">
+                <div class="tieu-de-khoang">Lịch sử dòng tiền gần đây</div>
+                <div id="lich-su-giao-dich">
+                    <div class="trang-thai-trong">Đang đồng bộ dữ liệu đám mây...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: THÊM THU CHI (+) ================= -->
+        <div id="tab-add" class="tab-content">
+            <div class="form-group">
+                <label>Loại dòng tiền:</label>
+                <select id="loai-giao-dich">
+                    <option value="chi">💸 Chi tiêu (Khoản ra)</option>
+                    <option value="thu">💰 Thu nhập (Khoản vào)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Tên khoản thu / chi:</label>
+                <input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng...">
+            </div>
+
+            <div class="form-group">
+                <label>Phân loại danh mục:</label>
+                <select id="danh-muc-giao-dich">
+                    <option value="Ăn uống">🍔 Ăn uống</option>
+                    <option value="Di chuyển">🚗 Di chuyển</option>
+                    <option value="Mua sắm">🛍️ Mua sắm</option>
+                    <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
+                    <option value="Giải trí">🎬 Giải trí & Cà phê</option>
+                    <option value="Thu nhập">💰 Khoản thu nhập</option>
+                    <option value="Khác">✨ Khác</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Số tiền (đ):</label>
+                <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
+            </div>
+
+            <button id="nut-ghi-de">Cập nhật ví</button>
+        </div>
+
+        <!-- ================= TAB 3: BÁO CÁO ================= -->
+        <div id="tab-report" class="tab-content">
+            <div class="tieu-de-khoang">Tổng quan chu kỳ tài chính</div>
+            
+            <div class="the-bao-cao">
+                <div class="thong-ke-dong">
+                    <span>Tổng thu nhập (vào):</span>
+                    <span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span>
+                </div>
+                <div class="thanh-phan-tram-khung">
+                    <div id="thanh-thu-ti-le" class="thanh-tien-vao"></div>
+                </div>
+            </div>
+
+            <div class="the-bao-cao">
+                <div class="thong-ke-dong">
+                    <span>Tổng chi tiêu (ra):</span>
+                    <span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span>
+                </div>
+                <div class="thanh-phan-tram-khung">
+                    <div id="thanh-chi-ti-le" class="thanh-tien-ra"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= THANH MENU CHUYỂN TAB ĐÁY MÀNH HÌNH ================= -->
+        <nav class="menu-day-app">
+            <button class="nut-tab active" data-target="home" data-title="Trang Chủ">
+                <span class="icon">🏠</span>
+                <span>Trang chủ</span>
+            </button>
+            <button class="nut-tab nut-tab-them-trung-tam" data-target="add" data-title="Thêm Giao Dịch">
+                <span class="icon">＋</span>
+                <span>Nhập số</span>
+            </button>
+            <button class="nut-tab" data-target="report" data-title="Báo Cáo Phân Tích">
+                <span class="icon">📊</span>
+                <span>Báo cáo</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- CẤU HÌNH LIÊN KẾT FIREBASE CLOUD -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
+            authDomain: "quanlychitieu-af553.firebaseapp.com",
+            projectId: "quanlychitieu-af553",
+            storageBucket: "quanlychitieu-af553.firebasestorage.app",
+            messagingSenderId: "800322270032",
+            appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
+            measurementId: "G-3NQYVR3VFB"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const boChonBoSuuTap = collection(db, "giao_dich_business");
+
+        // Bộ điều khiển chuyển đổi giữa các Tab thực tế
+        const cacNutTab = document.querySelectorAll('.nut-tab');
+        const cacVungNoiDung = document.querySelectorAll('.tab-content');
+        const tieuDeHeader = document.getElementById('app-header');
+
+        cacNutTab.forEach(nut => {
+            nut.addEventListener('click', () => {
+                const mucTieu = nut.getAttribute('data-target');
+                const tieuDeMoi = nut.getAttribute('data-title');
+                
+                // Cập nhật trạng thái nút Menu được chọn
+                cacNutTab.forEach(b => b.classList.remove('active'));
+                nut.classList.add('active');
+                
+                // Hiện vùng nội dung tương ứng và ẩn phần còn lại
+                cacVungNoiDung.forEach(content => content.classList.remove('active'));
+                document.getElementById(`tab-${mucTieu}`).classList.add('active');
+                
+                // Đổi chữ tiêu đề trên Header cho đồng bộ
+                tieuDeHeader.innerText = tieuDeMoi;
+            });
+        });
+
+        const idNutGhiDe = document.getElementById('nut-ghi-de');
+        const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
+        const idTen = document.getElementById('ten-khoan-chi');
+        const idDanhMuc = document.getElementById('danh-muc-giao-dich');
+        const idSoTien = document.getElementById('so-tien');
+        const idHienThiSoDu = document.getElementById('so-du');
+        const idVungLichSu = document.getElementById('lich-su-giao-dich');
+
+        // Các biến hiển thị báo cáo phân tích
+        const idBcThu = document.getElementById('bao-cao-thu');
+        const idBcChi = document.getElementById('bao-cao-chi');
+        const idThanhThu = document.getElementById('thanh-thu-ti-le');
+        const idThanhChi = document.getElementById('thanh-chi-ti-le');
+
+        // Tự chuyển đổi nhanh danh mục khi người dùng đổi loại dòng tiền
+        idLoaiGiaoDich.addEventListener('change', () => {
+            idDanhMuc.value = idLoaiGiaoDich.value === 'thu' ? 'Thu nhập' : 'Ăn uống';
+        });
+
+        const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
+        
+        // Lắng nghe dữ liệu thời gian thực tự động từ Firebase Cloud
+        onSnapshot(truyVanSapXep, (snapshot) => {
+            idVungLichSu.innerHTML = ''; 
+            let tongSoDu = 0;
+            let tongThuNhap = 0;
+            let tongChiTieu = 0;
+
+            if (snapshot.empty) {
+                idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
+                idHienThiSoDu.innerText = "0";
+                idBcThu.innerText = "0 đ";
+                idBcChi.innerText = "0 đ";
+                idThanhThu.style.width = "0%";
+                idThanhChi.style.width = "0%";
+                return;
+            }
+
+            snapshot.forEach((doc) => {
+                const giaoDich = doc.data();
+                let kyTuDau = '';
+                let lopMauSac = '';
+
+                if (giaoDich.loai === 'thu') {
+                    tongSoDu += giaoDich.soTien;
+                    tongThuNhap += giaoDich.soTien;
+                    kyTuDau = '+';
+                    lopMauSac = 'mau-thu';
+                } else {
+                    tongSoDu -= giaoDich.soTien;
+                    tongChiTieu += giaoDich.soTien;
+                    kyTuDau = '-';
+                    lopMauSac = 'mau-chi';
+                }
+
+                const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+
+                const dongMoi = document.createElement('div');
+                dongMoi.classList.add('dong-giao-dich');
+                dongMoi.innerHTML = `
+                    <div class="giao-dich-trai">
+                        <span class="giao-dich-ten">${giaoDich.ten}</span>
+                        <span class="giao-dich-muc">📂 ${hienThiDanhMuc}</span>
+                    </div>
+                    <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
+                `;
+                idVungLichSu.appendChild(dongMoi); 
+            });
+
+            // Cập nhật số tiền số dư ở Trang chủ
+            idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
+
+            // Cập nhật dữ liệu xử lý Tab Báo Cáo
+            idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
+            idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
+
+            // Thiết lập tỷ lệ phần trăm thanh Progress Bar đồ họa
+            const maxTong = Math.max(tongThuNhap, tongChiTieu);
+            if (maxTong > 0) {
+                idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
+                idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
+            } else {
+                idThanhThu.style.width = "0%";
+                idThanhChi.style.width = "0%";
+            }
+        });
+
+        // Xử lý sự kiện nhấn cập nhật thêm dòng tiền mới vào cơ sở dữ liệu
+        idNutGhiDe.addEventListener('click', async () => {
+            const loai = idLoaiGiaoDich.value; 
+            const ten = idTen.value.trim();
+            const danhMuc = idDanhMuc.value;
+            const soTien = parseInt(idSoTien.value);
+
+            if (ten === '' || isNaN(soTien) || soTien <= 0) {
+                alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
+                return;
+            }
+
+            try {
+                await addDoc(boChonBoSuuTap, {
+                    ten: ten,
+                    soTien: soTien,
+                    loai: loai,
+                    danhMuc: danhMuc,
+                    thoiGian: Date.now()
+                });
+
+                // Clear trống ô nhập để sẵn sàng cho lần sau
+                idTen.value = '';
+                idSoTien.value = '';
+                
+                // Mẹo trải nghiệm: Tự điều hướng người dùng quay về Tab Home để xem lịch sử ngay
+                document.querySelector('[data-target="home"]').click();
+                
+            } catch (loi) {
+                console.error("Lỗi kết nối Firebase: ", loi);
+                alert("Không thể ghi nhận giao dịch lên đám mây!");
+            }
+        });
+    </script>
+</body>
+</html>
