@@ -504,9 +504,28 @@
         const idThanhThu = document.getElementById('thanh-thu-ti-le');
         const idThanhChi = document.getElementById('thanh-chi-ti-le');
 
-        // Mẹo UX: Tự động đổi nhanh danh mục mặc định khi người dùng thay đổi loại dòng tiền
+        // Tự động thay đổi danh sách danh mục theo Loại dòng tiền (Thu nhập / Chi tiêu)
         idLoaiGiaoDich.addEventListener('change', () => {
-            idDanhMuc.value = idLoaiGiaoDich.value === 'thu' ? 'Thu nhập' : 'Ăn uống';
+        // Xóa sạch các option cũ hiện tại
+        idDanhMuc.innerHTML = '';
+
+        if (idLoaiGiaoDich.value === 'chi') {
+        // Nếu chọn Chi tiêu -> Hiển thị các danh mục chi tiêu (Bỏ khoản thu nhập)
+        idDanhMuc.innerHTML = `
+            <option value="Ăn uống">🍔 Ăn uống</option>
+            <option value="Di chuyển">🚗 Di chuyển</option>
+            <option value="Mua sắm">🛍️ Mua sắm</option>
+            <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
+            <option value="Giải trí">🎬 Giải trí & Cà phê</option>
+            <option value="Khác">✨ Khác</option>
+        `;
+        } else if (idLoaiGiaoDich.value === 'thu') {
+        // Nếu chọn Thu nhập -> Chỉ hiển thị Thu nhập từ lương và Thu nhập khác
+        idDanhMuc.innerHTML = `
+            <option value="Thu nhập từ lương">💵 Thu nhập từ lương</option>
+            <option value="Thu nhập khác">💰 Thu nhập khác</option>
+        `;
+        }
         });
 
         // Cấu hình truy vấn sắp xếp dữ liệu theo thời gian mới nhất xếp lên đầu
