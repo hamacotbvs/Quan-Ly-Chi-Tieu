@@ -86,19 +86,22 @@
         /* Từng dòng giao dịch đơn lẻ */
         .dong-giao-dich {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 5px;
-            border-bottom: 1px solid #f1f5f9;
+            justify-content: space-between; /* Đẩy phần tên sang sát lề trái, phần số tiền sang sát lề phải */
+            align-items: center;            /* Căn cho hai bên thẳng hàng nhau theo chiều dọc */
+            padding: 12px 5px;              /* Tạo khoảng cách trống giữa các hàng cho thoáng mắt */
+            border-bottom: 1px solid #f1f5f9; /* Đường kẻ ngang siêu mờ dưới mỗi giao dịch */
         }
-        .giao-dich-trai { display: flex; flex-direction: column; }
-        .giao-dich-ten { font-size: 15px; font-weight: 500; color: #2c3e50; }
-        .giao-dich-muc { font-size: 12px; color: #95a5a6; margin-top: 3px; }
-        .giao-dich-phai { font-weight: 600; font-size: 15px; }
+        .giao-dich-trai { 
+            display: flex; 
+            flex-direction: column;         /* Xếp tên giao dịch và tên danh mục theo hàng dọc (Tên ở trên, danh mục ở dưới) */
+        }
+        .giao-dich-ten { font-size: 15px; font-weight: 500; color: #2c3e50; } /* Tên khoản chi màu đen đậm */
+        .giao-dich-muc { font-size: 12px; color: #95a5a6; margin-top: 3px; }   /* Biểu tượng 📂 và tên danh mục nhỏ hơn, màu xám mờ */
+        .giao-dich-phai { font-weight: 600; font-size: 15px; }                 /* Số tiền bên phải được in đậm */
         
         /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
-        .mau-thu { color: #2ecc71; }
-        .mau-chi { color: #e74c3c; }
+        .mau-thu { color: #0082C8; } /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
+        .mau-chi { color: #e74c3c; } /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
 
         /* ==========================================================================
            TAB 2: NHẬP LIỆU (+) - CSS
