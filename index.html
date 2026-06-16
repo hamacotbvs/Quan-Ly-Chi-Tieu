@@ -279,21 +279,27 @@
             transition: color 0.2s, transform 0.2s;
             -webkit-tap-highlight-color: transparent;
         }
-
-        .nut-tab .icon { 
-            font-size: 22px;
-            margin-bottom: 2px;
-            transition: transform 0.2s;
-        }
         
-        /* Khi Tab được chọn (Active) */
-        .nut-tab.active { 
-            color: #ffffff;               /* Chuyển thành màu TRẮNG tinh nổi bật */
-            font-weight: 700;
-        }
-        .nut-tab.active .icon {
-            transform: scale(1.1);        /* Phóng to nhẹ icon khi đang ở tab đó */
-        }
+/* Trạng thái mặc định (Không chọn): Icon chỉ có đường viền mờ, ruột rỗng */
+.nut-tab .icon svg {
+    fill: none; 
+    stroke: currentColor;
+    transition: fill 0.2s, transform 0.2s;
+}
+
+/* ==========================================================================
+   KHI ĐƯỢC CHỌN (ACTIVE) - ICON ĐỔ ĐẶC NGUYÊN KHỐI MÀU TRẮNG NHƯ HÌNH
+   ========================================================================== */
+.nut-tab.active { 
+    color: #ffffff;               /* Chuyển thành màu TRẮNG tinh nổi bật */
+    font-weight: 700;
+}
+
+.nut-tab.active .icon svg {
+    fill: #ffffff;                /* 👈 ĐỔ ĐẶC RUỘT MÀU TRẮNG TINH THEO YÊU CẦU */
+    stroke: #ffffff;              /* Giữ viền trắng để không bị mất nét góc */
+    transform: scale(1.1);        /* Phóng to nhẹ icon khi đang ở tab đó */
+}
         
         /* NÚT THÊM (+) TRUNG TÂM PHONG CÁCH MỚI - ĐÃ CĂN CHỈNH GIỮA */
         .nut-tab-them-trung-tam .icon {
