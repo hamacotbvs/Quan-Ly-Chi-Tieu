@@ -52,13 +52,13 @@
            ========================================================================== */
         /* Khung hiển thị số dư hiện tại */
         .vi-tong-quan {
-            background-color: #0082C8; /* Màu xanh coban */
+            background-color: #0082C8; /* Màu xanh hoàng gia */
             color: white;                            /* Chữ bên trong màu trắng */
             padding: 20px;                           /* Khoảng cách từ chữ đến viền khung là 20px */
             border-radius: 12px;                     /* Bo tròn 4 góc của khung (độ cong 12px) */
             text-align: center;                      /* Căn giữa toàn bộ chữ bên trong */
             margin-top: 10px; margin-bottom: 25px;   /* Tạo khoảng cách trống phía trên và dưới khung */
-
+            box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2); /* Tạo hiệu ứng đổ bóng màu xanh mờ giúp khung trông nổi lên bệ bề mặt */
         }
         .vi-tong-quan .nhan { 
             font-size: 14px;      /* Chữ dòng "Số dư hiện tại" nhỏ vừa phải */
@@ -70,9 +70,18 @@
             font-weight: 700;     /* In đậm số tiền để tạo điểm nhấn */
         }
 
-        /* Danh sách lịch sử giao dịch */
-        .danh-sach-lich-su { margin-top: 15px; }
-        .tieu-de-khoang { font-size: 16px; color: #7f8c8d; border-bottom: 1px solid #edf2f4; padding-bottom: 8px; margin-bottom: 10px; font-weight: 600; }
+        /* Tiêu đề khu vực lịch sử */
+        .danh-sach-lich-su { 
+            margin-top: 15px; /* Đẩy toàn bộ khối lịch sử cách khung số dư phía trên một khoảng */
+        }
+        .tieu-de-khoang { 
+            font-size: 16px; 
+            color: #7f8c8d;               /* Màu chữ xám thanh lịch */
+            border-bottom: 1px solid #edf2f4; /* Tạo một đường kẻ ngang mờ ngăn cách ở dưới tiêu đề */
+            padding-bottom: 8px;          /* Khoảng cách từ chữ tiêu đề xuống đường kẻ */
+            margin-bottom: 10px; 
+            font-weight: 600;             /* Chữ hơi in đậm một chút */
+        }
         
         /* Từng dòng giao dịch đơn lẻ */
         .dong-giao-dich {
