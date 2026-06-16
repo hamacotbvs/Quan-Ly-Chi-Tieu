@@ -112,14 +112,14 @@
             border: 1px solid #edf2f4;
         }
         .thong-ke-dong { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
-        .thong-ke-so font-weight: bold; }
+        .thong-ke-so { font-weight: bold; }
         
         /* Thanh đồ họa so sánh trực quan */
         .thanh-phan-tram-khung { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
         .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
         .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
 
-        /* --- 🖤 CẬP NHẬT: MENU ĐÁY CAPSULE NỔI TRẮNG ĐEN (GIỐNG ẢNH MẪU) 🖤 --- */
+        /* --- 🖤 MENU ĐÁY CAPSULE NỔI TRẮNG ĐEN (Đã sửa lỗi hiển thị) 🖤 --- */
         .menu-day-app {
             position: fixed;
             bottom: 15px;             /* Đẩy cao lên tạo khoảng trống bên dưới */
@@ -146,25 +146,4 @@
             justify-content: center;
             background: none;
             border: none;
-            color: #94a3b8; /* Chữ và icon mặc định màu xám mờ */
-            cursor: pointer;
-            width: 28%;
-            height: 100%;
-            font-size: 10px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .nut-tab .icon { font-size: 20px; margin-bottom: 2px; filter: grayscale(100%); opacity: 0.6; }
-        
-        /* Khi nút được chọn: Chữ và icon chuyển sang màu Trắng tinh khiết */
-        .nut-tab.active { color: #ffffff; font-weight: 600; }
-        .nut-tab.active .icon { filter: grayscale(0%); opacity: 1; }
-        
-        /* Thiết kế nút cộng (+) Tròn lọt lòng ở giữa giống hệt ảnh */
-        .nut-tab-them-trung-tam {
-            width: 22%;
-        }
-        .nut-tab-them-trung-tam .icon {
-            font-size: 24px;
-            background-color: #ffffff; /* Hình tròn nền trắng nổi bật */
-            color:
+            color: #94a3b
