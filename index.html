@@ -332,45 +332,6 @@
             padding: 30px 0; 
             font-size: 14px; 
         }
-
-.giao-dich-wrapper {
-    overflow: hidden;
-    background: #ef4444; /* Nền đỏ ẩn phía dưới */
-    margin-bottom: 1px;
-}
-
-.giao-dich-item {
-    display: flex;
-    justify-content: space-between;
-    background: #ffffff;
-    padding: 15px;
-    transition: transform 0.3s ease;
-    position: relative;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-/* Khi vuốt sang trái (thêm class .swiped bằng JS) */
-.giao-dich-item.swiped {
-    transform: translateX(-70px); /* Dịch dòng sang trái để lộ nút xóa */
-}
-
-.hanh-dong-xoa {
-    position: absolute;
-    right: -70px;
-    top: 0;
-    width: 70px;
-    height: 100%;
-    background-color: #ef4444;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
     </style>
 </head>
 <body>
@@ -396,16 +357,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="giao-dich-wrapper">
-    <div class="giao-dich-item" onclick="toggleSwipe(this)">
-        <div class="thong-tin">
-            <span class="ten">Tiền ăn sáng</span>
-            <span class="so-tien">-30.000đ</span>
-        </div>
-        <div class="hanh-dong-xoa" onclick="xoaGiaoDich('ID_CỦA_GIAO_DỊCH')">Xóa</div>
-    </div>
-</div>
 
 
         <div id="tab-add" class="tab-content">
@@ -683,43 +634,6 @@
                 window.location.reload();
             }, 350);
         });
-
-// Thao tác click để vuốt (Dành riêng cho Cách 2)
-function toggleSwipe(element) {
-    element.classList.toggle('swiped');
-}
-
-// Hàm xử lý xóa giao dịch
-function xoaGiaoDich(id) {
-    // 1. Hiện bảng hỏi xác nhận cho chắc chắn
-    if (confirm("Bạn có chắc chắn muốn xóa giao dịch này không?")) {
-        
-        // 2. Lấy phần tử HTML của dòng giao dịch đó
-        // (Tìm nút bấm hoặc wrapper có chứa ID hoặc class tương ứng)
-        const item = document.querySelector(`[data-id="${id}"]`) || event.target.closest('.giao-dich-item');
-        
-        if (item) {
-            // Tạo hiệu ứng mờ dần và thu nhỏ trước khi xóa hẳn
-            item.style.transition = "all 0.3s ease";
-            item.style.opacity = "0";
-            item.style.transform = "scale(0.9)";
-            
-            setTimeout(() => {
-                item.remove(); // Xóa hẳn khỏi giao diện HTML
-                
-                /* =========================================================
-                   👉 ĐOẠN NÀY: Viết thêm code xóa trong Database của bạn ở đây
-                   Ví dụ nếu dùng LocalStorage:
-                   let danhSach = JSON.parse(localStorage.getItem('giaoDich')) || [];
-                   danhSach = danhSach.filter(gd => gd.id !== id);
-                   localStorage.setItem('giaoDich', JSON.stringify(danhSach));
-                   ========================================================= */
-                   
-                alert("Đã xóa giao dịch thành công!");
-            }, 300);
-        }
-    }
-}
     </script>
 </body>
 </html>
