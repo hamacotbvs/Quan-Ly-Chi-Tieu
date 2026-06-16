@@ -234,8 +234,8 @@
         .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
         .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
 
-         /* ==========================================================================
-           NAVIGATION: THANH MENU ĐÁY FLOATING (BO TRÒN BÁN NGUYỆT CHUẨN THEO ẢNH)
+        /* ==========================================================================
+           NAVIGATION: THANH MENU ĐÁY FLOATING (NỀN TRẮNG PHÍA DƯỚI & BO TRÒN NHƯ ẢNH)
            ========================================================================== */
         .menu-day-app {
             position: fixed;
@@ -246,20 +246,19 @@
             max-width: 420px;             /* Giới hạn lại chiều rộng tối đa cho cân đối */
             height: 65px;
             background-color: #0082C8;    /* Nền màu XANH HOÀNG GIA */
-            
-            /* 👇 THAY ĐỔI: Bo tròn dạng viên thuốc (Capsule) đối xứng hoàn hảo như ảnh mẫu */
-            border-radius: 999px;          
-            
+            border-radius: 999px;         /* Bo tròn dạng viên thuốc (Capsule) */
             display: flex;
             justify-content: space-around;
             align-items: center;
             z-index: 100;
-            box-shadow: 0 10px 28px rgba(0, 130, 200, 0.35); /* Đổ bóng sâu hơn một chút tạo độ nổi */
-            border: none;
-            
-            /* 👇 BỔ SUNG: Thụt lề 2 đầu vào 15px để icon không bị dính vào phần bo cong */
             padding: 0 15px;              
             box-sizing: border-box;
+
+            /* 👇 THAY ĐỔI: Đổ bóng thông minh tạo vùng nền sáng phía dưới và xung quanh menu */
+            box-shadow: 
+                0 10px 28px rgba(0, 130, 200, 0.25), /* Bóng xanh mờ của menu */
+                0 25px 0 20px #ffffff,               /* 👈 Tạo một lớp nền trắng cứng lót hẳn phía dưới */
+                0 15px 30px 25px rgba(255, 255, 255, 0.95); /* 👈 Tạo vùng chuyển mờ trắng (Blur) che nội dung khi cuộn */
         }
         
         .nut-tab {
