@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ứng dụng Quản lý Chi tiêu Nâng cấp</title>
     
-    <!-- Cấu hình hiển thị Logo và Ứng dụng PWA -->
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
     <link rel="manifest" href="manifest.json">
@@ -31,18 +30,7 @@
             position: relative;
             padding-bottom: 75px; /* Chừa không gian cho thanh Menu đáy */
             box-sizing: border-box;
-        }
-
-        header {
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            padding-top: 20px; /* Thêm khoảng cách phía trên khi bỏ header */
         }
 
         /* Quản lý các Tab nội dung */
@@ -124,7 +112,7 @@
             border: 1px solid #edf2f4;
         }
         .thong-ke-dong { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
-        .thong-ke-so { font-weight: bold; }
+        .thong-ke-so font-weight: bold; }
         
         /* Thanh đồ họa so sánh trực quan */
         .thanh-phan-tram-khung { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
@@ -189,14 +177,11 @@
 <body>
 
     <div class="app-container">
-        <header id="app-header">Trang Chủ</header>
-
-        <!-- ================= TAB 1: TRANG CHỦ ================= -->
         <div id="tab-home" class="tab-content active">
             <div class="vi-tong-quan">
                 <div class="nhan">Số dư hiện tại</div>
                 <div class="so-tien-vi"><span id="so-du">0</span> đ</div>
-            </div>
+            }
 
             <div class="danh-sach-lich-su">
                 <div class="tieu-de-khoang">Lịch sử dòng tiền gần đây</div>
@@ -206,7 +191,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 2: THÊM THU CHI (+) ================= -->
         <div id="tab-add" class="tab-content">
             <div class="form-group">
                 <label>Loại dòng tiền:</label>
@@ -239,10 +223,9 @@
                 <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
             </div>
 
-            <button id="nut-ghi-de">Cập nhật ví</button>
+            <button id="nut-ghi-de" class="nut-bam-luu">Cập nhật ví</button>
         </div>
 
-        <!-- ================= TAB 3: BÁO CÁO ================= -->
         <div id="tab-report" class="tab-content">
             <div class="tieu-de-khoang">Tổng quan chu kỳ tài chính</div>
             
@@ -267,7 +250,6 @@
             </div>
         </div>
 
-        <!-- ================= THANH MENU CHUYỂN TAB ĐÁY MÀNH HÌNH ================= -->
         <nav class="menu-day-app">
             <button class="nut-tab active" data-target="home" data-title="Trang Chủ">
                 <span class="icon">🏠</span>
@@ -283,7 +265,6 @@
         </nav>
     </div>
 
-    <!-- CẤU HÌNH LIÊN KẾT FIREBASE CLOUD -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -305,12 +286,10 @@
         // Bộ điều khiển chuyển đổi giữa các Tab thực tế
         const cacNutTab = document.querySelectorAll('.nut-tab');
         const cacVungNoiDung = document.querySelectorAll('.tab-content');
-        const tieuDeHeader = document.getElementById('app-header');
 
         cacNutTab.forEach(nut => {
             nut.addEventListener('click', () => {
                 const mucTieu = nut.getAttribute('data-target');
-                const tieuDeMoi = nut.getAttribute('data-title');
                 
                 // Cập nhật trạng thái nút Menu được chọn
                 cacNutTab.forEach(b => b.classList.remove('active'));
@@ -319,9 +298,6 @@
                 // Hiện vùng nội dung tương ứng và ẩn phần còn lại
                 cacVungNoiDung.forEach(content => content.classList.remove('active'));
                 document.getElementById(`tab-${mucTieu}`).classList.add('active');
-                
-                // Đổi chữ tiêu đề trên Header cho đồng bộ
-                tieuDeHeader.innerText = tieuDeMoi;
             });
         });
 
