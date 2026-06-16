@@ -70,38 +70,55 @@
             font-weight: 700;     /* In đậm số tiền để tạo điểm nhấn */
         }
 
-        /* Tiêu đề khu vực lịch sử */
+/* ==========================================================================
+           TAB 1: TRANG CHỦ (HOME) - KHU VỰC LỊCH SỬ GIAO DỊCH
+           ========================================================================== */
+        
+        /* Tạo nguyên khung nền màu trắng bo quanh toàn bộ khối lịch sử */
         .danh-sach-lich-su { 
-            margin-top: 15px; /* Đẩy toàn bộ khối lịch sử cách khung số dư phía trên một khoảng */
+            margin-top: 20px;                 /* Đẩy khối lịch sử cách xa khung ví phía trên một chút */
+            background-color: #ffffff;        /* 👈 Đổ nền màu TRẮNG tinh cho toàn bộ khối */
+            border-radius: 14px;              /* Bo tròn 4 góc của khung trắng */
+            padding: 16px;                    /* Tạo khoảng trống từ viền trắng dịch vào trong để nội dung dễ thở */
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); /* Đổ bóng siêu mờ nhẹ để khung nổi lên trên nền xám */
+            border: 1px solid #edf2f4;        /* Tạo đường viền mảnh xung quanh khung trắng */
         }
+
         .tieu-de-khoang { 
             font-size: 16px; 
-            color: #7f8c8d;               /* Màu chữ xám thanh lịch */
+            color: #7f8c8d;                   /* Màu chữ xám thanh lịch */
             border-bottom: 1px solid #edf2f4; /* Tạo một đường kẻ ngang mờ ngăn cách ở dưới tiêu đề */
-            padding-bottom: 8px;          /* Khoảng cách từ chữ tiêu đề xuống đường kẻ */
-            margin-bottom: 10px; 
-            font-weight: 600;             /* Chữ hơi in đậm một chút */
+            padding-bottom: 10px;             /* Khoảng cách từ chữ tiêu đề xuống đường kẻ */
+            margin-bottom: 5px; 
+            font-weight: 600;                 /* Chữ hơi in đậm một chút */
         }
         
         /* Từng dòng giao dịch đơn lẻ */
         .dong-giao-dich {
             display: flex;
-            justify-content: space-between; /* Đẩy phần tên sang sát lề trái, phần số tiền sang sát lề phải */
-            align-items: center;            /* Căn cho hai bên thẳng hàng nhau theo chiều dọc */
-            padding: 12px 5px;              /* Tạo khoảng cách trống giữa các hàng cho thoáng mắt */
-            border-bottom: 1px solid #f1f5f9; /* Đường kẻ ngang siêu mờ dưới mỗi giao dịch */
+            justify-content: space-between;   /* Đẩy phần tên sang sát lề trái, phần số tiền sang sát lề phải */
+            align-items: center;              /* Căn cho hai bên thẳng hàng nhau theo chiều dọc */
+            padding: 14px 0;                  /* Tăng nhẹ khoảng cách trên dưới giữa các hàng */
+            border-bottom: 1px solid #f8fafc; /* Đường kẻ ngang siêu mờ dưới mỗi giao dịch */
         }
+        
+        /* Xóa đường kẻ ngang ở dòng giao dịch cuối cùng để không bị lỗi giao diện */
+        .dong-giao-dich:last-child {
+            border-bottom: none;
+        }
+
         .giao-dich-trai { 
             display: flex; 
-            flex-direction: column;         /* Xếp tên giao dịch và tên danh mục theo hàng dọc (Tên ở trên, danh mục ở dưới) */
+            flex-direction: column;           /* Xếp tên giao dịch và tên danh mục theo hàng dọc (Tên ở trên, danh mục ở dưới) */
         }
         .giao-dich-ten { font-size: 15px; font-weight: 500; color: #2c3e50; } /* Tên khoản chi màu đen đậm */
-        .giao-dich-muc { font-size: 12px; color: #95a5a6; margin-top: 3px; }   /* Biểu tượng 📂 và tên danh mục nhỏ hơn, màu xám mờ */
+        .giao-dich-muc { font-size: 12px; color: #95a5a6; margin-top: 4px; }   /* Biểu tượng 📂 và tên danh mục nhỏ hơn, màu xám mờ */
         .giao-dich-phai { font-weight: 600; font-size: 15px; }                 /* Số tiền bên phải được in đậm */
         
         /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
-        .mau-thu { color: #0082C8; } /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
-        .mau-chi { color: #e74c3c; } /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
+        .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
+        .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
+
 
         /* ==========================================================================
            TAB 2: NHẬP LIỆU (+) - CSS
