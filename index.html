@@ -254,7 +254,7 @@
             padding: 0 15px;              
             box-sizing: border-box;
 
-            /* 👇 THAY ĐỔI: Đổ bóng thông minh tạo vùng nền sáng phía dưới và xung quanh menu */
+        /* 👇 THAY ĐỔI: Đổ bóng thông minh tạo vùng nền sáng phía dưới và xung quanh menu */
             box-shadow: 
                 0 10px 28px rgba(0, 130, 200, 0.25), /* Bóng xanh mờ của menu */
                 0 25px 0 20px #ffffff,               /* 👈 Tạo một lớp nền trắng cứng lót hẳn phía dưới */
@@ -280,26 +280,26 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-/* Trạng thái mặc định (Không chọn): Icon chỉ có đường viền mờ, ruột rỗng */
-.nut-tab .icon svg {
-    fill: none; 
-    stroke: currentColor;
-    transition: fill 0.2s, transform 0.2s;
-}
+        /* Trạng thái mặc định (Không chọn): Icon chỉ có đường viền mờ, ruột rỗng */
+        .nut-tab .icon svg {
+        fill: none; 
+        stroke: currentColor;
+       transition: fill 0.2s, transform 0.2s;
+        }
 
-/* ==========================================================================
-   KHI ĐƯỢC CHỌN (ACTIVE) - ICON ĐỔ ĐẶC NGUYÊN KHỐI MÀU TRẮNG NHƯ HÌNH
-   ========================================================================== */
-.nut-tab.active { 
-    color: #ffffff;               /* Chuyển thành màu TRẮNG tinh nổi bật */
-    font-weight: 700;
-}
+        /* ==========================================================================
+           KHI ĐƯỢC CHỌN (ACTIVE) - ICON ĐỔ ĐẶC NGUYÊN KHỐI MÀU TRẮNG NHƯ HÌNH
+           ========================================================================== */
+        .nut-tab.active { 
+            color: #ffffff;               /* Chuyển thành màu TRẮNG tinh nổi bật */
+            font-weight: 700;
+        }
 
-.nut-tab.active .icon svg {
-    fill: #ffffff;                /* 👈 ĐỔ ĐẶC RUỘT MÀU TRẮNG TINH THEO YÊU CẦU */
-    stroke: #ffffff;              /* Giữ viền trắng để không bị mất nét góc */
-    transform: scale(1.1);        /* Phóng to nhẹ icon khi đang ở tab đó */
-}
+        .nut-tab.active .icon svg {
+            fill: #ffffff;                /* 👈 ĐỔ ĐẶC RUỘT MÀU TRẮNG TINH THEO YÊU CẦU */
+            stroke: #ffffff;              /* Giữ viền trắng để không bị mất nét góc */
+            transform: scale(1.1);        /* Phóng to nhẹ icon khi đang ở tab đó */
+        }
         
         /* NÚT THÊM (+) TRUNG TÂM PHONG CÁCH MỚI - ĐÃ CĂN CHỈNH GIỮA */
         .nut-tab-them-trung-tam .icon {
@@ -357,6 +357,16 @@
                 </div>
             </div>
         </div>
+
+        <div class="giao-dich-wrapper">
+    <div class="giao-dich-item" onclick="toggleSwipe(this)">
+        <div class="thong-tin">
+            <span class="ten">Tiền ăn sáng</span>
+            <span class="so-tien">-30.000đ</span>
+        </div>
+        <div class="hanh-dong-xoa" onclick="xoaGiaoDich('ID_CỦA_GIAO_DỊCH')">Xóa</div>
+    </div>
+</div>
 
 
         <div id="tab-add" class="tab-content">
