@@ -287,19 +287,21 @@
             transform: scale(1.1);        /* Phóng to nhẹ icon khi đang ở tab đó */
         }
         
-        /* NÚT THÊM (+) TRUNG TÂM PHONG CÁCH MỚI */
+        /* ==========================================================================
+           NÚT THÊM (+) TRUNG TÂM PHONG CÁCH MỚI - ĐÃ CĂN CHỈNH GIỮA
+           ========================================================================== */
         .nut-tab-them-trung-tam .icon {
             font-size: 26px;
-            background-color: #ffffff;    /* 👈 Quả bóng chuyển sang màu TRẮNG tinh */
-            color: #0082C8;               /* 👈 Dấu (+) bên trong mang màu xanh hoàng gia */
-            width: 48px;
-            height: 48px;
+            background-color: #ffffff;    /* Quả bóng màu TRẮNG tinh */
+            color: #0082C8;               /* Dấu (+) bên trong mang màu xanh hoàng gia */
+            width: 46px;                  /* Gom nhỏ lại một chút (46px) cho vừa vặn */
+            height: 46px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            margin-bottom: 15px;          /* Đẩy quả bóng nhô cao vượt hẳn lên trên thanh menu */
+            margin-bottom: 0;             /* 👈 Đổi từ 15px về 0 để đưa nút về vị trí chính giữa */
             transition: transform 0.2s, background-color 0.2s, color 0.2s;
         }
 
@@ -307,7 +309,7 @@
         .nut-tab-them-trung-tam.active .icon { 
             background-color: #2c3e50;    /* Quả bóng chuyển sang màu xám đen sang trọng */
             color: #ffffff;               /* Dấu (+) chuyển sang màu trắng */
-            transform: scale(1.08) translateY(-2px);
+            transform: scale(1.08);       /* 👈 Bỏ bớt thuộc tính dịch chuyển translateY để không bị lệch */
         }
 
         /* Dòng trạng thái trống */
