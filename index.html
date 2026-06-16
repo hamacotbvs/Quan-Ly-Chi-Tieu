@@ -122,18 +122,18 @@
         /* --- 🖤 MENU ĐÁY CAPSULE NỔI TRẮNG ĐEN 🖤 --- */
         .menu-day-app {
             position: fixed;
-            bottom: 15px;             /* Đẩy cao lên tạo khoảng trống bên dưới */
+            bottom: 15px;             
             left: 15px;
             right: 15px;
             margin: 0 auto;
-            max-width: calc(450px - 30px); /* Thu gọn nằm lọt lòng khung App */
+            max-width: calc(450px - 30px); 
             height: 66px;
-            background-color: #1e293b; /* Nền tối màu xám đen/đen huyền bí cực sang */
-            border-radius: 40px;       /* Bo tròn xịn mịn giống hệt ảnh ngân hàng */
+            background-color: #1e293b; 
+            border-radius: 40px;       
             display: flex;
             justify-content: space-around;
             align-items: center;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); /* Tạo độ nổi khối đổ bóng */
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); 
             padding: 0 10px;
             z-index: 100;
             box-sizing: border-box;
@@ -146,7 +146,7 @@
             justify-content: center;
             background: none;
             border: none;
-            color: #94a3b8; /* Chữ và icon mặc định màu xám mờ */
+            color: #94a3b8; 
             cursor: pointer;
             width: 28%;
             height: 100%;
@@ -156,193 +156,5 @@
         }
         .nut-tab .icon { font-size: 20px; margin-bottom: 2px; filter: grayscale(100%); opacity: 0.6; }
         
-        /* Khi nút được chọn: Chữ và icon chuyển sang màu Trắng tinh khiết */
         .nut-tab.active { color: #ffffff; font-weight: 600; }
-        .nut-tab.active .icon { filter: grayscale(0%); opacity: 1; }
-        
-        /* Thiết kế nút cộng (+) Tròn lọt lòng ở giữa giống hệt ảnh mẫu */
-        .nut-tab-them-trung-tam {
-            width: 22%;
-        }
-        .nut-tab-them-trung-tam .icon {
-            font-size: 24px;
-            background-color: #ffffff; /* Hình tròn nền trắng nổi bật */
-            color: #1e293b;            /* Dấu cộng màu đen */
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            margin-bottom: 0px;
-            transition: all 0.2s;
-            filter: none !important;
-            opacity: 0.9 !important;
-        }
-        /* Khi đang ở Tab nhập số (+) -> Nút tròn phóng to nhẹ tăng trải nghiệm bấm */
-        .nut-tab-them-trung-tam.active .icon { 
-            transform: scale(1.08);
-            opacity: 1 !important;
-            background-color: #ffffff;
-            color: #000000;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-        }
-
-        .trang-thai-trong { text-align: center; color: #94a3b8; font-style: italic; padding: 30px 0; font-size: 14px; }
-    </style>
-</head>
-<body>
-
-    <div class="app-container">
-
-        <div id="tab-home" class="tab-content active">
-            <div class="vi-tong-quan">
-                <div class="nhan">Số dư hiện tại</div>
-                <div class="so-tien-vi"><span id="so-du">0</span> đ</div>
-            </div>
-
-            <div class="danh-sach-lich-su">
-                <div class="tieu-de-khoang">Lịch sử dòng tiền gần đây</div>
-                <div id="lich-su-giao-dich">
-                    <div class="trang-thai-trong">Sẵn sàng nhận dữ liệu...</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-add" class="tab-content">
-            <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
-            <div class="form-group">
-                <label>Loại dòng tiền:</label>
-                <select id="loai-giao-dich">
-                    <option value="chi">💸 Chi tiêu (Khoản ra)</option>
-                    <option value="thu">💰 Thu nhập (Khoản vào)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Tên khoản thu / chi:</label>
-                <input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng...">
-            </div>
-
-            <div class="form-group">
-                <label>Phân loại danh mục:</label>
-                <select id="danh-muc-giao-dich">
-                    <option value="Ăn uống">🍔 Ăn uống</option>
-                    <option value="Di chuyển">🚗 Di chuyển</option>
-                    <option value="Mua sắm">🛍️ Mua sắm</option>
-                    <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
-                    <option value="Giải trí">🎬 Giải trí & Cà phê</option>
-                    <option value="Thu nhập">💰 Khoản thu nhập</option>
-                    <option value="Khác">✨ Khác</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Số tiền (đ):</label>
-                <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
-            </div>
-
-            <button id="nut-ghi-de" class="nut-bam-luu">Cập nhật ví</button>
-        </div>
-
-        <div id="tab-report" class="tab-content">
-            <div class="tieu-de-khoang" style="margin-top: 10px;">Tổng quan chu kỳ tài chính</div>
-            
-            <div class="the-bao-cao">
-                <div class="thong-ke-dong">
-                    <span>Tổng thu nhập (vào):</span>
-                    <span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span>
-                </div>
-                <div class="thanh-phan-tram-khung">
-                    <div id="thanh-thu-ti-le" class="thanh-tien-vao"></div>
-                </div>
-            </div>
-
-            <div class="the-bao-cao">
-                <div class="thong-ke-dong">
-                    <span>Tổng chi tiêu (ra):</span>
-                    <span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span>
-                </div>
-                <div class="thanh-phan-tram-khung">
-                    <div id="thanh-chi-ti-le" class="thanh-tien-ra"></div>
-                </div>
-            </div>
-        </div>
-
-        <nav class="menu-day-app">
-            <button class="nut-tab active" data-target="home">
-                <span class="icon">🏠</span>
-                <span>Tổng quan</span>
-            </button>
-            <button class="nut-tab nut-tab-them-trung-tam" data-target="add">
-                <span class="icon">＋</span>
-            </button>
-            <button class="nut-tab" data-target="report">
-                <span class="icon">📊</span>
-                <span>Báo cáo</span>
-            </button>
-        </nav>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // Cấu hình kết nối Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
-            authDomain: "quanlychitieu-af553.firebaseapp.com",
-            projectId: "quanlychitieu-af553",
-            storageBucket: "quanlychitieu-af553.firebasestorage.app",
-            messagingSenderId: "800322270032",
-            appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
-            measurementId: "G-3NQYVR3VFB"
-        };
-
-        // Khởi động các Dom Element giao diện cơ bản ngay lập tức để chống trắng màn hình
-        const cacNutTab = document.querySelectorAll('.nut-tab');
-        const cacVungNoiDung = document.querySelectorAll('.tab-content');
-
-        cacNutTab.forEach(nut => {
-            nut.addEventListener('click', () => {
-                const mucTieu = nut.getAttribute('data-target');
-                cacNutTab.forEach(b => b.classList.remove('active'));
-                nut.classList.add('active');
-                cacVungNoiDung.forEach(content => content.classList.remove('active'));
-                document.getElementById(`tab-${mucTieu}`).classList.add('active');
-            });
-        });
-
-        const idNutGhiDe = document.getElementById('nut-ghi-de');
-        const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
-        const idTen = document.getElementById('ten-khoan-chi');
-        const idDanhMuc = document.getElementById('danh-muc-giao-dich');
-        const idSoTien = document.getElementById('so-tien');
-        const idHienThiSoDu = document.getElementById('so-du');
-        const idVungLichSu = document.getElementById('lich-su-giao-dich');
-        const idBcThu = document.getElementById('bao-cao-thu');
-        const idBcChi = document.getElementById('bao-cao-chi');
-        const idThanhThu = document.getElementById('thanh-thu-ti-le');
-        const idThanhChi = document.getElementById('thanh-chi-ti-le');
-
-        idLoaiGiaoDich.addEventListener('change', () => {
-            idDanhMuc.value = idLoaiGiaoDich.value === 'thu' ? 'Thu nhập' : 'Ăn uống';
-        });
-
-        // Bọc Firebase vào khối Try-Catch an toàn phòng trừ tài khoản Firebase bị khóa/lỗi Rules đám mây
-        try {
-            const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
-            const boChonBoSuuTap = collection(db, "giao_dich_business");
-            const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
-            
-            // Đọc dữ liệu thời gian thực
-            onSnapshot(truyVanSapXep, (snapshot) => {
-                idVungLichSu.innerHTML = ''; 
-                let tongSoDu = 0;
-                let tongThuNhap = 0;
-                let tongChiTieu = 0;
-
-                if (snapshot.empty) {
-                    idVungLichSu.innerHTML = '<div class
+        .nut-tab.active .
