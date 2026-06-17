@@ -611,41 +611,53 @@
             }
         });
 
-        // --------------------------------------------------------------------------
-        // LOGIC SUBMIT FORM - THÊM GIAO DỊCH MỚI LÊN FIREBASE
-        // --------------------------------------------------------------------------
-        idNutGhiDe.addEventListener('click', async () => {
-            const loai = idLoaiGiaoDich.value; 
-            const ten = idTen.value.trim();
-            const danhMuc = idDanhMuc.value;
-            const soTien = parseInt(idSoTien.value);
+// --------------------------------------------------------------------------
+    // LOGIC NÚT "CẬP NHẬT VÍ" - GỬI DATA LÊN FIREBASE CHUẨN ASYNC/AWAIT
+    // --------------------------------------------------------------------------
+    const nutCapNhatVi = document.getElementById('btn-cap-nhat-vi'); // Bạn nhớ kiểm tra xem ID nút bấm trong HTML của bạn có đúng là 'btn-cap-nhat-vi' không nhé
 
-            // Kiểm tra dữ liệu đầu vào xem có hợp lệ hay không trước khi gửi
-            if (ten === '' || isNaN(soTien) || soTien <= 0) {
-                alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
+    if (nutCapNhatVi) {
+        nutCapNhatVi.addEventListener('click', async () => {
+            // Lấy dữ liệu từ form
+            const loaiGiaoDich = document.getElementById('loai-giao-dich').value;
+            const tenKhoanChi = document.getElementById('ten-khoan-chi').value;
+            const danhMucGiaoDich = document.getElementById('danh-muc-giao-dich').value;
+            const soTienThucTe = Number(document.getElementById('so-tien').value) || 0;
+            const ngayGiaoDich = document.getElementById('ngay-giao-dich').value;
+            const gioGiaoDich = document.getElementById('gio-giao-dich').value;
+
+            // Kiểm tra nhập liệu cơ bản
+            if (!tenKhoanChi || soTienThucTe <= 0) {
+                alert('Vui lòng điền đầy đủ thông tin và số tiền hợp lệ!');
                 return;
             }
 
-            try {
-                // Đẩy dữ liệu transaction mới lên Firestore
-                await addDoc(boChonBoSuuTap, {
-                    ten: ten,
-                    soTien: soTien,
-                    loai: loai,
-                    danhMuc: danhMuc,
-                    thoiGian: Date.now() // Lưu mốc thời gian Unix hiện tại để sắp xếp
-                });
+            // Gói dữ liệu gửi lên Firebase
+            const duLieuGui = {
+                loai: loaiGiaoDich,
+                ten: tenKhoanChi,
+                danhMuc: danhMucGiaoDich,
+                soTien: soTienThucTe,
+                thoiGian: `${ngayGiaoDich} ${gioGiaoDich}`,
+                ngayTao: new Date()
+            };
 
-                // Reset trống các ô input chuẩn bị cho lần nhập tiếp theo
-                idTen.value = '';
-                soTien.value = '';
+            try {
+                // Đợi Firebase lưu xong thực sự trên đám mây
+                await addDoc(boChonBoSuuTap, duLieuGui);
                 
-                // Trải nghiệm người dùng mượt mà: Tự động click chuyển về Tab Home để thấy lịch sử cập nhật ngay
-                document.querySelector('[data-target="home"]').click();
+                // CHỈ KHI LƯU THÀNH CÔNG THÌ MỚI CHẠY KHỐI LỆNH NÀY
+                alert('Ghi nhận giao dịch thành công!');
                 
-            } catch (loi) {
-                console.error("Lỗi kết nối Firebase: ", loi);
-                alert("Không thể ghi nhận giao dịch lên đám mây!");
+                // Reset lại các ô nhập liệu sau khi lưu xong
+                document.getElementById('ten-khoan-chi').value = '';
+                document.getElementById('so-tien').value = '';
+                labelSoTien.innerText = 'Số tiền (đ):'; // Trả tiêu đề về mặc định
+                
+            } catch (error) {
+                // CHỈ KHI XẢY RA LỖI KẾT NỐI MẠNG HOẶC SAI RULES MỚI BÁO LỖI NÀY
+                console.error("Lỗi gửi Firebase: ", error);
+                alert('Không thể ghi nhận giao dịch lên đám mây!');
             }
         });
         // --------------------------------------------------------------------------
