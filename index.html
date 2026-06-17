@@ -365,118 +365,150 @@
 </head>
 <body>
 
-    <div class="app-container">
+<div class="app-container">
         
-        <button id="nut-lam-moi-app" class="nut-reset-treo" title="Tải lại ứng dụng">
-            <svg viewBox="0 0 24 24">
-                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/>
-            </svg>
-        </button>
-      
-        <div id="tab-home" class="tab-content active">
-            <div class="vi-tong-quan">
-                <div class="nhan">Số dư hiện tại</div>
-                <div class="so-tien-vi"><span id="so-du">0</span> đ</div>
-            </div>
-
-            <div class="danh-sach-lich-su">
-                <div class="tieu-de-khoang">Lịch sử dòng tiền gần đây</div>
-                <div id="lich-su-giao-dich">
-                    <div class="trang-thai-trong">Đang đồng bộ dữ liệu đám mây...</div>
-                </div>
-            </div>
+    <button id="nut-lam-moi-app" class="nut-reset-treo" title="Tải lại ứng dụng">
+        <svg viewBox="0 0 24 24">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/>
+        </svg>
+    </button>
+  
+    <div id="tab-home" class="tab-content active">
+        <div class="vi-tong-quan">
+            <div class="nhan">Số dư hiện tại</div>
+            <div class="so-tien-vi"><span id="so-du">0</span> đ</div>
         </div>
 
-
-        <div id="tab-add" class="tab-content">
-            <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
-            
-            <div class="form-group">
-                <label>Loại dòng tiền:</label>
-                <select id="loai-giao-dich">
-                    <option value="chi">💸 Chi tiêu (Khoản ra)</option>
-                    <option value="thu">💰 Thu nhập (Khoản vào)</option>
-                </select>
+        <div class="danh-sach-lich-su">
+            <div class="tieu-de-khoang">Lịch sử dòng tiền gần đây</div>
+            <div id="lich-su-giao-dich">
+                <div class="trang-thai-trong">Đang đồng bộ dữ liệu đám mây...</div>
             </div>
+        </div>
+    </div>
 
-            <div class="form-group Hiện mặc định khi chọn nhập liệu phần danh mục thu nhập hiện khi chọn lại thu nhập thì JavaScript đảm nhận">
-                <label>Phân loại danh mục:</label>
-                <select id="danh-muc-giao-dich">
+    <div id="tab-lich-su" class="tab-content">
+        <div class="tieu-de-khoang" style="margin-top: 10px;">Lịch sử dòng tiền chi tiết</div>
+        <div id="danh-sach-lich-su-toan-bo">
+            <div class="trang-thai-trong">Đang tải danh sách lịch sử...</div>
+        </div>
+    </div>
+
+
+    <div id="tab-add" class="tab-content">
+        <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
+        
+        <div class="form-group">
+            <label>Loại dòng tiền:</label>
+            <select id="loai-giao-dich">
+                <option value="chi">💸 Chi tiêu (Khoản ra)</option>
+                <option value="thu">💰 Thu nhập (Khoản vào)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Phân loại danh mục:</label>
+            <select id="danh-muc-giao-dich">
                 <option value="Ăn uống">🍔 Ăn uống</option>
                 <option value="Di chuyển">🚗 Di chuyển</option>
                 <option value="Mua sắm">🛍️ Mua sắm</option>
                 <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
                 <option value="Giải trí">🎬 Giải trí & Cà phê</option>
                 <option value="Khác">✨ Khác</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Tên khoản thu/chi:</label>
-                <input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng...">
-            </div>
-
-            <div class="form-group">
-                <label id="label-so-tien">Số tiền (đ):</label>
-                <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
-            </div>
-
-            <div class="form-group-row ô chọn Ngày và Giờ" style="display: flex; gap: 10px;">
-                <div class="form-group" style="flex: 1;">
-                    <label>Ngày tháng:</label>
-                    <input type="date" id="ngay-giao-dich">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>Thời gian:</label>
-                    <input type="time" id="gio-giao-dich">
-                </div>
-            </div>            
-
-            <button id="nut-ghi-de" class="nut-bam-luu">Cập nhật ví</button>
+            </select>
         </div>
 
-
-        <div id="tab-report" class="tab-content">
-            <div class="tieu-de-khoang" style="margin-top: 10px;">Tổng quan chu kỳ tài chính</div>
-            
-            <div class="the-bao-cao">
-                <div class="thong-ke-dong">
-                    <span>Tổng thu nhập (vào):</span>
-                    <span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span>
-                </div>
-                <div class="thanh-phan-tram-khung">
-                    <div id="thanh-thu-ti-le" class="thanh-tien-vao"></div>
-                </div>
-            </div>
-
-            <div class="the-bao-cao">
-                <div class="thong-ke-dong">
-                    <span>Tổng chi tiêu (ra):</span>
-                    <span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span>
-                </div>
-                <div class="thanh-phan-tram-khung">
-                    <div id="thanh-chi-ti-le" class="thanh-tien-ra"></div>
-                </div>
-            </div>
+        <div class="form-group">
+            <label>Tên khoản thu/chi:</label>
+            <input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng...">
         </div>
 
+        <div class="form-group">
+            <label id="label-so-tien">Số tiền (đ):</label>
+            <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
+        </div>
 
-            <nav class="menu-day-app menu dưới">
-                <button class="nut-tab active" data-target="home">
-                <img src="homemau.png" class="img-icon-2d icon-active" alt="Tổng quan">
-                <img src="homevien.png" class="img-icon-2d icon-inactive" alt="Tổng quan">
-                <span class="chu-menu">Tổng quan</span>
-                </button>
-            <button class="nut-tab nut-tab-them-trung-tam" data-target="add">
-                <span class="icon">＋</span>
-            </button>
-                <button class="nut-tab active" data-target="report">
-                <img src="baocaomau.png" class="img-icon-2d icon-active" alt="Báo cáo">
-                <img src="baocaovien.png" class="img-icon-2d icon-inactive" alt="Báo cáo">
-                <span class="chu-menu">Báo cáo</span>
-                </button>
-        </nav>
+        <div class="form-group-row" style="display: flex; gap: 10px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Ngày tháng:</label>
+                <input type="date" id="ngay-giao-dich">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Thời gian:</label>
+                <input type="time" id="gio-giao-dich">
+            </div>
+        </div>            
+
+        <button id="nut-ghi-de" class="nut-bam-luu">Cập nhật ví</button>
     </div>
+
+
+    <div id="tab-report" class="tab-content">
+        <div class="tieu-de-khoang" style="margin-top: 10px;">Tổng quan chu kỳ tài chính</div>
+        
+        <div class="the-bao-cao">
+            <div class="thong-ke-dong">
+                <span>Tổng thu nhập (vào):</span>
+                <span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span>
+            </div>
+            <div class="thanh-phan-tram-khung">
+                <div id="thanh-thu-ti-le" class="thanh-tien-vao"></div>
+            </div>
+        </div>
+
+        <div class="the-bao-cao">
+            <div class="thong-ke-dong">
+                <span>Tổng chi tiêu (ra):</span>
+                <span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span>
+            </div>
+            <div class="thanh-phan-tram-khung">
+                <div id="thanh-chi-ti-le" class="thanh-tien-ra"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="tab-tai-khoan" class="tab-content">
+        <div class="tieu-de-khoang" style="margin-top: 10px;">Thông tin cá nhân</div>
+        <div style="padding: 20px; text-align: center; background: white; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div style="font-size: 45px; margin-bottom: 10px;">👤</div>
+            <h3 style="margin: 5px 0;">Người dùng App Business</h3>
+            <p style="color: #777; font-size: 13px; margin: 5px 0;">Hệ thống quản lý chi tiêu đám mây</p>
+        </div>
+    </div>
+
+
+    <nav class="menu-day-app menu dưới">
+        <button class="nut-tab active" data-target="home">
+            <img src="homemau.png" class="img-icon-2d icon-active" alt="Tổng quan">
+            <img src="homevien.png" class="img-icon-2d icon-inactive" alt="Tổng quan">
+            <span class="chu-menu">Tổng quan</span>
+        </button>
+
+        <button class="nut-tab" data-target="lich-su">
+            <img src="lichsumau.png" class="img-icon-2d icon-active" alt="Lịch sử">
+            <img src="lichsuvien.png" class="img-icon-2d icon-inactive" alt="Lịch sử">
+            <span class="chu-menu">Lịch sử</span>
+        </button>
+
+        <button class="nut-tab nut-tab-them-trung-tam" data-target="add">
+            <span class="icon">＋</span>
+        </button>
+
+        <button class="nut-tab" data-target="report">
+            <img src="baocaomau.png" class="img-icon-2d icon-active" alt="Báo cáo">
+            <img src="baocaovien.png" class="img-icon-2d icon-inactive" alt="Báo cáo">
+            <span class="chu-menu">Báo cáo</span>
+        </button>
+
+        <button class="nut-tab" data-target="tai-khoan">
+            <img src="taikhoanmau.png" class="img-icon-2d icon-active" alt="Tài khoản">
+            <img src="taikhoanvien.png" class="img-icon-2d icon-inactive" alt="Tài khoản">
+            <span class="chu-menu">Tài khoản</span>
+        </button>
+    </nav>
+
+</div>
 
 
     <script type="module">
