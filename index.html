@@ -696,7 +696,7 @@
                             lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
                         }
                         const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
-                // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền
+                // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền chứa: Tên khoản chi/thu, biểu tượng danh mục, số tiền hiển thị trên lịch sử màn hình
                         const dongMoi = document.createElement('div');
                         dongMoi.classList.add('dong-giao-dich');
                         dongMoi.innerHTML = `
@@ -708,13 +708,11 @@
                         `;
                         idVungLichSu.appendChild(dongMoi); 
                     });
-
-            // Đưa số liệu sau khi tính toán lên giao diện trực quan
+            // 7.4 Đưa số liệu sau khi tính toán lên giao diện trực quan
                     if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
                     if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
                     if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
-
-            // Tính toán tỷ lệ phần trăm co dãn thanh đồ họa Progress Bar
+            // 7.5 Cập nhật thanh đồ họa
                     const maxTong = Math.max(tongThuNhap, tongChiTieu);
                     if (maxTong > 0) {
                         if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
