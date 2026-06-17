@@ -659,7 +659,7 @@
         // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
         // --------------------------------------------------------------------------
                     const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));     
-        // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
         // --------------------------------------------------------------------------
             // 7.1 Khởi tạo và làm sạch (Mở đầu)
@@ -678,7 +678,7 @@
                         if (idThanhThu) idThanhThu.style.width = "0%";
                         if (idThanhChi) idThanhChi.style.width = "0%";
                         return;
-                        }
+                    }
             // 7.3 Vòng lặp tính toán và dựng dòng lịch sử (Phần cốt lõi)
                     snapshot.forEach((doc) => {
                         const giaoDich = doc.data();
@@ -699,7 +699,7 @@
                         const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
                         // Lấy chuỗi ngày giờ (Ví dụ: "18/06/2026 14:30" hoặc giữ nguyên chuỗi gốc)
                         const hienThiThoiGian = giaoDich.ngayGioNhap ? giaoDich.ngayGioNhap : "--/--/---- --:--";
-                // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền chứa: Tên khoản chi/thu, biểu tượng danh mục, số tiền hiển thị trên lịch sử màn hình
+                // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền (ĐÃ THÊM biến hienThiThoiGian vào HTML)
                         const dongMoi = document.createElement('div');
                         dongMoi.classList.add('dong-giao-dich');
                         dongMoi.innerHTML = `
