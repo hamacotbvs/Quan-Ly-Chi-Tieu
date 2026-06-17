@@ -661,14 +661,14 @@
         // --------------------------------------------------------------------------
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
         // --------------------------------------------------------------------------
+            // 7.1 Khởi tạo và làm sạch (Mở đầu)
                 onSnapshot(truyVanSapXep, (snapshot) => {
-                    if (!idVungLichSu) return;
-            
+                    if (!idVungLichSu) return;            
                     idVungLichSu.innerHTML = ''; 
                     let tongSoDu = 0;
                     let tongThuNhap = 0;
                     let tongChiTieu = 0;
-
+            // 7.2 Kiểm tra bộ lưu trữ rỗng
                     if (snapshot.empty) {
                         idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
                         if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
@@ -677,37 +677,36 @@
                         if (idThanhThu) idThanhThu.style.width = "0%";
                         if (idThanhChi) idThanhChi.style.width = "0%";
                         return;
-                }
-
-                snapshot.forEach((doc) => {
-                    const giaoDich = doc.data();
-                    let kyTuDau = '';
-                    let lopMauSac = '';
-
-                    if (giaoDich.loai === 'thu') {
-                        tongSoDu += giaoDich.soTien;
-                        tongThuNhap += giaoDich.soTien;
-                        kyTuDau = '+';
-                        lopMauSac = 'mau-thu';
-                    } else {
-                        tongSoDu -= giaoDich.soTien;
-                        tongChiTieu += giaoDich.soTien;
-                        kyTuDau = '-';
-                        lopMauSac = 'mau-chi';
-                    }
-
-                    const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
-
-                    const dongMoi = document.createElement('div');
-                    dongMoi.classList.add('dong-giao-dich');
-                    dongMoi.innerHTML = `
-                        <div class="giao-dich-trai">
-                            <span class="giao-dich-ten">${giaoDich.ten}</span>
-                            <span class="giao-dich-muc">📂 ${hienThiDanhMuc}</span>
-                        </div>
-                        <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
-                    `;
-                    idVungLichSu.appendChild(dongMoi); 
+                        }
+            // 7.3 Vòng lặp tính toán và dựng dòng lịch sử (Phần cốt lõi)
+                    snapshot.forEach((doc) => {
+                        const giaoDich = doc.data();
+                        let kyTuDau = '';
+                        let lopMauSac = '';
+                // 7.3.1 Bước A: Phân loại tiền và tính toán
+                        if (giaoDich.loai === 'thu') {
+                            tongSoDu += giaoDich.soTien; // Cộng vào số dư
+                            tongThuNhap += giaoDich.soTien; // Cộng vào tổng thu
+                            kyTuDau = '+';
+                            lopMauSac = 'mau-thu'; // Đặt chữ màu xanh
+                        } else {
+                            tongSoDu -= giaoDich.soTien; // Trừ bớt số dư
+                            tongChiTieu += giaoDich.soTien; // Cộng vào tổng chi
+                            kyTuDau = '-';
+                            lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
+                        }
+                        const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+                // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền
+                        const dongMoi = document.createElement('div');
+                        dongMoi.classList.add('dong-giao-dich');
+                        dongMoi.innerHTML = `
+                            <div class="giao-dich-trai">
+                                <span class="giao-dich-ten">${giaoDich.ten}</span>
+                                <span class="giao-dich-muc">📂 ${hienThiDanhMuc}</span>
+                            </div>
+                            <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
+                        `;
+                        idVungLichSu.appendChild(dongMoi); 
                     });
 
             // Đưa số liệu sau khi tính toán lên giao diện trực quan
