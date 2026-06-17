@@ -683,7 +683,7 @@
         inputGio.value = `${gio}:${phut}`;
         
         // --------------------------------------------------------------------------
-        // LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
+        // CẬP NHẬT SỐ TIỀN CÓ ĐỊNH DẠNG NGHÌN LÊN TIÊU ĐỀ SỐ TIỀN
         // --------------------------------------------------------------------------
 
         const inputSoTien = document.getElementById('so-tien');
@@ -702,7 +702,7 @@
         let soDaPhanCach = Number(value).toLocaleString('vi-VN');
     
         // Cập nhật lên tiêu đề phía trên
-        labelSoTien.innerText = `Số tiền (đ): ${soDaPhanCach}`;
+        labelSoTien.innerText = `Số tiền: ${soDaPhanCach} đ`;
         });
     </script>
 </body>
