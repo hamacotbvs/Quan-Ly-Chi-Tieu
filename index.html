@@ -316,19 +316,19 @@
         }
         
         /* 3. Màu chữ mặc định cho tất cả các menu khi KHÔNG CHỌN */
-.nut-tab .chu-menu {
-    font-size: 11px;
-    color: #b3dbf2;      /* Màu xanh nhạt hoặc xám mờ tùy bạn chỉnh */
-    opacity: 0.7;        /* Làm mờ nhẹ đi để nhấn mạnh nút đang chọn */
-    transition: all 0.2s ease;
-}
+        .nut-tab .chu-menu {
+        font-size: 11px;
+        color: #b3dbf2;      /* Màu xanh nhạt hoặc xám mờ tùy bạn chỉnh */
+        opacity: 0.7;        /* Làm mờ nhẹ đi để nhấn mạnh nút đang chọn */
+        transition: all 0.2s ease;
+        }
 
-/* 2. Khi ĐƯỢC CHỌN (có class active) - Chữ sẽ trắng tinh và đậm lên */
-.nut-tab.active .chu-menu {
-    color: #ffffff !important;   /* Mã màu trắng tinh mã Hex */
-    opacity: 1 !important;       /* Hiện rõ nét 100% */
-    font-weight: bold;           /* Chữ đậm lên nhìn cho rõ ràng */
-}
+        /* 4. Khi ĐƯỢC CHỌN (có class active) - Chữ sẽ trắng tinh và đậm lên */
+        .nut-tab.active .chu-menu {
+            color: #ffffff !important;   /* Mã màu trắng tinh mã Hex */
+            opacity: 1 !important;       /* Hiện rõ nét 100% */
+            font-weight: bold;           /* Chữ đậm lên nhìn cho rõ ràng */
+        }
 
         /* NÚT THÊM (+) TRUNG TÂM PHONG CÁCH MỚI - ĐÃ CĂN CHỈNH GIỮA */
         .nut-tab-them-trung-tam .icon {
@@ -473,7 +473,7 @@
                 <button class="nut-tab active" data-target="report">
                 <img src="baocaomau.png" class="img-icon-2d icon-active" alt="Báo cáo">
                 <img src="baocaovien.png" class="img-icon-2d icon-inactive" alt="Báo cáo">
-                <span>Báo cáo</span>
+                <span class="chu-menu">Báo cáo</span>
                 </button>
         </nav>
     </div>
