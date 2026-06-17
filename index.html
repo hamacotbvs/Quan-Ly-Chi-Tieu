@@ -546,7 +546,10 @@
                 
                 // Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
                 cacVungNoiDung.forEach(content => content.classList.remove('active'));
-                document.getElementById(`tab-${mucTieu}`).classList.add('active');
+// Hiển thị đúng tab dựa theo data-target
+        const tabMucTieu = document.getElementById(`tab-${mucTieu}`);
+        if (tabMucTieu) {
+            tabMucTieu.classList.add('active');
             });
         });
 
