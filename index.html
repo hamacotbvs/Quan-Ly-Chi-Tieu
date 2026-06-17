@@ -656,24 +656,9 @@
         // --------------------------------------------------------------------------
         // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
         // --------------------------------------------------------------------------
-                    const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));  
+                    const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));     
         // --------------------------------------------------------------------------
-        // VIII. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
-        // --------------------------------------------------------------------------
-                cacNutTab.forEach(nut => {
-                    nut.addEventListener('click', () => {
-                        const mucTieu = nut.getAttribute('data-target');                
-            // Cập nhật trạng thái active trên giao diện thanh menu đáy
-                cacNutTab.forEach(b => b.classList.remove('active'));
-                    nut.classList.add('active');                
-            // Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
-                cacVungNoiDung.forEach(content => content.classList.remove('active'));
-                    const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
-                    if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');
-                });
-                });      
-        // --------------------------------------------------------------------------
-        // IX. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
+        // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
         // --------------------------------------------------------------------------
                 onSnapshot(truyVanSapXep, (snapshot) => {
                     if (!idVungLichSu) return;
@@ -739,6 +724,21 @@
                         if (idThanhChi) idThanhChi.style.width = "0%";
                     }
                     });
+        // --------------------------------------------------------------------------
+        // IX. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
+        // --------------------------------------------------------------------------
+                cacNutTab.forEach(nut => {
+                    nut.addEventListener('click', () => {
+                        const mucTieu = nut.getAttribute('data-target');                
+            // Cập nhật trạng thái active trên giao diện thanh menu đáy
+                cacNutTab.forEach(b => b.classList.remove('active'));
+                    nut.classList.add('active');                
+            // Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
+                cacVungNoiDung.forEach(content => content.classList.remove('active'));
+                    const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
+                    if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');
+                });
+                });   
         // --------------------------------------------------------------------------
         // X. LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
         // --------------------------------------------------------------------------
