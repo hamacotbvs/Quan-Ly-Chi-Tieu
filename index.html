@@ -715,8 +715,8 @@
                 }
 
                 // 🟢 THÊM MỚI: Tách ngày từ chuỗi "ngayGioNhap" để cộng dồn tiền từng ngày
-                // Chuỗi gốc ví dụ: "2026-06-17 20:45" -> substring(0, 10) lấy ra "2026-06-17"
-                if (giaoDich.ngayGioNhap) {
+                // ĐÃ GIA CỐ: Kiểm tra chuỗi hợp lệ trước khi xử lý cắt chuỗi tránh sập app
+                if (giaoDich.ngayGioNhap && typeof giaoDich.ngayGioNhap === 'string' && giaoDich.ngayGioNhap.length >= 10) {
                     const chiLayNgay = giaoDich.ngayGioNhap.substring(0, 10);
                     
                     // Nếu ngày này chưa tồn tại trong bộ nhớ, tạo mới nhóm cho ngày đó
@@ -759,9 +759,14 @@
                 
                 // Chạy vòng lặp qua từng ngày đã gom nhóm được
                 for (const ngay trong thongKeTheoNgay) {
-                    // Cắt chuỗi đổi định dạng ngày từ YYYY-MM-DD sang dạng thuần Việt DD/MM/YYYY
+                    // ĐÃ GIA CỐ: Kiểm tra định dạng ngày dạng YYYY-MM-DD bẻ gãy lỗi lặp vô tận
                     const cacPhan = ngay.split('-');
-                    const ngayTiengViet = `${cacPhan[2]}/${cacPhan[1]}/${cacPhan[0]}`;
+                    let ngayTiengViet = ngay; 
+                    
+                    // Chỉ khi cắt ra đúng 3 phần (Năm-Tháng-Ngày) thì mới đổi định dạng Việt Nam
+                    if (cacPhan.length === 3 && cacPhan[0] && cacPhan[1] && cacPhan[2]) {
+                        ngayTiengViet = `${cacPhan[2]}/${cacPhan[1]}/${cacPhan[0]}`;
+                    }
                     
                     const thuTrongNgay = thongKeTheoNgay[ngay].thu.toLocaleString('vi-VN');
                     const chiTrongNgay = thongKeTheoNgay[ngay].chi.toLocaleString('vi-VN');
