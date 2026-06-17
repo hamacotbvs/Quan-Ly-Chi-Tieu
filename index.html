@@ -659,149 +659,86 @@
         // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
         // --------------------------------------------------------------------------
                     const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));     
-// --------------------------------------------------------------------------
+        // --------------------------------------------------------------------------
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
         // --------------------------------------------------------------------------
-        // 7.1 Khởi tạo và làm sạch (Mở đầu)
-        onSnapshot(truyVanSapXep, (snapshot) => {
-            if (!idVungLichSu) return;            
-            
-            // Lấy dữ liệu thô ra một mảng độc lập hoàn toàn để cắt đuôi Firebase
-            const danhSachRaw = [];
-            snapshot.forEach((doc) => {
-                danhSachRaw.push({
-                    id: doc.id,
-                    ten: doc.data().ten || "Không tên",
-                    soTien: Number(doc.data().soTien) || 0,
-                    loai: doc.data().loai || "chi",
-                    danhMuc: doc.data().danhMuc || "Khác",
-                    ngayGioNhap: doc.data().ngayGioNhap || ""
+            // 7.1 Khởi tạo và làm sạch (Mở đầu)
+                onSnapshot(truyVanSapXep, (snapshot) => {
+                    if (!idVungLichSu) return;            
+                    idVungLichSu.innerHTML = ''; 
+                    let tongSoDu = 0;
+                    let tongThuNhap = 0;
+                    let tongChiTieu = 0;
+            // 7.2 Kiểm tra bộ lưu trữ rỗng
+                    if (snapshot.empty) {
+                        idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
+                        if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
+                        if (idBcThu) idBcThu.innerText = "0 đ";
+                        if (idBcChi) idBcChi.innerText = "0 đ";
+                        if (idThanhThu) idThanhThu.style.width = "0%";
+                        if (idThanhChi) idThanhChi.style.width = "0%";
+                        return;
+                        }
+            // 7.3 Vòng lặp tính toán và dựng dòng lịch sử (Phần cốt lõi)
+                    snapshot.forEach((doc) => {
+                        const giaoDich = doc.data();
+                        let kyTuDau = '';
+                        let lopMauSac = '';
+                // 7.3.1 Bước A: Phân loại tiền và tính toán
+                        if (giaoDich.loai === 'thu') {
+                            tongSoDu += giaoDich.soTien; // Cộng vào số dư
+                            tongThuNhap += giaoDich.soTien; // Cộng vào tổng thu
+                            kyTuDau = '+';
+                            lopMauSac = 'mau-thu'; // Đặt chữ màu xanh
+                        } else {
+                            tongSoDu -= giaoDich.soTien; // Trừ bớt số dư
+                            tongChiTieu += giaoDich.soTien; // Cộng vào tổng chi
+                            kyTuDau = '-';
+                            lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
+                        }
+                        const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+                // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền chứa: Tên khoản chi/thu, biểu tượng danh mục, số tiền hiển thị trên lịch sử màn hình
+                        const dongMoi = document.createElement('div');
+                        dongMoi.classList.add('dong-giao-dich');
+                        dongMoi.innerHTML = `
+                            <div class="giao-dich-trai">
+                                <span class="giao-dich-ten">${giaoDich.ten}</span>
+                                <span class="giao-dich-muc">📂 ${hienThiDanhMuc}</span>
+                            </div>
+                            <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
+                        `;
+                        idVungLichSu.appendChild(dongMoi); 
+                    });
+            // 7.4 Đưa số liệu sau khi tính toán lên giao diện trực quan
+                    if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
+                    if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
+                    if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
+            // 7.5 Cập nhật thanh đồ họa
+                    const maxTong = Math.max(tongThuNhap, tongChiTieu);
+                    if (maxTong > 0) {
+                        if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
+                        if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
+                    } else {
+                        if (idThanhThu) idThanhThu.style.width = "0%";
+                        if (idThanhChi) idThanhChi.style.width = "0%";
+                    }
+                    });
+        // B. ĐỊNH DẠNG
+        // --------------------------------------------------------------------------
+        // IX. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
+        // --------------------------------------------------------------------------
+                cacNutTab.forEach(nut => {
+                    nut.addEventListener('click', () => {
+                        const mucTieu = nut.getAttribute('data-target');                
+            // Cập nhật trạng thái active trên giao diện thanh menu đáy
+                cacNutTab.forEach(b => b.classList.remove('active'));
+                    nut.classList.add('active');                
+            // Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
+                cacVungNoiDung.forEach(content => content.classList.remove('active'));
+                    const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
+                    if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');
                 });
-            });
-
-            // Làm rỗng giao diện cũ sau khi đã có mảng dữ liệu an toàn
-            idVungLichSu.innerHTML = ''; 
-            
-            let tongSoDu = 0;
-            let tongThuNhap = 0;
-            let tongChiTieu = 0;
-            let cấuTrúcTheoNgay = {}; 
-
-        // 7.2 Kiểm tra mảng rỗng
-            if (danhSachRaw.length === 0) {
-                idVungLichSu.innerHTML = '<div class="trang-thai-trong" style="text-align:center; padding:20px; color:#a0aec0;">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
-                if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
-                if (idBcThu) idBcThu.innerText = "0 đ";
-                if (idBcChi) idBcChi.innerText = "0 đ";
-                if (idThanhThu) idThanhThu.style.width = "0%";
-                if (idThanhChi) idThanhChi.style.width = "0%";
-                return;
-            }
-
-        // 7.3 BƯỚC 1: Tính toán trên mảng độc lập (Tuyệt đối không gây lặp vô hạn)
-            danhSachRaw.forEach((giaoDich) => {
-                if (giaoDich.loai === 'thu') {
-                    tongSoDu += giaoDich.soTien;
-                    tongThuNhap += giaoDich.soTien;
-                } else {
-                    tongSoDu -= giaoDich.soTien;
-                    tongChiTieu += giaoDich.soTien;
-                }
-
-                // Xử lý tách lấy Ngày 
-                let ngayKhoa = "Không rõ ngày";
-                if (giaoDich.ngayGioNhap && giaoDich.ngayGioNhap.length >= 10) {
-                    ngayKhoa = giaoDich.ngayGioNhap.substring(0, 10);
-                } else {
-                    const d = new Date();
-                    ngayKhoa = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                }
-
-                if (!cấuTrúcTheoNgay[ngayKhoa]) {
-                    cấuTrúcTheoNgay[ngayKhoa] = { tongThu: 0, tongChi: 0, danhSachKhoan: [] };
-                }
-
-                if (giaoDich.loai === 'thu') {
-                    cấuTrúcTheoNgay[ngayKhoa].tongThu += giaoDich.soTien;
-                } else {
-                    cấuTrúcTheoNgay[ngayKhoa].tongChi += giaoDich.soTien;
-                }
-                cấuTrúcTheoNgay[ngayKhoa].danhSachKhoan.push(giaoDich);
-            });
-
-        // 7.4 Đưa số liệu tổng lên màn hình
-            if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
-            if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
-            if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
-
-        // 7.5 BƯỚC 2: Dựng giao diện cụm ngày
-            const cacNgayDaSapXep = Object.keys(cấuTrúcTheoNgay).sort((a, b) => b.localeCompare(a));
-
-            cacNgayDaSapXep.forEach((ngay) => {
-                const dataCuaNgay = cấuTrúcTheoNgay[ngay];
-                const phan = ngay.split('-');
-                let dinhDangNgayViệt = ngay;
-                if (phan.length === 3) {
-                    dinhDangNgayViệt = `${phan[2]}/${phan[1]}/${phan[0]}`;
-                }
-
-                let chuoiTongTienTrongNgay = '';
-                if (dataCuaNgay.tongThu > 0) {
-                    chuoiTongTienTrongNgay += `<span style="color: #2ec4b6; font-weight: bold;">+${dataCuaNgay.tongThu.toLocaleString('vi-VN')} đ</span>`;
-                }
-                if (dataCuaNgay.tongChi > 0) {
-                    if (chuoiTongTienTrongNgay) chuoiTongTienTrongNgay += ' | ';
-                    chuoiTongTienTrongNgay += `<span style="color: #e71d36; font-weight: bold;">-${dataCuaNgay.tongChi.toLocaleString('vi-VN')} đ</span>`;
-                }
-
-                const cumNgayBlock = document.createElement('div');
-                cumNgayBlock.style.marginBottom = '12px';
-                cumNgayBlock.style.background = '#ffffff';
-                cumNgayBlock.style.borderRadius = '8px';
-                cumNgayBlock.style.overflow = 'hidden';
-                cumNgayBlock.style.border = '1px solid #e2e8f0';
-
-                cumNgayBlock.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #edf2f7; border-bottom: 1px solid #e2e8f0;">
-                        <span style="font-weight: bold; color: #4a5568; font-size: 14px;">📅 ${dinhDangNgayViệt}</span>
-                        <span style="font-size: 13px;">${chuoiTongTienTrongNgay}</span>
-                    </div>
-                `;
-
-                dataCuaNgay.danhSachKhoan.forEach((giaoDich) => {
-                    let kyTuDau = giaoDich.loai === 'thu' ? '+' : '-';
-                    let mauChuTien = giaoDich.loai === 'thu' ? '#2ec4b6' : '#e71d36';
-
-                    const dongChiTiet = document.createElement('div');
-                    dongChiTiet.style.padding = '12px';
-                    dongChiTiet.style.display = 'flex';
-                    dongChiTiet.style.justifyContent = 'space-between';
-                    dongChiTiet.style.alignItems = 'center';
-                    dongChiTiet.style.borderBottom = '1px solid #f7fafc';
-
-                    dongChiTiet.innerHTML = `
-                        <div style="display: flex; flex-direction: column; text-align: left;">
-                            <span style="font-weight: 500; color: #2d3748; font-size: 15px;">${giaoDich.ten}</span>
-                            <span style="font-size: 12px; color: #718096; margin-top: 2px;">📂 ${giaoDich.danhMuc}</span>
-                        </div>
-                        <span style="font-weight: 600; font-size: 15px; color: ${mauChuTien};">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
-                    `;
-                    cumNgayBlock.appendChild(dongChiTiet);
-                });
-
-                idVungLichSu.appendChild(cumNgayBlock);
-            });
-
-        // 7.6 Cập nhật thanh đồ họa tiến trình
-            const maxTong = Math.max(tongThuNhap, tongChiTieu);
-            if (maxTong > 0) {
-                if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
-                if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
-            } else {
-                if (idThanhThu) idThanhThu.style.width = "0%";
-                if (idThanhChi) idThanhChi.style.width = "0%";
-            }
-        });
+                });   
         // --------------------------------------------------------------------------
         // X. LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
         // --------------------------------------------------------------------------
