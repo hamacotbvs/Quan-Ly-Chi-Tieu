@@ -707,23 +707,23 @@
                             kyTuDau = '-';
                             lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
                         }
-                        // 🟢 THÊM MỚI: Tách ngày từ chuỗi "ngayGioNhap" để cộng dồn tiền từng ngày
+                // 🟢 THÊM MỚI: Tách ngày từ chuỗi "ngayGioNhap" để cộng dồn tiền từng ngày
                 // Chuỗi gốc ví dụ: "2026-06-17 20:45" -> substring(0, 10) lấy ra "2026-06-17"
-                if (giaoDich.ngayGioNhap) {
-                    const chiLayNgay = giaoDich.ngayGioNhap.substring(0, 10);
+                        if (giaoDich.ngayGioNhap) {
+                            const chiLayNgay = giaoDich.ngayGioNhap.substring(0, 10);
                     
-                    // Nếu ngày này chưa tồn tại trong bộ nhớ, tạo mới nhóm cho ngày đó
-                    if (!thongKeTheoNgay[chiLayNgay]) {
-                        thongKeTheoNgay[chiLayNgay] = { thu: 0, chi: 0 };
-                    }
+                            // Nếu ngày này chưa tồn tại trong bộ nhớ, tạo mới nhóm cho ngày đó
+                            if (!thongKeTheoNgay[chiLayNgay]) {
+                                thongKeTheoNgay[chiLayNgay] = { thu: 0, chi: 0 };
+                            }
                     
-                    // Tiến hành cộng dồn tiền vào đúng ngày tương ứng
-                    if (giaoDich.loai === 'thu') {
-                        thongKeTheoNgay[chiLayNgay].thu += giaoDich.soTien;
-                    } else {
-                        thongKeTheoNgay[chiLayNgay].chi += giaoDich.soTien;
-                    }
-                }
+                            // Tiến hành cộng dồn tiền vào đúng ngày tương ứng
+                            if (giaoDich.loai === 'thu') {
+                                thongKeTheoNgay[chiLayNgay].thu += giaoDich.soTien;
+                            } else {
+                                thongKeTheoNgay[chiLayNgay].chi += giaoDich.soTien;
+                            }
+                        }
                         const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
                 // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền chứa: Tên khoản chi/thu, biểu tượng danh mục, số tiền hiển thị trên lịch sử màn hình
                         const dongMoi = document.createElement('div');
@@ -741,6 +741,33 @@
                     if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
                     if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
                     if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
+                    // 🟢 THÊM MỚI: Dựng giao diện và in danh sách Tổng tiền theo từng ngày ra HTML
+            const noiDungTongNgay = document.getElementById('noi-dung-tong-ngay');
+            if (noiDungTongNgay) {
+                let chuoiHtmlTongNgay = '';
+                
+                // Chạy vòng lặp qua từng ngày đã gom nhóm được
+                for (const ngay trong thongKeTheoNgay) {
+                    // Cắt chuỗi đổi định dạng ngày từ YYYY-MM-DD sang dạng thuần Việt DD/MM/YYYY
+                    const cacPhan = ngay.split('-');
+                    const ngayTiengViet = `${cacPhan[2]}/${cacPhan[1]}/${cacPhan[0]}`;
+                    
+                    const thuTrongNgay = thongKeTheoNgay[ngay].thu.toLocaleString('vi-VN');
+                    const chiTrongNgay = thongKeTheoNgay[ngay].chi.toLocaleString('vi-VN');
+                    
+                    // Tạo dòng tổng kết Thu/Chi ngắn gọn cho từng ngày
+                    chuoiHtmlTongNgay += `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; border-bottom: 1px dashed #e0e0e0; padding-bottom: 4px;">
+                            <span>📅 <b>${ngayTiengViet}</b></span>
+                            <span>
+                                <span style="color: #2ec4b6; font-weight: 500;">+${thuTrongNgay}đ</span> | 
+                                <span style="color: #e71d36; font-weight: 500;">-${chiTrongNgay}đ</span>
+                            </span>
+                        </div>
+                    `;
+                }
+                noiDungTongNgay.innerHTML = chuoiHtmlTongNgay;
+            }
             // 7.5 Cập nhật thanh đồ họa
                     const maxTong = Math.max(tongThuNhap, tongChiTieu);
                     if (maxTong > 0) {
