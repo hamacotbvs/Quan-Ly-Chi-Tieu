@@ -546,6 +546,7 @@
                 alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
                 return;
                 }
+
                 try {
             // 2.4 Đẩy dữ liệu transaction mới lên Firestore
                 await addDoc(boChonBoSuuTap, {
@@ -553,13 +554,23 @@
                 soTien: soTien,
                 loai: loai,
                 danhMuc: danhMuc,
-                // tự động lấy mốc thời gian chính xác đến từng mili-giây ngay tại thời điểm bạn bấm nút
                 thoiGian: Date.now() // Lưu mốc thời gian Unix hiện tại để sắp xếp
                 });
-
             // 2.5 Dọn dẹp giao diện (Reset Form)
                 idTen.value = '';
                 idSoTien.value = ''; // <--- Thay 'soTien.value' bằng 'idSoTien.value'
+            // 2.6 Tự động chuyển qua tab Tổng quan (HOME)
+                const nutHome = document.querySelector('[data-target="home"]');
+                if (nutHome) {
+                nutHome.click();
+                }
+            // 2.7 Trải nghiệm người dùng mượt mà: Tự động click chuyển về Tab Home để thấy lịch sử cập nhật ngay
+                document.querySelector('[data-target="home"]').click();        
+                } catch (loi) {
+                console.error("Lỗi kết nối Firebase: ", loi);
+                alert("Không thể ghi nhận giao dịch lên đám mây!");
+                }
+                });
 
         // --------------------------------------------------------------------------
         // II. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAP
@@ -697,20 +708,6 @@
         });
 
         
-        // IX. TỰ ĐỘNG CHUYỂN QUA TAB TỔNG QUAN (HOME)
-        const nutHome = document.querySelector('[data-target="home"]');
-        if (nutHome) {
-            nutHome.click();
-        }
-        
-        // 9.1 Trải nghiệm người dùng mượt mà: Tự động click chuyển về Tab Home để thấy lịch sử cập nhật ngay
-        document.querySelector('[data-target="home"]').click();
-        
-        } catch (loi) {
-        console.error("Lỗi kết nối Firebase: ", loi);
-        alert("Không thể ghi nhận giao dịch lên đám mây!");
-        }
-        });
         // --------------------------------------------------------------------------
         // X. LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
         // --------------------------------------------------------------------------
