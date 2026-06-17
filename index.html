@@ -392,7 +392,7 @@
                 <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
             </div>
 
-            <div class="form-group-row" style="display: flex; gap: 10px;">
+            <div class="form-group-row ô chọn Ngày và Giờ" style="display: flex; gap: 10px;">
                 <div class="form-group" style="flex: 1;">
                     <label>Ngày tháng:</label>
                     <input type="date" id="ngay-giao-dich">
@@ -663,6 +663,24 @@
                 window.location.reload();
             }, 350);
         });
+
+// Lấy thẻ input ngày và giờ
+const inputNgay = document.getElementById('ngay-giao-dich');
+const inputGio = document.getElementById('gio-giao-dich');
+
+// Lấy thời gian hiện tại theo múi giờ địa phương
+const bayGio = new Date();
+
+// Định dạng ngày thành YYYY-MM-DD
+const nam = bayGio.getFullYear();
+const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
+const ngay = String(bayGio.getDate()).padStart(2, '0');
+inputNgay.value = `${nam}-${thang}-${ngay}`;
+
+// Định dạng giờ thành HH:MM
+const gio = String(bayGio.getHours()).padStart(2, '0');
+const phut = String(bayGio.getMinutes()).padStart(2, '0');
+inputGio.value = `${gio}:${phut}`;        
     </script>
 </body>
 </html>
