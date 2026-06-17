@@ -707,6 +707,23 @@
                             kyTuDau = '-';
                             lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
                         }
+                        // 🟢 THÊM MỚI: Tách ngày từ chuỗi "ngayGioNhap" để cộng dồn tiền từng ngày
+                // Chuỗi gốc ví dụ: "2026-06-17 20:45" -> substring(0, 10) lấy ra "2026-06-17"
+                if (giaoDich.ngayGioNhap) {
+                    const chiLayNgay = giaoDich.ngayGioNhap.substring(0, 10);
+                    
+                    // Nếu ngày này chưa tồn tại trong bộ nhớ, tạo mới nhóm cho ngày đó
+                    if (!thongKeTheoNgay[chiLayNgay]) {
+                        thongKeTheoNgay[chiLayNgay] = { thu: 0, chi: 0 };
+                    }
+                    
+                    // Tiến hành cộng dồn tiền vào đúng ngày tương ứng
+                    if (giaoDich.loai === 'thu') {
+                        thongKeTheoNgay[chiLayNgay].thu += giaoDich.soTien;
+                    } else {
+                        thongKeTheoNgay[chiLayNgay].chi += giaoDich.soTien;
+                    }
+                }
                         const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
                 // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền chứa: Tên khoản chi/thu, biểu tượng danh mục, số tiền hiển thị trên lịch sử màn hình
                         const dongMoi = document.createElement('div');
