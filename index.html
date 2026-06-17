@@ -685,6 +685,9 @@
                         if (idBcChi) idBcChi.innerText = "0 đ";
                         if (idThanhThu) idThanhThu.style.width = "0%";
                         if (idThanhChi) idThanhChi.style.width = "0%";
+            // 🟢 THÊM MỚI: Reset vùng hiển thị tổng theo ngày về trống khi không có dữ liệu
+                        const noiDungTongNgay = document.getElementById('noi-dung-tong-ngay');
+                        if (noiDungTongNgay) noiDungTongNgay.innerHTML = "Chưa có dữ liệu";
                         return;
                         }
             // 7.3 Vòng lặp tính toán và dựng dòng lịch sử (Phần cốt lõi)
