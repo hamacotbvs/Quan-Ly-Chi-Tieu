@@ -290,16 +290,29 @@
         /* ==========================================================================
            KHI ĐƯỢC CHỌN (ACTIVE) - ICON ĐỔ ĐẶC NGUYÊN KHỐI MÀU TRẮNG NHƯ HÌNH
            ========================================================================== */
-        .nut-tab.active { 
-            color: #ffffff;               /* Chuyển thành màu TRẮNG tinh nổi bật */
-            font-weight: 700;
-        }
+/* Định dạng chung cho cả 2 ảnh icon ngôi nhà */
+.nut-tab .img-icon-2d {
+    width: 18px !important;
+    height: 18px !important;
+    object-fit: contain;
+    margin-bottom: 5px;
+}
 
-        .nut-tab.active .icon svg {
-            fill: #ffffff;                /* 👈 ĐỔ ĐẶC RUỘT MÀU TRẮNG TINH THEO YÊU CẦU */
-            stroke: #ffffff;              /* Giữ viền trắng để không bị mất nét góc */
-            transform: scale(1.1);        /* Phóng to nhẹ icon khi đang ở tab đó */
-        }
+/* 1. Mặc định khi KHÔNG CHỌN (Không có class active) */
+.nut-tab .icon-active {
+    display: none; /* Ẩn ảnh viền đi */
+}
+.nut-tab .icon-inactive {
+    display: block; /* Hiện ảnh màu (homemau.png) lên */
+}
+
+/* 2. Khi ĐƯỢC CHỌN (Có class active) */
+.nut-tab.active .icon-active {
+    display: block; /* Hiện ảnh viền (homevien.png) lên */
+}
+.nut-tab.active .icon-inactive {
+    display: none; /* Ẩn ảnh màu đi */
+}
         
         /* NÚT THÊM (+) TRUNG TÂM PHONG CÁCH MỚI - ĐÃ CĂN CHỈNH GIỮA */
         .nut-tab-them-trung-tam .icon {
@@ -434,7 +447,8 @@
 
         <nav class="menu-day-app">
 <button class="nut-tab active" data-target="home">
-    <img src="homevien.png" class="img-icon-2d" alt="Tổng quan" style="width: 18px; height: 18px; object-fit: contain; margin-bottom: 5px;">
+    <img src="homevien.png" class="img-icon-2d icon-active" alt="Tổng quan">
+    <img src="homemau.png" class="img-icon-2d icon-inactive" alt="Tổng quan">
     <span class="chu-menu">Tổng quan</span>
 </button>
             <button class="nut-tab nut-tab-them-trung-tam" data-target="add">
