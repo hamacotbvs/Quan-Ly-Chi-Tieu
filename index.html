@@ -532,37 +532,36 @@
                 const boChonBoSuuTap = collection(db, "giao_dich_business");
 
         // --------------------------------------------------------------------------
-        // II. DOM ELEMENTS - ĐỊNH DANH TẤT CẢ CÁC BIẾN (BẮT BUỘC ĐỂ TRÊN ĐẦU)
+        // II. ĐỊNH DANH TẤT CẢ CÁC BIẾN (BẮT BUỘC ĐỂ TRÊN ĐẦU)
         // --------------------------------------------------------------------------
-        const idNutGhiDe = document.getElementById('nut-ghi-de');
-        const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
-        const idTen = document.getElementById('ten-khoan-chi');
-        const idDanhMuc = document.getElementById('danh-muc-giao-dich');
-        const idSoTien = document.getElementById('so-tien');
-        const idHienThiSoDu = document.getElementById('so-du');
-        const idVungLichSu = document.getElementById('lich-su-giao-dich');
+                const idNutGhiDe = document.getElementById('nut-ghi-de');
+                const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
+                const idTen = document.getElementById('ten-khoan-chi');
+                const idDanhMuc = document.getElementById('danh-muc-giao-dich');
+                const idSoTien = document.getElementById('so-tien');
+                const idHienThiSoDu = document.getElementById('so-du');
+                const idVungLichSu = document.getElementById('lich-su-giao-dich');
+            // Các biến hiển thị của TAB BÁO CÁO
+                const idBcThu = document.getElementById('bao-cao-thu');
+                const idBcChi = document.getElementById('bao-cao-chi');
+                const idThanhThu = document.getElementById('thanh-thu-ti-le');
+                const idThanhChi = document.getElementById('thanh-chi-ti-le');
 
-        // Các biến hiển thị của TAB BÁO CÁO
-        const idBcThu = document.getElementById('bao-cao-thu');
-        const idBcChi = document.getElementById('bao-cao-chi');
-        const idThanhThu = document.getElementById('thanh-thu-ti-le');
-        const idThanhChi = document.getElementById('thanh-chi-ti-le');
+            // Các thẻ input ngày, giờ và label số tiền
+                const inputNgay = document.getElementById('ngay-giao-dich');
+                const inputGio = document.getElementById('gio-giao-dich');
+                const labelSoTien = document.getElementById('label-so-tien');
 
-        // Các thẻ input ngày, giờ và label số tiền
-        const inputNgay = document.getElementById('ngay-giao-dich');
-        const inputGio = document.getElementById('gio-giao-dich');
-        const labelSoTien = document.getElementById('label-so-tien');
-
-        const cacNutTab = document.querySelectorAll('.nut-tab');
-        const cacVungNoiDung = document.querySelectorAll('.tab-content');
-        const idNutLamMoi = document.getElementById('nut-lam-moi-app');
+                const cacNutTab = document.querySelectorAll('.nut-tab');
+                const cacVungNoiDung = document.querySelectorAll('.tab-content');
+                const idNutLamMoi = document.getElementById('nut-lam-moi-app');
 
         // --------------------------------------------------------------------------
         // III. THAY ĐỔI DANH MỤC THU/CHI TƯƠNG ỨNG
         // --------------------------------------------------------------------------
-        if (idLoaiGiaoDich && idDanhMuc) {
-            idLoaiGiaoDich.addEventListener('change', () => {
-                idDanhMuc.innerHTML = ''; // Xóa sạch các option cũ
+                if (idLoaiGiaoDich && idDanhMuc) {
+                    idLoaiGiaoDich.addEventListener('change', () => {
+                    idDanhMuc.innerHTML = ''; // Xóa sạch các option cũ
 
                 if (idLoaiGiaoDich.value === 'chi') {
                     idDanhMuc.innerHTML = `
@@ -579,34 +578,34 @@
                         <option value="Thu nhập khác">💰 Thu nhập khác</option>
                     `;
                 }
-            });
-        }
-
-        // --------------------------------------------------------------------------
-        // IV. THÊM GIAO DỊCH MỚI LÊN FIREBASE
-        // --------------------------------------------------------------------------
-        if (idNutGhiDe) {
-            idNutGhiDe.addEventListener('click', async () => {
-                const loai = idLoaiGiaoDich.value; 
-                const ten = idTen.value.trim();
-                const danhMuc = idDanhMuc.value;
-                const soTien = parseInt(idSoTien.value);
-                
-                // Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
-                const ngayNhap = inputNgay ? inputNgay.value : "";
-                const gioNhap = inputGio ? inputGio.value : "";
-
-                // Kiểm tra dữ liệu đầu vào hợp lệ
-                if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
-                    alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
-                    return;
+                });
                 }
 
-                try {
+        // --------------------------------------------------------------------------
+        // IV. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
+        // --------------------------------------------------------------------------
+                if (idNutGhiDe) {
+                    idNutGhiDe.addEventListener('click', async () => {
+                    const loai = idLoaiGiaoDich.value; 
+                    const ten = idTen.value.trim();
+                    const danhMuc = idDanhMuc.value;
+                    const soTien = parseInt(idSoTien.value);
+                
+            // Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
+                    const ngayNhap = inputNgay ? inputNgay.value : "";
+                    const gioNhap = inputGio ? inputGio.value : "";
+
+            // Kiểm tra dữ liệu đầu vào hợp lệ
+                    if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
+                        alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
+                        return;
+                    }
+
+                    try {
                     // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
                     const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
 
-                    // Đẩy dữ liệu transaction mới lên Firestore
+            // Đẩy dữ liệu transaction mới lên Firestore
                     await addDoc(boChonBoSuuTap, {
                         ten: ten,
                         soTien: soTien,
@@ -615,12 +614,12 @@
                         thoiGian: chuoiThoiGianGop // Đã đồng bộ với input giao diện
                     });
 
-                    // Dọn dẹp giao diện (Reset Form)
+            // Dọn dẹp giao diện (Reset Form)
                     idTen.value = '';
                     idSoTien.value = ''; 
                     if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):';
 
-                    // Tự động chuyển qua tab Tổng quan (HOME)
+            // Tự động chuyển qua tab Tổng quan (HOME)
                     const nutHome = document.querySelector('[data-target="home"]');
                     if (nutHome) {
                         nutHome.click();
