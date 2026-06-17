@@ -511,15 +511,31 @@
         // --------------------------------------------------------------------------
         // I. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
         // --------------------------------------------------------------------------
-        const firebaseConfig = {
-            apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
-            authDomain: "quanlychitieu-af553.firebaseapp.com",
-            projectId: "quanlychitieu-af553",
-            storageBucket: "quanlychitieu-af553.firebasestorage.app",
-            messagingSenderId: "800322270032",
-            appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
-            measurementId: "G-3NQYVR3VFB"
-        };
+            // 1.1 Chứng minh thư và địa chỉ nhà của App
+
+            const firebaseConfig = {
+
+                // Mật khẩu, Chìa khóa bảo mật để app của bạn có quyền kết nối vào hệ thống
+
+                apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
+
+                authDomain: "quanlychitieu-af553.firebaseapp.com",
+
+                // Tên dự án của bạn trên hệ thống Google
+
+                projectId: "quanlychitieu-af553",
+
+                // Giống như số nhà, ngõ ngách, mã bưu điện để định vị chính xác tuyệt đối cơ sở dữ liệu của riêng bạn
+
+                storageBucket: "quanlychitieu-af553.firebasestorage.app",
+
+                messagingSenderId: "800322270032",
+
+                appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
+
+                measurementId: "G-3NQYVR3VFB"
+
+            };
         
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
