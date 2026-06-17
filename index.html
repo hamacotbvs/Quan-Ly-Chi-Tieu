@@ -381,22 +381,16 @@
         </div>
         </div>
 
-<div id="tab-lich-su" class="tab-content">
-    <div class="danh-sach-lich-su">
-        <div class="tieu-de-khoang">Lịch sử dòng tiền chi tiết</div>
-        
-        <div id="khung-tong-ngay" style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; border: 1px solid #eee;">
-            <div style="font-weight: bold; margin-bottom: 5px; color: #555;">📊 Tổng hợp theo ngày gần nhất:</div>
-            <div id="noi-dung-tong-ngay" style="color: #666;">Đang tính toán...</div>
-        </div>
-        
-        <div id="lich-su-giao-dich">
-            <div id="danh-sach-lich-su-toan-bo">
-                <div class="trang-thai-trong">Đang tải danh sách lịch sử...</div>
+    <div id="tab-lich-su" class="tab-content">
+        <div class="danh-sach-lich-su">
+            <div class="tieu-de-khoang">Lịch sử dòng tiền chi tiết</div>
+            <div id="lich-su-giao-dich">
+                <div id="danh-sach-lich-su-toan-bo">
+                    <div class="trang-thai-trong">Đang tải danh sách lịch sử...</div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <div id="tab-add" class="tab-content">
         <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
@@ -665,136 +659,70 @@
         // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
         // --------------------------------------------------------------------------
                     const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));     
-// --------------------------------------------------------------------------
+        // --------------------------------------------------------------------------
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
         // --------------------------------------------------------------------------
-        // 7.1 Khởi tạo và làm sạch (Mở đầu)
-        onSnapshot(truyVanSapXep, (snapshot) => {
-            if (!idVungLichSu) return;            
-            idVungLichSu.innerHTML = ''; 
-            let tongSoDu = 0;
-            let tongThuNhap = 0;
-            let tongChiTieu = 0;
-
-            // 🟢 THÊM MỚI: Khởi tạo bộ nhớ tạm để gom tiền theo ngày nhập
-            let thongKeTheoNgay = {}; 
-
-        // 7.2 Kiểm tra bộ lưu trữ rỗng
-            if (snapshot.empty) {
-                idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
-                if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
-                if (idBcThu) idBcThu.innerText = "0 đ";
-                if (idBcChi) idBcChi.innerText = "0 đ";
-                if (idThanhThu) idThanhThu.style.width = "0%";
-                if (idThanhChi) idThanhChi.style.width = "0%";
-
-                // 🟢 THÊM MỚI: Reset vùng hiển thị tổng theo ngày về trống khi không có dữ liệu
-                const noiDungTongNgay = document.getElementById('noi-dung-tong-ngay');
-                if (noiDungTongNgay) noiDungTongNgay.innerHTML = "Chưa có dữ liệu";
-
-                return;
-            }
-
-        // 7.3 Vòng lặp tính toán và dựng dòng lịch sử (Phần cốt lõi)
-            snapshot.forEach((doc) => {
-                const giaoDich = doc.data();
-                let kyTuDau = '';
-                let lopMauSac = '';
-
+            // 7.1 Khởi tạo và làm sạch (Mở đầu)
+                onSnapshot(truyVanSapXep, (snapshot) => {
+                    if (!idVungLichSu) return;            
+                    idVungLichSu.innerHTML = ''; 
+                    let tongSoDu = 0;
+                    let tongThuNhap = 0;
+                    let tongChiTieu = 0;
+            // 7.2 Kiểm tra bộ lưu trữ rỗng
+                    if (snapshot.empty) {
+                        idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
+                        if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
+                        if (idBcThu) idBcThu.innerText = "0 đ";
+                        if (idBcChi) idBcChi.innerText = "0 đ";
+                        if (idThanhThu) idThanhThu.style.width = "0%";
+                        if (idThanhChi) idThanhChi.style.width = "0%";
+                        return;
+                        }
+            // 7.3 Vòng lặp tính toán và dựng dòng lịch sử (Phần cốt lõi)
+                    snapshot.forEach((doc) => {
+                        const giaoDich = doc.data();
+                        let kyTuDau = '';
+                        let lopMauSac = '';
                 // 7.3.1 Bước A: Phân loại tiền và tính toán
-                if (giaoDich.loai === 'thu') {
-                    tongSoDu += giaoDich.soTien; // Cộng vào số dư
-                    tongThuNhap += giaoDich.soTien; // Cộng vào tổng thu
-                    kyTuDau = '+';
-                    lopMauSac = 'mau-thu'; // Đặt chữ màu xanh
-                } else {
-                    tongSoDu -= giaoDich.soTien; // Trừ bớt số dư
-                    tongChiTieu += giaoDich.soTien; // Cộng vào tổng chi
-                    kyTuDau = '-';
-                    lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
-                }
-
-                // 🟢 THÊM MỚI: Tách ngày từ chuỗi "ngayGioNhap" để cộng dồn tiền từng ngày
-                // ĐÃ GIA CỐ: Kiểm tra chuỗi hợp lệ trước khi xử lý cắt chuỗi tránh sập app
-                if (giaoDich.ngayGioNhap && typeof giaoDich.ngayGioNhap === 'string' && giaoDich.ngayGioNhap.length >= 10) {
-                    const chiLayNgay = giaoDich.ngayGioNhap.substring(0, 10);
-                    
-                    // Nếu ngày này chưa tồn tại trong bộ nhớ, tạo mới nhóm cho ngày đó
-                    if (!thongKeTheoNgay[chiLayNgay]) {
-                        thongKeTheoNgay[chiLayNgay] = { thu: 0, chi: 0 };
-                    }
-                    
-                    // Tiến hành cộng dồn tiền vào đúng ngày tương ứng
-                    if (giaoDich.loai === 'thu') {
-                        thongKeTheoNgay[chiLayNgay].thu += giaoDich.soTien;
-                    } else {
-                        thongKeTheoNgay[chiLayNgay].chi += giaoDich.soTien;
-                    }
-                }
-
-                const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
-
+                        if (giaoDich.loai === 'thu') {
+                            tongSoDu += giaoDich.soTien; // Cộng vào số dư
+                            tongThuNhap += giaoDich.soTien; // Cộng vào tổng thu
+                            kyTuDau = '+';
+                            lopMauSac = 'mau-thu'; // Đặt chữ màu xanh
+                        } else {
+                            tongSoDu -= giaoDich.soTien; // Trừ bớt số dư
+                            tongChiTieu += giaoDich.soTien; // Cộng vào tổng chi
+                            kyTuDau = '-';
+                            lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
+                        }
+                        const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
                 // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền chứa: Tên khoản chi/thu, biểu tượng danh mục, số tiền hiển thị trên lịch sử màn hình
-                const dongMoi = document.createElement('div');
-                dongMoi.classList.add('dong-giao-dich');
-                dongMoi.innerHTML = `
-                    <div class="giao-dich-trai">
-                        <span class="giao-dich-ten">${giaoDich.ten}</span>
-                        <span class="giao-dich-muc">📂 ${hienThiDanhMuc}</span>
-                    </div>
-                    <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
-                `;
-                idVungLichSu.appendChild(dongMoi); 
-            });
-
-        // 7.4 Đưa số liệu sau khi tính toán lên giao diện trực quan
-            if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
-            if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
-            if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
-
-            // 🟢 THÊM MỚI: Dựng giao diện và in danh sách Tổng tiền theo từng ngày ra HTML
-            const noiDungTongNgay = document.getElementById('noi-dung-tong-ngay');
-            if (noiDungTongNgay) {
-                let chuoiHtmlTongNgay = '';
-                
-                // Chạy vòng lặp qua từng ngày đã gom nhóm được
-                for (const ngay trong thongKeTheoNgay) {
-                    // ĐÃ GIA CỐ: Kiểm tra định dạng ngày dạng YYYY-MM-DD bẻ gãy lỗi lặp vô tận
-                    const cacPhan = ngay.split('-');
-                    let ngayTiengViet = ngay; 
-                    
-                    // Chỉ khi cắt ra đúng 3 phần (Năm-Tháng-Ngày) thì mới đổi định dạng Việt Nam
-                    if (cacPhan.length === 3 && cacPhan[0] && cacPhan[1] && cacPhan[2]) {
-                        ngayTiengViet = `${cacPhan[2]}/${cacPhan[1]}/${cacPhan[0]}`;
+                        const dongMoi = document.createElement('div');
+                        dongMoi.classList.add('dong-giao-dich');
+                        dongMoi.innerHTML = `
+                            <div class="giao-dich-trai">
+                                <span class="giao-dich-ten">${giaoDich.ten}</span>
+                                <span class="giao-dich-muc">📂 ${hienThiDanhMuc}</span>
+                            </div>
+                            <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
+                        `;
+                        idVungLichSu.appendChild(dongMoi); 
+                    });
+            // 7.4 Đưa số liệu sau khi tính toán lên giao diện trực quan
+                    if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
+                    if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
+                    if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
+            // 7.5 Cập nhật thanh đồ họa
+                    const maxTong = Math.max(tongThuNhap, tongChiTieu);
+                    if (maxTong > 0) {
+                        if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
+                        if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
+                    } else {
+                        if (idThanhThu) idThanhThu.style.width = "0%";
+                        if (idThanhChi) idThanhChi.style.width = "0%";
                     }
-                    
-                    const thuTrongNgay = thongKeTheoNgay[ngay].thu.toLocaleString('vi-VN');
-                    const chiTrongNgay = thongKeTheoNgay[ngay].chi.toLocaleString('vi-VN');
-                    
-                    // Tạo dòng tổng kết Thu/Chi ngắn gọn cho từng ngày
-                    chuoiHtmlTongNgay += `
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; border-bottom: 1px dashed #e0e0e0; padding-bottom: 4px;">
-                            <span>📅 <b>${ngayTiengViet}</b></span>
-                            <span>
-                                <span style="color: #2ec4b6; font-weight: 500;">+${thuTrongNgay}đ</span> | 
-                                <span style="color: #e71d36; font-weight: 500;">-${chiTrongNgay}đ</span>
-                            </span>
-                        </div>
-                    `;
-                }
-                noiDungTongNgay.innerHTML = chuoiHtmlTongNgay;
-            }
-
-        // 7.5 Cập nhật thanh đồ họa
-            const maxTong = Math.max(tongThuNhap, tongChiTieu);
-            if (maxTong > 0) {
-                if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
-                if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
-            } else {
-                if (idThanhThu) idThanhThu.style.width = "0%";
-                if (idThanhChi) idThanhChi.style.width = "0%";
-            }
-        });
+                    });
         // B. ĐỊNH DẠNG
         // --------------------------------------------------------------------------
         // IX. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
