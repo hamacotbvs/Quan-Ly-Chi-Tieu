@@ -680,7 +680,30 @@
         // Định dạng giờ thành HH:MM
         const gio = String(bayGio.getHours()).padStart(2, '0');
         const phut = String(bayGio.getMinutes()).padStart(2, '0');
-        inputGio.value = `${gio}:${phut}`;        
+        inputGio.value = `${gio}:${phut}`;
+        
+        // --------------------------------------------------------------------------
+        // LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
+        // --------------------------------------------------------------------------
+
+        const inputSoTien = document.getElementById('so-tien');
+        const labelSoTien = document.getElementById('label-so-tien');
+
+        inputSoTien.addEventListener('input', function () {
+        let value = this.value;
+    
+        // Nếu ô nhập trống thì trả tiêu đề về mặc định
+        if (!value) {
+        labelSoTien.innerText = 'Số tiền (đ):';
+        return;
+        }
+    
+        // Định dạng số vừa nhập thành chuỗi có dấu chấm hàng nghìn
+        let soDaPhanCach = Number(value).toLocaleString('vi-VN');
+    
+        // Cập nhật lên tiêu đề phía trên
+        labelSoTien.innerText = `Số tiền (đ): ${soDaPhanCach}`;
+        });
     </script>
 </body>
 </html>
