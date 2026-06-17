@@ -532,6 +532,47 @@
                 const boChonBoSuuTap = collection(db, "giao_dich_business");
 
         // --------------------------------------------------------------------------
+        // III. DOM ELEMENTS - ĐỊNH DANH CÁC BIẾN GIAO DIỆN
+        // --------------------------------------------------------------------------
+        const idNutGhiDe = document.getElementById('nut-ghi-de');
+        const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
+        const idTen = document.getElementById('ten-khoan-chi');
+        const idDanhMuc = document.getElementById('danh-muc-giao-dich');
+        const idSoTien = document.getElementById('so-tien');
+        const idHienThiSoDu = document.getElementById('so-du');
+        const idVungLichSu = document.getElementById('lich-su-giao-dich');
+
+        // IV. CÁC BIẾN HIỂN THỊ CỦA TAP BÁO CÁO
+        const idBcThu = document.getElementById('bao-cao-thu');
+        const idBcChi = document.getElementById('bao-cao-chi');
+        const idThanhThu = document.getElementById('thanh-thu-ti-le');
+        const idThanhChi = document.getElementById('thanh-chi-ti-le');
+
+        // V. THAY ĐỔI DANH MỤC THU/CHI TƯƠNG ỨNG
+        idLoaiGiaoDich.addEventListener('change', () => {
+        // 5.1 Xóa sạch các option cũ hiện tại
+        idDanhMuc.innerHTML = '';
+
+        if (idLoaiGiaoDich.value === 'chi') {
+        // 5.2 Nếu chọn Chi tiêu -> Hiển thị các danh mục chi tiêu (Bỏ khoản thu nhập)
+        idDanhMuc.innerHTML = `
+            <option value="Ăn uống">🍔 Ăn uống</option>
+            <option value="Di chuyển">🚗 Di chuyển</option>
+            <option value="Mua sắm">🛍️ Mua sắm</option>
+            <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
+            <option value="Giải trí">🎬 Giải trí & Cà phê</option>
+            <option value="Khác">✨ Khác</option>
+        `;
+        } else if (idLoaiGiaoDich.value === 'thu') {
+        // 5.3 Nếu chọn Thu nhập -> Chỉ hiển thị Thu nhập từ lương và Thu nhập khác
+        idDanhMuc.innerHTML = `
+            <option value="Thu nhập từ lương">💵 Thu nhập từ lương</option>
+            <option value="Thu nhập khác">💰 Thu nhập khác</option>
+        `;
+        }
+        });
+
+        // --------------------------------------------------------------------------
         // II. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
         // --------------------------------------------------------------------------
             // 2.1 kích hoạt toàn bộ các lệnh bên trong nút bấm chạy
@@ -592,46 +633,7 @@
             });
         });
 
-        // --------------------------------------------------------------------------
-        // III. DOM ELEMENTS - ĐỊNH DANH CÁC BIẾN GIAO DIỆN
-        // --------------------------------------------------------------------------
-        const idNutGhiDe = document.getElementById('nut-ghi-de');
-        const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
-        const idTen = document.getElementById('ten-khoan-chi');
-        const idDanhMuc = document.getElementById('danh-muc-giao-dich');
-        const idSoTien = document.getElementById('so-tien');
-        const idHienThiSoDu = document.getElementById('so-du');
-        const idVungLichSu = document.getElementById('lich-su-giao-dich');
 
-        // IV. CÁC BIẾN HIỂN THỊ CỦA TAP BÁO CÁO
-        const idBcThu = document.getElementById('bao-cao-thu');
-        const idBcChi = document.getElementById('bao-cao-chi');
-        const idThanhThu = document.getElementById('thanh-thu-ti-le');
-        const idThanhChi = document.getElementById('thanh-chi-ti-le');
-
-        // V. THAY ĐỔI DANH MỤC THU/CHI TƯƠNG ỨNG
-        idLoaiGiaoDich.addEventListener('change', () => {
-        // 5.1 Xóa sạch các option cũ hiện tại
-        idDanhMuc.innerHTML = '';
-
-        if (idLoaiGiaoDich.value === 'chi') {
-        // 5.2 Nếu chọn Chi tiêu -> Hiển thị các danh mục chi tiêu (Bỏ khoản thu nhập)
-        idDanhMuc.innerHTML = `
-            <option value="Ăn uống">🍔 Ăn uống</option>
-            <option value="Di chuyển">🚗 Di chuyển</option>
-            <option value="Mua sắm">🛍️ Mua sắm</option>
-            <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
-            <option value="Giải trí">🎬 Giải trí & Cà phê</option>
-            <option value="Khác">✨ Khác</option>
-        `;
-        } else if (idLoaiGiaoDich.value === 'thu') {
-        // 5.3 Nếu chọn Thu nhập -> Chỉ hiển thị Thu nhập từ lương và Thu nhập khác
-        idDanhMuc.innerHTML = `
-            <option value="Thu nhập từ lương">💵 Thu nhập từ lương</option>
-            <option value="Thu nhập khác">💰 Thu nhập khác</option>
-        `;
-        }
-        });
 
         // VI. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
         const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
