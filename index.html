@@ -580,22 +580,21 @@
                 }
                 });
                 }
-
         // --------------------------------------------------------------------------
         // IV. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
         // --------------------------------------------------------------------------
-             // 2.1 kích hoạt toàn bộ các lệnh bên trong nút bấm chạy    
+             // 4.1 kích hoạt toàn bộ các lệnh bên trong nút bấm chạy    
                 if (idNutGhiDe) {
                     idNutGhiDe.addEventListener('click', async () => {
-            // 2.2 lấy ra các giá trị hiện tại mà bạn đang gõ trong ô nhập liệu
+            // 4.2 lấy ra các giá trị hiện tại mà bạn đang gõ trong ô nhập liệu
                     const loai = idLoaiGiaoDich.value; 
                     const ten = idTen.value.trim();
                     const danhMuc = idDanhMuc.value;
                     const soTien = parseInt(idSoTien.value);                
-            // 2.3 Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
+            // 4.3 Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
                     const ngayNhap = inputNgay ? inputNgay.value : "";
                     const gioNhap = inputGio ? inputGio.value : "";
-            // 2.4 Kiểm tra dữ liệu đầu vào hợp lệ
+            // 4.4 Kiểm tra dữ liệu đầu vào hợp lệ
                     if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
                         alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
                         return;
@@ -603,7 +602,7 @@
                     try {
                     // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
                     const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
-            // 2.5 Đẩy dữ liệu transaction mới lên Firestore
+            // 4.5 Đẩy dữ liệu transaction mới lên Firestore
                     await addDoc(boChonBoSuuTap, {
                         ten: ten,
                         soTien: soTien,
@@ -611,11 +610,11 @@
                         danhMuc: danhMuc,
                         thoiGian: chuoiThoiGianGop // Đã đồng bộ với input giao diện
                     });
-            // 2.6 Dọn dẹp giao diện (Reset Form)
+            // 4.6 Dọn dẹp giao diện (Reset Form)
                     idTen.value = '';
                     idSoTien.value = ''; 
                     if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):';
-            // 2.7 Tự động chuyển qua tab Tổng quan (HOME)
+            // 4.7 Tự động chuyển qua tab Tổng quan (HOME)
                     const nutHome = document.querySelector('[data-target="home"]');
                     if (nutHome) {
                         nutHome.click();
@@ -624,147 +623,138 @@
                     console.error("Lỗi kết nối Firebase: ", loi);
                     alert("Không thể ghi nhận giao dịch lên đám mây!");
                 }
-            });
-        }
-
-        // --------------------------------------------------------------------------
-        // V. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
-        // --------------------------------------------------------------------------
-        cacNutTab.forEach(nut => {
-            nut.addEventListener('click', () => {
-                const mucTieu = nut.getAttribute('data-target');
-                
-                // Cập nhật trạng thái active trên giao diện thanh menu đáy
-                cacNutTab.forEach(b => b.classList.remove('active'));
-                nut.classList.add('active');
-                
-                // Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
-                cacVungNoiDung.forEach(content => content.classList.remove('active'));
-                const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
-                if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');
-            });
-        });
-
-        // --------------------------------------------------------------------------
-        // VI. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
-        // --------------------------------------------------------------------------
-        const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
-        
-        // --------------------------------------------------------------------------
-        // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
-        // --------------------------------------------------------------------------
-        onSnapshot(truyVanSapXep, (snapshot) => {
-            if (!idVungLichSu) return;
-            
-            idVungLichSu.innerHTML = ''; 
-            let tongSoDu = 0;
-            let tongThuNhap = 0;
-            let tongChiTieu = 0;
-
-            if (snapshot.empty) {
-                idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
-                if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
-                if (idBcThu) idBcThu.innerText = "0 đ";
-                if (idBcChi) idBcChi.innerText = "0 đ";
-                if (idThanhThu) idThanhThu.style.width = "0%";
-                if (idThanhChi) idThanhChi.style.width = "0%";
-                return;
-            }
-
-            snapshot.forEach((doc) => {
-                const giaoDich = doc.data();
-                let kyTuDau = '';
-                let lopMauSac = '';
-
-                if (giaoDich.loai === 'thu') {
-                    tongSoDu += giaoDich.soTien;
-                    tongThuNhap += giaoDich.soTien;
-                    kyTuDau = '+';
-                    lopMauSac = 'mau-thu';
-                } else {
-                    tongSoDu -= giaoDich.soTien;
-                    tongChiTieu += giaoDich.soTien;
-                    kyTuDau = '-';
-                    lopMauSac = 'mau-chi';
+                });
                 }
-
-                const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
-
-                const dongMoi = document.createElement('div');
-                dongMoi.classList.add('dong-giao-dich');
-                dongMoi.innerHTML = `
-                    <div class="giao-dich-trai">
-                        <span class="giao-dich-ten">${giaoDich.ten}</span>
-                        <span class="giao-dich-muc">📂 ${hienThiDanhMuc}</span>
-                    </div>
-                    <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
-                `;
-                idVungLichSu.appendChild(dongMoi); 
-            });
-
-            // Đưa số liệu sau khi tính toán lên giao diện trực quan
-            if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
-            if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
-            if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
-
-            // Tính toán tỷ lệ phần trăm co dãn thanh đồ họa Progress Bar
-            const maxTong = Math.max(tongThuNhap, tongChiTieu);
-            if (maxTong > 0) {
-                if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
-                if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
-            } else {
-                if (idThanhThu) idThanhThu.style.width = "0%";
-                if (idThanhChi) idThanhChi.style.width = "0%";
-            }
-        });
-
         // --------------------------------------------------------------------------
-        // VIII. LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
+        // V. TỰ ĐỘNG ĐIỀN NGÀY GIỜ HIỆN TẠI VÀO INPUT LÚC KHỞI ĐỘNG
         // --------------------------------------------------------------------------
-        if (idNutLamMoi) {
-            idNutLamMoi.addEventListener('click', () => {
-                const iconSvg = idNutLamMoi.querySelector('svg');
-                if (iconSvg) {
-                    iconSvg.style.transform = 'rotate(360deg)';
-                    iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-                }
-                setTimeout(() => {
-                    window.location.reload();
-                }, 350);
-            });
-        }
+                const bayGio = new Date();
+                if (inputNgay && inputGio) {
+                const nam = bayGio.getFullYear();
+                const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
+                const ngay = String(bayGio.getDate()).padStart(2, '0');
+                inputNgay.value = `${nam}-${thang}-${ngay}`;
 
+                const gio = String(bayGio.getHours()).padStart(2, '0');
+                const phut = String(bayGio.getMinutes()).padStart(2, '0');
+                inputGio.value = `${gio}:${phut}`;
+                }       
         // --------------------------------------------------------------------------
-        // IX. TỰ ĐỘNG ĐIỀN NGÀY GIỜ HIỆN TẠI VÀO INPUT LÚC KHỞI ĐỘNG
+        // VI. CẬP NHẬT SỐ TIỀN CÓ ĐỊNH DẠNG NGHÌN LÊN TIÊU ĐỀ SỐ TIỀN
         // --------------------------------------------------------------------------
-        const bayGio = new Date();
-        if (inputNgay && inputGio) {
-            const nam = bayGio.getFullYear();
-            const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
-            const ngay = String(bayGio.getDate()).padStart(2, '0');
-            inputNgay.value = `${nam}-${thang}-${ngay}`;
-
-            const gio = String(bayGio.getHours()).padStart(2, '0');
-            const phut = String(bayGio.getMinutes()).padStart(2, '0');
-            inputGio.value = `${gio}:${phut}`;
-        }
-        
-        // --------------------------------------------------------------------------
-        // X. CẬP NHẬT SỐ TIỀN CÓ ĐỊNH DẠNG NGHÌN LÊN TIÊU ĐỀ SỐ TIỀN
-        // --------------------------------------------------------------------------
-        if (idSoTien && labelSoTien) {
-            idSoTien.addEventListener('input', function () {
-                let value = this.value;
-            
+                if (idSoTien && labelSoTien) {
+                    idSoTien.addEventListener('input', function () {
+                        let value = this.value;           
                 if (!value) {
                     labelSoTien.innerText = 'Số tiền (đ):';
                     return;
-                }
-            
+                }            
                 let soDaPhanCach = Number(value).toLocaleString('vi-VN');
                 labelSoTien.innerText = `Số tiền: ${soDaPhanCach}đ`;
-            });
-        }
+                });
+                }
+        // --------------------------------------------------------------------------
+        // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
+        // --------------------------------------------------------------------------
+                    const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));  
+        // --------------------------------------------------------------------------
+        // VIII. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
+        // --------------------------------------------------------------------------
+                cacNutTab.forEach(nut => {
+                    nut.addEventListener('click', () => {
+                        const mucTieu = nut.getAttribute('data-target');                
+            // Cập nhật trạng thái active trên giao diện thanh menu đáy
+                cacNutTab.forEach(b => b.classList.remove('active'));
+                    nut.classList.add('active');                
+            // Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
+                cacVungNoiDung.forEach(content => content.classList.remove('active'));
+                    const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
+                    if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');
+                });
+                });      
+        // --------------------------------------------------------------------------
+        // IX. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
+        // --------------------------------------------------------------------------
+                onSnapshot(truyVanSapXep, (snapshot) => {
+                    if (!idVungLichSu) return;
+            
+                    idVungLichSu.innerHTML = ''; 
+                    let tongSoDu = 0;
+                    let tongThuNhap = 0;
+                    let tongChiTieu = 0;
+
+                    if (snapshot.empty) {
+                        idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
+                        if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
+                        if (idBcThu) idBcThu.innerText = "0 đ";
+                        if (idBcChi) idBcChi.innerText = "0 đ";
+                        if (idThanhThu) idThanhThu.style.width = "0%";
+                        if (idThanhChi) idThanhChi.style.width = "0%";
+                        return;
+                }
+
+                snapshot.forEach((doc) => {
+                    const giaoDich = doc.data();
+                    let kyTuDau = '';
+                    let lopMauSac = '';
+
+                    if (giaoDich.loai === 'thu') {
+                        tongSoDu += giaoDich.soTien;
+                        tongThuNhap += giaoDich.soTien;
+                        kyTuDau = '+';
+                        lopMauSac = 'mau-thu';
+                    } else {
+                        tongSoDu -= giaoDich.soTien;
+                        tongChiTieu += giaoDich.soTien;
+                        kyTuDau = '-';
+                        lopMauSac = 'mau-chi';
+                    }
+
+                    const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+
+                    const dongMoi = document.createElement('div');
+                    dongMoi.classList.add('dong-giao-dich');
+                    dongMoi.innerHTML = `
+                        <div class="giao-dich-trai">
+                            <span class="giao-dich-ten">${giaoDich.ten}</span>
+                            <span class="giao-dich-muc">📂 ${hienThiDanhMuc}</span>
+                        </div>
+                        <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
+                    `;
+                    idVungLichSu.appendChild(dongMoi); 
+                    });
+
+            // Đưa số liệu sau khi tính toán lên giao diện trực quan
+                    if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
+                    if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
+                    if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
+
+            // Tính toán tỷ lệ phần trăm co dãn thanh đồ họa Progress Bar
+                    const maxTong = Math.max(tongThuNhap, tongChiTieu);
+                    if (maxTong > 0) {
+                        if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
+                        if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
+                    } else {
+                        if (idThanhThu) idThanhThu.style.width = "0%";
+                        if (idThanhChi) idThanhChi.style.width = "0%";
+                    }
+                    });
+        // --------------------------------------------------------------------------
+        // X. LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
+        // --------------------------------------------------------------------------
+                    if (idNutLamMoi) {
+                        idNutLamMoi.addEventListener('click', () => {
+                            const iconSvg = idNutLamMoi.querySelector('svg');
+                            if (iconSvg) {
+                                iconSvg.style.transform = 'rotate(360deg)';
+                                iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                            }
+                            setTimeout(() => {
+                            window.location.reload();
+                    }, 350);
+                    });
+                    }
+
 </script>
 </body>
 </html>
