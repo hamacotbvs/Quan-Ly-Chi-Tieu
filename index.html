@@ -697,6 +697,8 @@
                             lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
                         }
                         const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+                        // Lấy chuỗi ngày giờ (Ví dụ: "18/06/2026 14:30" hoặc giữ nguyên chuỗi gốc)
+                        const hienThiThoiGian = giaoDich.ngayGioNhap ? giaoDich.ngayGioNhap : "--/--/---- --:--";
                 // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền chứa: Tên khoản chi/thu, biểu tượng danh mục, số tiền hiển thị trên lịch sử màn hình
                         const dongMoi = document.createElement('div');
                         dongMoi.classList.add('dong-giao-dich');
