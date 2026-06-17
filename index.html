@@ -611,43 +611,46 @@
             }
         });
 
-        // --------------------------------------------------------------------------
-        // LOGIC SUBMIT FORM - THÊM GIAO DỊCH MỚI LÊN FIREBASE
-        // --------------------------------------------------------------------------
-        idNutGhiDe.addEventListener('click', async () => {
-            const loai = idLoaiGiaoDich.value; 
-            const ten = idTen.value.trim();
-            const danhMuc = idDanhMuc.value;
-            const soTien = parseInt(idSoTien.value);
+// --------------------------------------------------------------------------
+// LOGIC SUBMIT FORM - THÊM GIAO DỊCH MỚI LÊN FIREBASE
+// --------------------------------------------------------------------------
+idNutGhiDe.addEventListener('click', async () => {
+    const loai = idLoaiGiaoDich.value; 
+    const ten = idTen.value.trim();
+    const danhMuc = idDanhMuc.value;
+    const soTien = parseInt(idSoTien.value);
 
-            // Kiểm tra dữ liệu đầu vào xem có hợp lệ hay không trước khi gửi
-            if (ten === '' || isNaN(soTien) || soTien <= 0) {
-                alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
-                return;
-            }
+    // Kiểm tra dữ liệu đầu vào xem có hợp lệ hay không trước khi gửi
+    if (ten === '' || isNaN(soTien) || soTien <= 0) {
+        alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
+        return;
+    }
 
-            try {
-                // Đẩy dữ liệu transaction mới lên Firestore
-                await addDoc(boChonBoSuuTap, {
-                    ten: ten,
-                    soTien: soTien,
-                    loai: loai,
-                    danhMuc: danhMuc,
-                    thoiGian: Date.now() // Lưu mốc thời gian Unix hiện tại để sắp xếp
-                });
-
-                // Reset trống các ô input chuẩn bị cho lần nhập tiếp theo
-                idTen.value = '';
-                soTien.value = '';
-                
-                // Trải nghiệm người dùng mượt mà: Tự động click chuyển về Tab Home để thấy lịch sử cập nhật ngay
-                document.querySelector('[data-target="home"]').click();
-                
-            } catch (loi) {
-                console.error("Lỗi kết nối Firebase: ", loi);
-                alert("Không thể ghi nhận giao dịch lên đám mây!");
-            }
+    try {
+        // Đẩy dữ liệu transaction mới lên Firestore
+        await addDoc(boChonBoSuuTap, {
+            ten: ten,
+            soTien: soTien,
+            loai: loai,
+            danhMuc: danhMuc,
+            thoiGian: Date.now() // Lưu mốc thời gian Unix hiện tại để sắp xếp
         });
+
+        // ĐÃ SỬA: Dùng đúng ID của ô nhập liệu để xóa trống
+        idTen.value = '';
+        idSoTien.value = ''; // <--- Thay 'soTien.value' bằng 'idSoTien.value'
+        
+        // Thêm thông báo thành công cho người dùng yên tâm
+        alert('Ghi nhận giao dịch thành công!');
+        
+        // Trải nghiệm người dùng mượt mà: Tự động click chuyển về Tab Home để thấy lịch sử cập nhật ngay
+        document.querySelector('[data-target="home"]').click();
+        
+    } catch (loi) {
+        console.error("Lỗi kết nối Firebase: ", loi);
+        alert("Không thể ghi nhận giao dịch lên đám mây!");
+    }
+});
         // --------------------------------------------------------------------------
         // LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
         // --------------------------------------------------------------------------
