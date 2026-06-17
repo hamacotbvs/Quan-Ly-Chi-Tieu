@@ -504,24 +504,32 @@
 </div>
 
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Cấu hình Firebase kết nối với Cơ sở dữ liệu đám mây
-    const firebaseConfig = {
-        apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
-        authDomain: "quanlychitieu-af553.firebaseapp.com",
-        projectId: "quanlychitieu-af553",
-        storageBucket: "quanlychitieu-af553.firebasestorage.app",
-        messagingSenderId: "800322270032",
-        appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
-        measurementId: "G-3NQYVR3VFB"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const boChonBoSuuTap = collection(db, "giao_dich_business");
+        // --------------------------------------------------------------------------
+        // I. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
+        // --------------------------------------------------------------------------
+            // 1.1 Chứng minh thư và địa chỉ nhà của App
+            const firebaseConfig = {
+                // Mật khẩu, Chìa khóa bảo mật để app của bạn có quyền kết nối vào hệ thống
+                apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
+                authDomain: "quanlychitieu-af553.firebaseapp.com",
+                // Tên dự án của bạn trên hệ thống Google
+                projectId: "quanlychitieu-af553",
+                // Giống như số nhà, ngõ ngách, mã bưu điện để định vị chính xác tuyệt đối cơ sở dữ liệu của riêng bạn
+                storageBucket: "quanlychitieu-af553.firebasestorage.app",
+                messagingSenderId: "800322270032",
+                appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
+                measurementId: "G-3NQYVR3VFB"
+            };
+            // 1.2 Lệnh này ra lệnh cho ứng dụng nạp các thông số cấu hình ở trên vào hệ thống để bắt đầu mở cổng kết nối lên Cloud
+                const app = initializeApp(firebaseConfig);
+            // 1.3 Lệnh này kích hoạt dịch vụ Firestore
+                const db = getFirestore(app);
+            // 1.4 Chỉ định ngăn tủ chứa dữ liệu
+                const boChonBoSuuTap = collection(db, "giao_dich_business");
 
         // --------------------------------------------------------------------------
         // II. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
