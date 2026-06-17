@@ -698,7 +698,7 @@
                         }
                         const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
                         // Lấy chuỗi ngày giờ (Ví dụ: "18/06/2026 14:30" hoặc giữ nguyên chuỗi gốc)
-                        const hienThiThoiGian = giaoDich.chuoiThoiGianGop ? giaoDich.chuoiThoiGianGop : "--/--/---- --:--";
+                        const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
                 // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền (ĐÃ THÊM biến hienThiThoiGian vào HTML)
                         const dongMoi = document.createElement('div');
                         dongMoi.classList.add('dong-giao-dich');
