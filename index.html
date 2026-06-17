@@ -584,8 +584,10 @@
         // --------------------------------------------------------------------------
         // IV. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
         // --------------------------------------------------------------------------
+             // 2.1 kích hoạt toàn bộ các lệnh bên trong nút bấm chạy    
                 if (idNutGhiDe) {
                     idNutGhiDe.addEventListener('click', async () => {
+                    // 2.2 lấy ra các giá trị hiện tại mà bạn đang gõ trong ô nhập liệu
                     const loai = idLoaiGiaoDich.value; 
                     const ten = idTen.value.trim();
                     const danhMuc = idDanhMuc.value;
