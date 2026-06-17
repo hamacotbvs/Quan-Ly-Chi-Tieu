@@ -659,7 +659,7 @@
         // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
         // --------------------------------------------------------------------------
                     const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));     
-        // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
         // --------------------------------------------------------------------------
         // 7.1 Khởi tạo và làm sạch (Mở đầu)
@@ -685,12 +685,12 @@
                 return;
             }
 
-        // 7.3 BƯỚC 1: Vòng lặp tính tổng hệ thống và GOM NHÓM giao dịch theo ngày
+        // 7.3 BƯỚC 1: Gom nhóm giao dịch theo ngày (ĐÃ SỬA: Copy dữ liệu an toàn tránh lặp vô hạn)
             snapshot.forEach((doc) => {
-                const giaoDich = doc.data();
-                giaoDich.id = doc.id; // Lưu lại id phòng trường hợp bạn cần xóa/sửa sau này
+                // ĐÃ SỬA: Dùng {...doc.data()} để clone ra object mới, không ghi đè lên dữ liệu gốc của Firebase
+                const giaoDich = { id: doc.id, ...doc.data() }; 
 
-                // Tính toán tổng Thu - Chi cho toàn bộ app
+                // Tính toán tổng Thu - Chi cho toàn bộ hệ thống
                 if (giaoDich.loai === 'thu') {
                     tongSoDu += giaoDich.soTien;
                     tongThuNhap += giaoDich.soTien;
@@ -699,7 +699,7 @@
                     tongChiTieu += giaoDich.soTien;
                 }
 
-                // Xử lý tách lấy Ngày để làm chìa khóa gom nhóm (Mặc định nếu thiếu ngày thì lấy ngày hôm nay)
+                // Xử lý tách lấy Ngày làm chìa khóa (Nếu thiếu ngày thì lấy ngày hôm nay)
                 let ngayKhoa = "Không rõ ngày";
                 if (giaoDich.ngayGioNhap && typeof giaoDich.ngayGioNhap === 'string' && giaoDich.ngayGioNhap.length >= 10) {
                     ngayKhoa = giaoDich.ngayGioNhap.substring(0, 10); // Lấy "YYYY-MM-DD"
@@ -708,16 +708,16 @@
                     ngayKhoa = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
                 }
 
-                // Nếu ngày này chưa được khởi tạo trong bộ lưu trữ nhóm, tiến hành tạo mới
+                // Nếu ngày này chưa được tạo trong bộ nhóm, tiến hành tạo mới
                 if (!cấuTrúcTheoNgay[ngayKhoa]) {
                     cấuTrúcTheoNgay[ngayKhoa] = {
                         tongThu: 0,
                         tongChi: 0,
-                        danhSachKhoan: [] // Nơi chứa các giao dịch chi tiết của ngày này
+                        danhSachKhoan: []
                     };
                 }
 
-                // Cộng dồn tổng tiền riêng cho ngày đó và đẩy giao dịch vào nhóm
+                // Cộng dồn tiền và đẩy giao dịch vào nhóm ngày tương ứng
                 if (giaoDich.loai === 'thu') {
                     cấuTrúcTheoNgay[ngayKhoa].tongThu += giaoDich.soTien;
                 } else {
@@ -726,26 +726,26 @@
                 cấuTrúcTheoNgay[ngayKhoa].danhSachKhoan.push(giaoDich);
             });
 
-        // 7.4 Đưa số liệu tổng hệ thống lên thẻ hiển thị trực quan
+        // 7.4 Đưa số liệu tổng hệ thống lên thẻ hiển thị
             if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
             if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
             if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
 
-        // 7.5 BƯỚC 2: Dựng giao diện gom cụm theo ngày (Giống hệt app mẫu)
-            // Sắp xếp các ngày theo thứ tự mới nhất lên đầu
+        // 7.5 BƯỚC 2: Dựng giao diện gom cụm theo ngày (Giống hệt Misa)
+            // Sắp xếp các ngày từ mới nhất đến cũ nhất
             const cacNgayDaSapXep = Object.keys(cấuTrúcTheoNgay).sort((a, b) => b.localeCompare(a));
 
             cacNgayDaSapXep.forEach((ngay) => {
                 const dataCuaNgay = cấuTrúcTheoNgay[ngay];
 
-                // Đổi định dạng ngày sang dạng DD/MM/YYYY để hiển thị tiếng Việt
+                // Đổi định dạng ngày sang dạng DD/MM/YYYY
                 const phan = ngay.split('-');
                 let dinhDangNgayViệt = ngay;
                 if (phan.length === 3) {
                     dinhDangNgayViệt = `${phan[2]}/${phan[1]}/${phan[0]}`;
                 }
 
-                // Tính toán chuỗi hiển thị tổng tiền của ngày (Ví dụ: +100.000đ hoặc -50.000đ hoặc kết hợp cả hai)
+                // Tính chuỗi hiển thị tổng tiền ngày
                 let chuoiTongTienTrongNgay = '';
                 if (dataCuaNgay.tongThu > 0) {
                     chuoiTongTienTrongNgay += `<span style="color: #2ec4b6; font-weight: bold;">+${dataCuaNgay.tongThu.toLocaleString('vi-VN')} đ</span>`;
@@ -755,20 +755,21 @@
                     chuoiTongTienTrongNgay += `<span style="color: #e71d36; font-weight: bold;">-${dataCuaNgay.tongChi.toLocaleString('vi-VN')} đ</span>`;
                 }
 
-                // Tạo cái khung chứa (Cụm ngày)
+                // Tạo khung chứa cụm ngày
                 const cumNgayBlock = document.createElement('div');
-                cumNgayBlock.classList.add('cum-ngay-giao-dich');
                 cumNgayBlock.style.marginBottom = '15px';
-                cumNgayBlock.style.background = '#f8f9fa';
+                cumNgayBlock.style.background = '#ffffff';
                 cumNgayBlock.style.borderRadius = '8px';
+                cumNgayBlock.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
                 cumNgayBlock.style.overflow = 'hidden';
+                cumNgayBlock.style.border = '1px solid #e2e8f0';
 
-                // 1. Tạo phần thanh tiêu đề ngày (Header ngày giống hệt ảnh mẫu)
+                // Header tiêu đề ngày
                 const thanhTieuDeNgay = document.createElement('div');
                 thanhTieuDeNgay.style.display = 'flex';
                 thanhTieuDeNgay.style.justifyContent = 'space-between';
                 thanhTieuDeNgay.style.alignItems = 'center';
-                thanhTieuDeNgay.style.padding = '8px 12px';
+                thanhTieuDeNgay.style.padding = '10px 12px';
                 thanhTieuDeNgay.style.background = '#edf2f7';
                 thanhTieuDeNgay.style.borderBottom = '1px solid #e2e8f0';
                 thanhTieuDeNgay.innerHTML = `
@@ -777,32 +778,29 @@
                 `;
                 cumNgayBlock.appendChild(thanhTieuDeNgay);
 
-                // 2. Tạo danh sách các dòng khoản tiền chi tiết nằm bên trong ngày đó
+                // Danh sách khoản tiền bên trong ngày
                 dataCuaNgay.danhSachKhoan.forEach((giaoDich) => {
                     let kyTuDau = giaoDich.loai === 'thu' ? '+' : '-';
                     let lopMauSac = giaoDich.loai === 'thu' ? 'mau-thu' : 'mau-chi';
                     const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
 
                     const dongChiTiet = document.createElement('div');
-                    dongChiTiet.classList.add('dong-giao-dich');
-                    dongChiTiet.style.padding = '10px 12px';
+                    dongChiTiet.style.padding = '12px';
                     dongChiTiet.style.display = 'flex';
                     dongChiTiet.style.justifyContent = 'space-between';
                     dongChiTiet.style.alignItems = 'center';
-                    dongChiTiet.style.background = '#ffffff';
-                    dongChiTiet.style.borderBottom = '1px dashed #edf2f7';
+                    dongChiTiet.style.borderBottom = '1px solid #f7fafc';
 
                     dongChiTiet.innerHTML = `
-                        <div class="giao-dich-trai" style="display: flex; flex-direction: column;">
-                            <span class="giao-dich-ten" style="font-weight: 500; color: #2d3748;">${giaoDich.ten}</span>
-                            <span class="giao-dich-muc" style="font-size: 12px; color: #718096; margin-top: 2px;">📂 ${hienThiDanhMuc}</span>
+                        <div style="display: flex; flex-direction: column;">
+                            <span style="font-weight: 500; color: #2d3748; font-size: 15px;">${giaoDich.ten}</span>
+                            <span style="font-size: 12px; color: #718096; margin-top: 2px;">📂 ${hienThiDanhMuc}</span>
                         </div>
-                        <span class="giao-dich-phai ${lopMauSac}" style="font-weight: 600;">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
+                        <span class="${lopMauSac}" style="font-weight: 600; font-size: 15px;">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
                     `;
                     cumNgayBlock.appendChild(dongChiTiet);
                 });
 
-                // Ném nguyên cụm ngày vừa dựng xong vào khu vực Lịch sử chính
                 idVungLichSu.appendChild(cumNgayBlock);
             });
 
@@ -815,23 +813,7 @@
                 if (idThanhThu) idThanhThu.style.width = "0%";
                 if (idThanhChi) idThanhChi.style.width = "0%";
             }
-        });
-        // B. ĐỊNH DẠNG
-        // --------------------------------------------------------------------------
-        // IX. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
-        // --------------------------------------------------------------------------
-                cacNutTab.forEach(nut => {
-                    nut.addEventListener('click', () => {
-                        const mucTieu = nut.getAttribute('data-target');                
-            // Cập nhật trạng thái active trên giao diện thanh menu đáy
-                cacNutTab.forEach(b => b.classList.remove('active'));
-                    nut.classList.add('active');                
-            // Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
-                cacVungNoiDung.forEach(content => content.classList.remove('active'));
-                    const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
-                    if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');
-                });
-                });   
+        }); 
         // --------------------------------------------------------------------------
         // X. LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
         // --------------------------------------------------------------------------
