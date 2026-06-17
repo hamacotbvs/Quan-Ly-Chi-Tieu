@@ -10,358 +10,349 @@
     <link rel="apple-touch-icon" href="logo.png">
     <link rel="manifest" href="manifest.json">
 
-    <style>
+<style>
+    /* ==========================================================================
+       NÚT RESET PHONG CÁCH MỚI (NỀN TRẮNG - ICON XANH HOÀNG GIA)
+       ========================================================================== */
+    .nut-reset-treo {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 1000;
+        background-color: #ffffff; /* Nền trắng tinh */
+        border: 1px solid #edf2f4;
+        width: 40px;  /* Tăng nhẹ kích thước lên 40px cho dễ bấm */
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Đổ bóng mịn màng */
+        transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Định cấu hình màu sắc cho icon SVG bên trong */
+    .nut-reset-treo svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: #0082C8; /* Màu xanh hoàng gia cho mũi tên */
+        stroke-width: 2.5; /* Độ dày của nét vẽ */
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        transition: transform 0.3s ease;
+    }
+
+    .nut-reset-treo:active {
+        transform: scale(0.92); /* Hiệu ứng lún nút khi nhấn */
+        background-color: #f8fafc; /* Nền xám cực nhẹ khi chạm ngón tay */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
 
     /* ==========================================================================
-           NÚT RESET PHONG CÁCH MỚI (NỀN TRẮNG - ICON XANH HOÀNG GIA)
-           ========================================================================== */
-        .nut-reset-treo {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 1000;
-            background-color: #ffffff; /* 👈 Nền trắng tinh */
-            border: 1px solid #edf2f4;
-            width: 40px;  /* Tăng nhẹ kích thước lên 40px cho dễ bấm */
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Đổ bóng mịn màng */
-            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+       CẤU HÌNH CHUNG & LAYOUT ỨNG DỤNG
+       ========================================================================== */
+    body {
+        font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f7f9fa; /* Màu nền xám nhạt toàn màn hình máy tính */
+        color: #333;               /* Màu chữ mặc định (đen xám) */
+        margin: 0; padding: 0;     /* Xóa bỏ khoảng cách thừa ở rìa màn hình */
+        display: flex;
+        justify-content: center;   /* Đưa toàn bộ ứng dụng ra chính giữa màn hình */
+    }
+    
+    /* Khung mô phỏng ứng dụng điện thoại tiện lợi */
+    .app-container {
+        background-color: #f7f9fa;     /* Nền của ứng dụng */
+        width: 100%;
+        max-width: 450px;           /* Chiều rộng tối đa là 450px */
+        min-height: 100vh;          /* Chiều cao tối thiểu bằng 100% màn hình */
+        box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ đổ xung quanh khung */
+        position: relative;
+        padding-bottom: 75px;       /* Đẩy nội dung lên để không bị thanh menu đáy đè */
+        box-sizing: border-box;
+    }
 
-        /* Định cấu hình màu sắc cho icon SVG bên trong */
-        .nut-reset-treo svg {
-            width: 20px;
-            height: 20px;
-            fill: none;
-            stroke: #0082C8; /* 👈 Màu xanh hoàng gia cho mũi tên */
-            stroke-width: 2.5; /* Độ dày của nét vẽ */
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            transition: transform 0.3s ease;
-        }
+    /* Quản lý ẩn/hiện các Tab nội dung */
+    .tab-content {
+        display: none; /* Ẩn mặc định */
+        padding: 20px; /* Tạo khoảng cách từ rìa ứng dụng vào nội dung */
+    }
 
-        .nut-reset-treo:active {
-            transform: scale(0.92); /* Hiệu ứng lún nút khi nhấn */
-            background-color: #f8fafc; /* Nền xám cực nhẹ khi chạm ngón tay */
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-        }
+    .tab-content.active {
+        display: block; /* Hiện tab được chọn */
+    }
 
-        /* ==========================================================================
-           CẤU HÌNH CHUNG & LAYOUT ỨNG DỤNG
-           ========================================================================== */
+    /* ==========================================================================
+       TAB 1: TRANG CHỦ (HOME) - KHU VỰC SỐ DƯ HIỆN TẠI
+       ========================================================================== */
+    .vi-tong-quan {
+        background-color: #0082C8; /* Màu xanh hoàng gia */
+        color: white;              /* Chữ bên trong màu trắng */
+        padding: 20px;             /* Khoảng cách từ chữ đến viền khung là 20px */
+        border-radius: 12px;       /* Bo tròn 4 góc của khung */
+        text-align: center;        /* Căn giữa toàn bộ chữ bên trong */
+        margin-top: 10px; margin-bottom: 25px; /* Tạo khoảng cách trống phía trên và dưới */
+        box-shadow: 0 4px 12px rgba(0, 130, 200, 0.2); /* Tạo hiệu ứng đổ bóng xanh mờ */
+    }
+    .vi-tong-quan .nhan { 
+        font-size: 14px;      
+        opacity: 0.9;         /* Làm mờ nhẹ chữ đi một chút */
+        margin-bottom: 5px;   
+    }
+    .vi-tong-quan .so-tien-vi { 
+        font-size: 28px;      
+        font-weight: 700;     /* In đậm số tiền để tạo điểm nhấn */
+    }
 
-        /* Cấu hình nền và căn giữa ứng dụng */
-           body {
-            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f7f9fa; /* Màu nền xám nhạt toàn màn hình máy tính */
-            color: #333;               /* Màu chữ mặc định (đen xám) */
-            margin: 0; padding: 0;     /* Xóa bỏ khoảng cách thừa ở rìa màn hình */
-            display: flex;
-            justify-content: center;   /* Đưa toàn bộ ứng dụng ra chính giữa màn hình */
-        }
+    /* ==========================================================================
+       TAB 2: LỊCH SỬ (HISTORY) - KHU VỰC LIỆT KÊ GOM NHÓM THEO NGÀY
+       ========================================================================== */
+    .danh-sach-lich-su { 
+        margin-top: 10px;                 
+        background-color: #ffffff;        /* Nền màu TRẮNG tinh */
+        border-radius: 14px;              /* Bo tròn 4 góc */
+        padding: 16px;                    
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); 
+        border: 1px solid #edf2f4;        /* Tạo đường viền mảnh xung quanh */
+    }
+
+    .tieu-de-khoang { 
+        font-size: 16px; 
+        color: #7f8c8d;                   
+        border-bottom: 1px solid #edf2f4; /* Đường kẻ ngang dưới tiêu đề */
+        padding-bottom: 10px;             
+        margin-bottom: 12px; 
+        font-weight: 600;                 
+    }
+    
+    /* 💥 MỚI: Thanh tiêu đề phụ khi gom nhóm theo từng ngày (Group Header) */
+    .tieu-de-ngay-group {
+        background-color: #f1f5f9;        /* Nền xám nhạt tinh tế */
+        padding: 6px 10px;
+        margin-top: 15px;
+        margin-bottom: 8px;
+        font-weight: bold;
+        font-size: 13px;
+        color: #475569;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    /* 💥 MỚI: Từng thẻ giao dịch đơn lẻ nằm bên trong nhóm ngày */
+    .the-giao-dich {
+        display: flex;
+        justify-content: space-between;   /* Tên bên trái, số tiền bên phải */
+        align-items: center;              
+        padding: 12px 4px;                  
+        border-bottom: 1px solid #f8fafc; /* Đường gạch mờ phân chia các hàng */
+        background: #ffffff;
+    }
+    
+    /* Xóa đường gạch chân cho phần tử cuối cùng để tránh lỗi thẩm mỹ */
+    .the-giao-dich:last-child {
+        border-bottom: none;
+    }
+
+    .giao-dich-trai { 
+        display: flex; 
+        flex-direction: column;           /* Tên khoản chi ở trên, giờ phát sinh ở dưới */
+    }
+    .ten-giao-dich { 
+        font-size: 15px; 
+        font-weight: 500; 
+        color: #2c3e50; 
+    }
+    .gio-giao-dich { 
+        font-size: 11px; 
+        color: #94a3b8; 
+        margin-top: 3px; 
+    }
+    .giao-dich-phai { 
+        font-weight: 600; 
+        font-size: 15px; 
+    }
+    
+    /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
+    .mau-thu { color: #0082C8; }          /* Thu nhập: XANH HOÀNG GIA */
+    .mau-chi { color: #e74c3c; }          /* Chi tiêu: ĐỎ CẢNH BÁO */
+
+    /* ==========================================================================
+       TAB 3: NHẬP LIỆU (+) - FORM NHẬP FORM-GROUP
+       ========================================================================== */
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #555; }
+    .form-group input, .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        box-sizing: border-box;
+        font-size: 15px;
+        background-color: #fff;
+        transition: border 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: #0082C8; outline: none; }
+    
+    /* Cấu trúc hàng ngang song song cho 2 ô Ngày và Giờ */
+    .form-group-row {
+        display: flex;
+        gap: 10px;
+    }
+    
+    /* Nút Lưu giao dịch "Cập nhật ví" */
+    .nut-bam-luu {
+        width: 100%;
+        padding: 14px;
+        background-color: #0082C8;         /* Đổi về màu Xanh Hoàng Gia đồng bộ thương hiệu */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+        box-shadow: 0 4px 12px rgba(0, 130, 200, 0.2);
+        transition: background-color 0.2s;
+    }
+    .nut-bam-luu:hover { background-color: #00669e; }
+
+    /* ==========================================================================
+       TAB 4: BÁO CÁO (REPORT)
+       ========================================================================== */
+    .the-bao-cao {
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        border: 1px solid #edf2f4;
+    }
+    .thong-ke-dong { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
+    .thong-ke-so { font-weight: bold; }
+    
+    /* Thanh tiến trình phần trăm (Progress Bar) */
+    .thanh-phan-tram-khung { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
+    .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
+    .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
+
+    /* ==========================================================================
+       NAVIGATION: THANH MENU ĐÁY FLOATING (CAPSULE VIÊN THUỐC)
+       ========================================================================== */
+    .menu-day-app {
+        position: fixed;
+        bottom: 15px;                 /* Đẩy menu bay lơ lửng cách đáy màn hình 15px */
+        left: 50%;
+        transform: translateX(-50%);  /* Căn giữa menu theo chiều ngang */
+        width: calc(100% - 30px);     /* Thu hẹp chiều rộng chừa 2 lề bên rìa */
+        max-width: 420px;             /* Giới hạn lại chiều rộng tối đa */
+        height: 65px;
+        background-color: #0082C8;    /* Nền màu XANH HOÀNG GIA */
+        border-radius: 999px;         /* Bo tròn dạng viên thuốc tuyệt đối */
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 100;
+        padding: 0 15px;              
+        box-sizing: border-box;
         
-        /* Khung mô phỏng ứng dụng điện thoại tiện lợi */
-        .app-container {
-            background-color: #f7f9fa;     /* Nền của ứng dụng là màu trắng */
-            width: 100%;
-            max-width: 450px;           /* Chiều rộng tối đa là 450px (chuẩn kích thước điện thoại) */
-            min-height: 100vh;          /* Chiều cao tối thiểu bằng 100% màn hình thiết bị */
-            box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ đổ xung quanh khung */
-            position: relative;
-            padding-bottom: 75px;       /* Đẩy nội dung bên trong lên 75px để không bị thanh menu đáy đè lên */
-            box-sizing: border-box;
-        }
+        /* Đổ bóng thông minh tạo vùng khuất trắng xịn sò dưới menu đáy */
+        box-shadow: 
+            0 10px 28px rgba(0, 130, 200, 0.25), 
+            0 25px 0 20px #ffffff,               /* Lớp lót nền cứng phía sau */
+            0 15px 30px 25px rgba(255, 255, 255, 0.95); 
+    }
+    
+    .nut-tab {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        flex: 1;                      /* Tự động chia đều không gian thanh menu */
+        height: 100%;
+        -webkit-tap-highlight-color: transparent;
+    }
 
-        /* Quản lý ẩn/hiện các Tab nội dung */
-        .tab-content {
-            display: none; /* Ẩn mặc định: Tất cả các tab (Home, Nhập số, Báo cáo) đều bị giấu đi */
-            padding: 20px; /* Tạo khoảng cách 20px từ rìa ứng dụng vào nội dung bên trong cho dễ nhìn */
-        }
+    /* 1. Kích thước icon 2D ép cố định */
+    .nut-tab .img-icon-2d {
+        width: 18px !important;
+        height: 18px !important;
+        object-fit: contain;
+        margin-bottom: 5px;
+    }
 
-        .tab-content.active {
-            display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */
-        }
+    /* 2. Trạng thái ẩn/hiện icon thông minh khi KHÔNG CHỌN */
+    .nut-tab .icon-active {
+        display: none; /* Ẩn ảnh màu */
+    }
+    .nut-tab .icon-inactive {
+        display: block; /* Hiện ảnh viền */
+    }
 
-        /* ==========================================================================
-           TAB 1: TRANG CHỦ (HOME) - KHU VỰC SỐ DƯ HIỆN TẠI
-           ========================================================================== */
-        /* Khung hiển thị số dư hiện tại */
-        .vi-tong-quan {
-            background-color: #0082C8; /* Màu xanh hoàng gia */
-            color: white;                            /* Chữ bên trong màu trắng */
-            padding: 20px;                           /* Khoảng cách từ chữ đến viền khung là 20px */
-            border-radius: 12px;                     /* Bo tròn 4 góc của khung (độ cong 12px) */
-            text-align: center;                      /* Căn giữa toàn bộ chữ bên trong */
-            margin-top: 10px; margin-bottom: 25px;   /* Tạo khoảng cách trống phía trên và dưới khung */
-            box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2); /* Tạo hiệu ứng đổ bóng màu xanh mờ giúp khung trông nổi lên bệ bề mặt */
-        }
-        .vi-tong-quan .nhan { 
-            font-size: 14px;      /* Chữ dòng "Số dư hiện tại" nhỏ vừa phải */
-            opacity: 0.9;         /* Làm mờ nhẹ chữ đi một chút (90%) để tạo độ phụ */
-            margin-bottom: 5px;   /* Cách dòng số tiền bên dưới 5px */
-        }
-        .vi-tong-quan .so-tien-vi { 
-            font-size: 28px;      /* Số tiền hiển thị rất to (28px) */
-            font-weight: 700;     /* In đậm số tiền để tạo điểm nhấn */
-        }
-
-        /* ==========================================================================
-           TAB 1: TRANG CHỦ (HOME) - KHU VỰC LỊCH SỬ GIAO DỊCH
-           ========================================================================== */
-        
-        /* Tạo nguyên khung nền màu trắng bo quanh toàn bộ khối lịch sử */
-        .danh-sach-lich-su { 
-            margin-top: 20px;                 /* Đẩy khối lịch sử cách xa khung ví phía trên một chút */
-            background-color: #ffffff;        /* 👈 Đổ nền màu TRẮNG tinh cho toàn bộ khối */
-            border-radius: 14px;              /* Bo tròn 4 góc của khung trắng */
-            padding: 16px;                    /* Tạo khoảng trống từ viền trắng dịch vào trong để nội dung dễ thở */
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); /* Đổ bóng siêu mờ nhẹ để khung nổi lên trên nền xám */
-            border: 1px solid #edf2f4;        /* Tạo đường viền mảnh xung quanh khung trắng */
-        }
-
-        .tieu-de-khoang { 
-            font-size: 16px; 
-            color: #7f8c8d;                   /* Màu chữ xám thanh lịch */
-            border-bottom: 1px solid #edf2f4; /* Tạo một đường kẻ ngang mờ ngăn cách ở dưới tiêu đề */
-            padding-bottom: 10px;             /* Khoảng cách từ chữ tiêu đề xuống đường kẻ */
-            margin-bottom: 5px; 
-            font-weight: 600;                 /* Chữ hơi in đậm một chút */
-        }
-        
-        /* Từng dòng giao dịch đơn lẻ */
-        .dong-giao-dich {
-            display: flex;
-            justify-content: space-between;   /* Đẩy phần tên sang sát lề trái, phần số tiền sang sát lề phải */
-            align-items: center;              /* Căn cho hai bên thẳng hàng nhau theo chiều dọc */
-            padding: 14px 0;                  /* Tăng nhẹ khoảng cách trên dưới giữa các hàng */
-            border-bottom: 1px solid #f8fafc; /* Đường kẻ ngang siêu mờ dưới mỗi giao dịch */
-        }
-        
-        /* Xóa đường kẻ ngang ở dòng giao dịch cuối cùng để không bị lỗi giao diện */
-        .dong-giao-dich:last-child {
-            border-bottom: none;
-        }
-        /* ==========================================================================
-           DÒNG TỔNG THEO NGÀY (TIÊU ĐỀ GOM NHÓM GIAO DỊCH)
-           ========================================================================== */
-        .nhom-ngay-tieude {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #f8fafc;        /* Nền xám siêu nhẹ để phân biệt */
-            padding: 8px 10px;
-            margin: 12px -10px 4px -10px;     /* Ăn gian lề ra một chút cho đẹp */
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #64748b;                   /* Màu chữ ngày tháng */
-        }
-        
-        .nhom-ngay-tong-tien {
-            font-size: 13px;
-            color: #475569;                   /* Màu chữ của số tổng */
-        }
-
-        .giao-dich-trai { 
-            display: flex; 
-            flex-direction: column;           /* Xếp tên giao dịch và tên danh mục theo hàng dọc (Tên ở trên, danh mục ở dưới) */
-        }
-        .giao-dich-ten { font-size: 15px; font-weight: 500; color: #2c3e50; } /* Tên khoản chi màu đen đậm */
-        .giao-dich-muc { font-size: 12px; color: #95a5a6; margin-top: 4px; }   /* Biểu tượng 📂 và tên danh mục nhỏ hơn, màu xám mờ */
-        .giao-dich-phai { font-weight: 600; font-size: 15px; }                 /* Số tiền bên phải được in đậm */
-        
-        /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
-        .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
-        .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
-
-
-        /* ==========================================================================
-           TAB 2: NHẬP LIỆU (+) - CSS
-           ========================================================================== */
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #555; }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 15px;
-            background-color: #fff;
-            transition: border 0.2s;
-        }
-        .form-group input:focus, .form-group select:focus { border-color: #3498db; outline: none; }
-        
-        /* Nút Lưu giao dịch */
-        .nut-bam-luu {
-            width: 100%;
-            padding: 14px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
-        }
-        .nut-bam-luu:hover { background-color: #2980b9; }
-
-        /* ==========================================================================
-           TAB 3: BÁO CÁO (REPORT) - CSS
-           ========================================================================== */
-        .the-bao-cao {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-            border: 1px solid #edf2f4;
-        }
-        .thong-ke-dong { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
-        .thong-ke-so { font-weight: bold; }
-        
-        /* Thanh đồ họa tiến trình (Progress Bar) so sánh trực quan */
-        .thanh-phan-tram-khung { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
-        .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
-        .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
-
-        /* ==========================================================================
-           NAVIGATION: THANH MENU ĐÁY FLOATING (NỀN TRẮNG PHÍA DƯỚI & BO TRÒN NHƯ ẢNH)
-           ========================================================================== */
-        .menu-day-app {
-            position: fixed;
-            bottom: 15px;                 /* Đẩy menu bay lơ lửng cách đáy màn hình 15px */
-            left: 50%;
-            transform: translateX(-50%);  /* Căn giữa menu theo chiều ngang */
-            width: calc(100% - 30px);     /* Thu hẹp chiều rộng lại để lộ khoảng trống 2 bên rìa */
-            max-width: 420px;             /* Giới hạn lại chiều rộng tối đa cho cân đối */
-            height: 65px;
-            background-color: #0082C8;    /* Nền màu XANH HOÀNG GIA */
-            border-radius: 999px;         /* Bo tròn dạng viên thuốc (Capsule) */
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 100;
-            padding: 0 15px;              
-            box-sizing: border-box;
-
-        /* 👇 THAY ĐỔI: Đổ bóng thông minh tạo vùng nền sáng phía dưới và xung quanh menu */
-            box-shadow: 
-                0 10px 28px rgba(0, 130, 200, 0.25), /* Bóng xanh mờ của menu */
-                0 25px 0 20px #ffffff,               /* 👈 Tạo một lớp nền trắng cứng lót hẳn phía dưới */
-                0 15px 30px 25px rgba(255, 255, 255, 0.95); /* 👈 Tạo vùng chuyển mờ trắng (Blur) che nội dung khi cuộn */
-        }
-        
-        .nut-tab {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.65); /* Chữ và icon mặc định màu trắng mờ trên nền xanh */
-            cursor: pointer;
-            
-            /* 👇 THAY ĐỔI: Sử dụng flex: 1 thay vì width cố định để phân bổ khoảng trống thông minh */
-            flex: 1;                      
-            height: 100%;
-            font-size: 11px;
-            font-weight: 500;
-            transition: color 0.2s, transform 0.2s;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        /* Trạng thái mặc định (Không chọn): Icon chỉ có đường viền mờ, ruột rỗng */
-        .nut-tab .icon svg {
-        fill: none; 
-        stroke: currentColor;
-       transition: fill 0.2s, transform 0.2s;
-        }
-
-        /* ==========================================================================
-           KHI ĐƯỢC CHỌN (ACTIVE) - ẨN HIỆN GIỮA 2 ICON MENU VIỀN/MÀU
-           ========================================================================== */
-        
-       /* Định dạng chung cho cả 2 ảnh icon ngôi nhà */
-        .nut-tab .img-icon-2d {
-            width: 18px !important;
-            height: 18px !important;
-            object-fit: contain;
-            margin-bottom: 5px;
-        }
-
-        /* 1. Mặc định khi KHÔNG CHỌN (Không có class active) */
-        .nut-tab .icon-active {
-            display: none; /* Ẩn ảnh viền đi */
-        }
-        .nut-tab .icon-inactive {
-            display: block; /* Hiện ảnh màu (homemau.png) lên */
-        }
-
-        /* 2. Khi ĐƯỢC CHỌN (Có class active) */
-        .nut-tab.active .icon-active {
-            display: block; /* Hiện ảnh viền (homevien.png) lên */
-        }
-        .nut-tab.active .icon-inactive {
-            display: none; /* Ẩn ảnh màu đi */
-        }
-        
-        /* 3. Màu chữ mặc định cho tất cả các menu khi KHÔNG CHỌN */
-        .nut-tab .chu-menu {
+    /* 3. Trạng thái ẩn/hiện icon thông minh khi ĐƯỢC CHỌN (.active) */
+    .nut-tab.active .icon-active {
+        display: block; /* Hiện ảnh màu lên rực rỡ */
+    }
+    .nut-tab.active .icon-inactive {
+        display: none; /* Giấu ảnh viền đi */
+    }
+    
+    /* 4. Định dạng chữ menu khi KHÔNG CHỌN */
+    .nut-tab .chu-menu {
         font-size: 11px;
-        color: #b3dbf2;      /* Màu xanh nhạt hoặc xám mờ tùy bạn chỉnh */
-        opacity: 0.7;        /* Làm mờ nhẹ đi để nhấn mạnh nút đang chọn */
+        color: #b3dbf2;      /* Màu chữ xanh nhạt tinh tế */
+        opacity: 0.7;        /* Làm mờ nhẹ */
         transition: all 0.2s ease;
-        }
+    }
 
-        /* 4. Khi ĐƯỢC CHỌN (có class active) - Chữ sẽ trắng tinh và đậm lên */
-        .nut-tab.active .chu-menu {
-            color: #ffffff !important;   /* Mã màu trắng tinh mã Hex */
-            opacity: 1 !important;       /* Hiện rõ nét 100% */
-            font-weight: bold;           /* Chữ đậm lên nhìn cho rõ ràng */
-        }
+    /* 5. Định dạng chữ menu khi ĐƯỢC CHỌN (.active) */
+    .nut-tab.active .chu-menu {
+        color: #ffffff !important;   /* Trắng tinh khôi */
+        opacity: 1 !important;       
+        font-weight: bold;           /* Chữ đậm sắc nét */
+    }
 
-        /* NÚT THÊM (+) TRUNG TÂM PHONG CÁCH MỚI - ĐÃ CĂN CHỈNH GIỮA */
-        .nut-tab-them-trung-tam .icon {
-            font-size: 26px;
-            background-color: #ffffff;    /* Quả bóng màu TRẮNG tinh */
-            color: #0082C8;               /* Dấu (+) bên trong mang màu xanh hoàng gia */
-            width: 46px;                  /* Kích thước quả bóng cân đối */
-            height: 46px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            margin-bottom: 0;             /* Giữ nút nằm chính giữa theo chiều dọc */
-            transition: transform 0.2s, background-color 0.2s, color 0.2s;
-        }
+    /* ==========================================================================
+       NÚT THÊM (+) TRUNG TÂM NỔI BẬT QUẢ BÓNG TRẮNG
+       ========================================================================== */
+    .nut-tab-them-trung-tam .icon {
+        font-size: 26px;
+        background-color: #ffffff;    /* Quả bóng màu TRẮNG tinh */
+        color: #0082C8;               /* Dấu (+) màu xanh hoàng gia */
+        width: 46px;                  
+        height: 46px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: transform 0.2s, background-color 0.2s, color 0.2s;
+    }
 
-        /* Khi người dùng đang nhấn giữ hoặc đang ở tab Nhập số (+) */
-        .nut-tab-them-trung-tam.active .icon { 
-            background-color: #2c3e50;    /* Quả bóng chuyển sang màu xám đen sang trọng */
-            color: #ffffff;               /* Dấu (+) chuyển sang màu trắng */
-            transform: scale(1.08);       
-        }
+    /* Khi nhấn giữ hoặc click chọn nút Thêm (+) trung tâm */
+    .nut-tab-them-trung-tam.active .icon { 
+        background-color: #2c3e50;    /* Chuyển sang màu xám đen quyền lực */
+        color: #ffffff;               /* Dấu (+) chuyển thành màu trắng */
+        transform: scale(1.08);       
+    }
 
-        /* Dòng trạng thái trống */
-        .trang-thai-trong { 
-            text-align: center; 
-            color: #94a3b8; 
-            font-style: italic; 
-            padding: 30px 0; 
-            font-size: 14px; 
-        }
-    </style>
+    /* Trạng thái danh sách rỗng chưa có data */
+    .trang-thai-trong { 
+        text-align: center; 
+        color: #94a3b8; 
+        font-style: italic; 
+        padding: 30px 0; 
+        font-size: 14px; 
+    }
+</style>
 </head>
 <body>
 
