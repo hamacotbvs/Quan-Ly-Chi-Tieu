@@ -675,6 +675,8 @@
                     let tongSoDu = 0;
                     let tongThuNhap = 0;
                     let tongChiTieu = 0;
+            // 🟢 THÊM MỚI: Khởi tạo bộ nhớ tạm để gom tiền theo ngày nhập
+                    let thongKeTheoNgay = {};
             // 7.2 Kiểm tra bộ lưu trữ rỗng
                     if (snapshot.empty) {
                         idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
