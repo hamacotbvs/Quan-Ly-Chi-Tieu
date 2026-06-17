@@ -511,28 +511,22 @@
         // --------------------------------------------------------------------------
         // I. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
         // --------------------------------------------------------------------------
-            // 1.1 Chứng minh thư và địa chỉ nhà của App
-            const firebaseConfig = {
-                // Mật khẩu, Chìa khóa bảo mật để app của bạn có quyền kết nối vào hệ thống
-                apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
-                authDomain: "quanlychitieu-af553.firebaseapp.com",
-                // Tên dự án của bạn trên hệ thống Google
-                projectId: "quanlychitieu-af553",
-                // Giống như số nhà, ngõ ngách, mã bưu điện để định vị chính xác tuyệt đối cơ sở dữ liệu của riêng bạn
-                storageBucket: "quanlychitieu-af553.firebasestorage.app",
-                messagingSenderId: "800322270032",
-                appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
-                measurementId: "G-3NQYVR3VFB"
-            };
-            // 1.2 Lệnh này ra lệnh cho ứng dụng nạp các thông số cấu hình ở trên vào hệ thống để bắt đầu mở cổng kết nối lên Cloud
-                const app = initializeApp(firebaseConfig);
-            // 1.3 Lệnh này kích hoạt dịch vụ Firestore
-                const db = getFirestore(app);
-            // 1.4 Chỉ định ngăn tủ chứa dữ liệu
-                const boChonBoSuuTap = collection(db, "giao_dich_business");
+        const firebaseConfig = {
+            apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
+            authDomain: "quanlychitieu-af553.firebaseapp.com",
+            projectId: "quanlychitieu-af553",
+            storageBucket: "quanlychitieu-af553.firebasestorage.app",
+            messagingSenderId: "800322270032",
+            appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
+            measurementId: "G-3NQYVR3VFB"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const boChonBoSuuTap = collection(db, "giao_dich_business");
 
         // --------------------------------------------------------------------------
-        // III. DOM ELEMENTS - ĐỊNH DANH CÁC BIẾN GIAO DIỆN
+        // II. DOM ELEMENTS - ĐỊNH DANH TẤT CẢ CÁC BIẾN (BẮT BUỘC ĐỂ TRÊN ĐẦU)
         // --------------------------------------------------------------------------
         const idNutGhiDe = document.getElementById('nut-ghi-de');
         const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
@@ -542,130 +536,146 @@
         const idHienThiSoDu = document.getElementById('so-du');
         const idVungLichSu = document.getElementById('lich-su-giao-dich');
 
-        // IV. CÁC BIẾN HIỂN THỊ CỦA TAP BÁO CÁO
+        // Các biến hiển thị của TAB BÁO CÁO
         const idBcThu = document.getElementById('bao-cao-thu');
         const idBcChi = document.getElementById('bao-cao-chi');
         const idThanhThu = document.getElementById('thanh-thu-ti-le');
         const idThanhChi = document.getElementById('thanh-chi-ti-le');
 
-        // V. THAY ĐỔI DANH MỤC THU/CHI TƯƠNG ỨNG
-        idLoaiGiaoDich.addEventListener('change', () => {
-        // 5.1 Xóa sạch các option cũ hiện tại
-        idDanhMuc.innerHTML = '';
+        // Các thẻ input ngày, giờ và label số tiền
+        const inputNgay = document.getElementById('ngay-giao-dich');
+        const inputGio = document.getElementById('gio-giao-dich');
+        const labelSoTien = document.getElementById('label-so-tien');
 
-        if (idLoaiGiaoDich.value === 'chi') {
-        // 5.2 Nếu chọn Chi tiêu -> Hiển thị các danh mục chi tiêu (Bỏ khoản thu nhập)
-        idDanhMuc.innerHTML = `
-            <option value="Ăn uống">🍔 Ăn uống</option>
-            <option value="Di chuyển">🚗 Di chuyển</option>
-            <option value="Mua sắm">🛍️ Mua sắm</option>
-            <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
-            <option value="Giải trí">🎬 Giải trí & Cà phê</option>
-            <option value="Khác">✨ Khác</option>
-        `;
-        } else if (idLoaiGiaoDich.value === 'thu') {
-        // 5.3 Nếu chọn Thu nhập -> Chỉ hiển thị Thu nhập từ lương và Thu nhập khác
-        idDanhMuc.innerHTML = `
-            <option value="Thu nhập từ lương">💵 Thu nhập từ lương</option>
-            <option value="Thu nhập khác">💰 Thu nhập khác</option>
-        `;
+        const cacNutTab = document.querySelectorAll('.nut-tab');
+        const cacVungNoiDung = document.querySelectorAll('.tab-content');
+        const idNutLamMoi = document.getElementById('nut-lam-moi-app');
+
+        // --------------------------------------------------------------------------
+        // III. THAY ĐỔI DANH MỤC THU/CHI TƯƠNG ỨNG
+        // --------------------------------------------------------------------------
+        if (idLoaiGiaoDich && idDanhMuc) {
+            idLoaiGiaoDich.addEventListener('change', () => {
+                idDanhMuc.innerHTML = ''; // Xóa sạch các option cũ
+
+                if (idLoaiGiaoDich.value === 'chi') {
+                    idDanhMuc.innerHTML = `
+                        <option value="Ăn uống">🍔 Ăn uống</option>
+                        <option value="Di chuyển">🚗 Di chuyển</option>
+                        <option value="Mua sắm">🛍️ Mua sắm</option>
+                        <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
+                        <option value="Giải trí">🎬 Giải trí & Cà phê</option>
+                        <option value="Khác">✨ Khác</option>
+                    `;
+                } else if (idLoaiGiaoDich.value === 'thu') {
+                    idDanhMuc.innerHTML = `
+                        <option value="Thu nhập từ lương">💵 Thu nhập từ lương</option>
+                        <option value="Thu nhập khác">💰 Thu nhập khác</option>
+                    `;
+                }
+            });
         }
-        });
 
         // --------------------------------------------------------------------------
-        // II. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
+        // IV. THÊM GIAO DỊCH MỚI LÊN FIREBASE
         // --------------------------------------------------------------------------
-            // 2.1 kích hoạt toàn bộ các lệnh bên trong nút bấm chạy
-                idNutGhiDe.addEventListener('click', async () => {
-            // 2.2 lấy ra các giá trị hiện tại mà bạn đang gõ trong ô nhập liệu
+        if (idNutGhiDe) {
+            idNutGhiDe.addEventListener('click', async () => {
                 const loai = idLoaiGiaoDich.value; 
                 const ten = idTen.value.trim();
                 const danhMuc = idDanhMuc.value;
                 const soTien = parseInt(idSoTien.value);
-            // 2.3 Kiểm tra dữ liệu đầu vào xem có hợp lệ hay không trước khi gửi
-                if (ten === '' || isNaN(soTien) || soTien <= 0) {
-                alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
-                return;
+                
+                // Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
+                const ngayNhap = inputNgay ? inputNgay.value : "";
+                const gioNhap = inputGio ? inputGio.value : "";
+
+                // Kiểm tra dữ liệu đầu vào hợp lệ
+                if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
+                    alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
+                    return;
                 }
 
                 try {
-            // 2.4 Đẩy dữ liệu transaction mới lên Firestore
-                await addDoc(boChonBoSuuTap, {
-                ten: ten,
-                soTien: soTien,
-                loai: loai,
-                danhMuc: danhMuc,
-                thoiGian: Date.now() // Lưu mốc thời gian Unix hiện tại để sắp xếp
-                });
-            // 2.5 Dọn dẹp giao diện (Reset Form)
-                idTen.value = '';
-                idSoTien.value = ''; // <--- Thay 'soTien.value' bằng 'idSoTien.value'
-            // 2.6 Tự động chuyển qua tab Tổng quan (HOME)
-                const nutHome = document.querySelector('[data-target="home"]');
-                if (nutHome) {
-                nutHome.click();
-                }
-            // 2.7 Trải nghiệm người dùng mượt mà: Tự động click chuyển về Tab Home để thấy lịch sử cập nhật ngay
-                document.querySelector('[data-target="home"]').click();        
+                    // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
+                    const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
+
+                    // Đẩy dữ liệu transaction mới lên Firestore
+                    await addDoc(boChonBoSuuTap, {
+                        ten: ten,
+                        soTien: soTien,
+                        loai: loai,
+                        danhMuc: danhMuc,
+                        thoiGian: chuoiThoiGianGop // Đã đồng bộ với input giao diện
+                    });
+
+                    // Dọn dẹp giao diện (Reset Form)
+                    idTen.value = '';
+                    idSoTien.value = ''; 
+                    if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):';
+
+                    // Tự động chuyển qua tab Tổng quan (HOME)
+                    const nutHome = document.querySelector('[data-target="home"]');
+                    if (nutHome) {
+                        nutHome.click();
+                    }
+                    
                 } catch (loi) {
-                console.error("Lỗi kết nối Firebase: ", loi);
-                alert("Không thể ghi nhận giao dịch lên đám mây!");
+                    console.error("Lỗi kết nối Firebase: ", loi);
+                    alert("Không thể ghi nhận giao dịch lên đám mây!");
                 }
-                });
+            });
+        }
 
         // --------------------------------------------------------------------------
-        // II. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAP
+        // V. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
         // --------------------------------------------------------------------------
-        const cacNutTab = document.querySelectorAll('.nut-tab');
-        const cacVungNoiDung = document.querySelectorAll('.tab-content');
-
         cacNutTab.forEach(nut => {
             nut.addEventListener('click', () => {
                 const mucTieu = nut.getAttribute('data-target');
                 
-                // 2.1 Cập nhật trạng thái active trên giao diện thanh menu đáy
+                // Cập nhật trạng thái active trên giao diện thanh menu đáy
                 cacNutTab.forEach(b => b.classList.remove('active'));
                 nut.classList.add('active');
                 
-                // 2.2 Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
+                // Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
                 cacVungNoiDung.forEach(content => content.classList.remove('active'));
-                document.getElementById(`tab-${mucTieu}`).classList.add('active');
+                const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
+                if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');
             });
         });
 
-
-
+        // --------------------------------------------------------------------------
         // VI. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
+        // --------------------------------------------------------------------------
         const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
         
         // --------------------------------------------------------------------------
-        // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT) FROM FIREBASE - TÍNH TOÁN
+        // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
         // --------------------------------------------------------------------------
         onSnapshot(truyVanSapXep, (snapshot) => {
+            if (!idVungLichSu) return;
+            
             idVungLichSu.innerHTML = ''; 
-            // 7.1 Làm rỗng lịch sử cũ để render lại từ đầu
             let tongSoDu = 0;
             let tongThuNhap = 0;
             let tongChiTieu = 0;
 
-            // 7.2 Xử lý trường hợp chưa có bất kỳ dữ liệu nào trong DB
             if (snapshot.empty) {
                 idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
-                idHienThiSoDu.innerText = "0";
-                idBcThu.innerText = "0 đ";
-                idBcChi.innerText = "0 đ";
-                idThanhThu.style.width = "0%";
-                idThanhChi.style.width = "0%";
+                if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
+                if (idBcThu) idBcThu.innerText = "0 đ";
+                if (idBcChi) idBcChi.innerText = "0 đ";
+                if (idThanhThu) idThanhThu.style.width = "0%";
+                if (idThanhChi) idThanhChi.style.width = "0%";
                 return;
             }
 
-            // 7.3 Duyệt qua từng bản ghi giao dịch lấy từ Cloud về
             snapshot.forEach((doc) => {
                 const giaoDich = doc.data();
                 let kyTuDau = '';
                 let lopMauSac = '';
 
-                // 7.4 Tính toán cộng dồn số dư, tổng thu, tổng chi dựa vào loại giao dịch
                 if (giaoDich.loai === 'thu') {
                     tongSoDu += giaoDich.soTien;
                     tongThuNhap += giaoDich.soTien;
@@ -680,7 +690,6 @@
 
                 const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
 
-                // 7.5 Tạo cấu trúc HTML động cho từng dòng dòng tiền lịch sử
                 const dongMoi = document.createElement('div');
                 dongMoi.classList.add('dong-giao-dich');
                 dongMoi.innerHTML = `
@@ -693,79 +702,69 @@
                 idVungLichSu.appendChild(dongMoi); 
             });
 
-            // 7.6 Đưa số liệu sau khi tính toán lên giao diện trực quan (Tab Home & Tab Report)
-            idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
-            idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
-            idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
+            // Đưa số liệu sau khi tính toán lên giao diện trực quan
+            if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
+            if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
+            if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
 
-            // 7.7 Tính toán tỷ lệ phần trăm để co dãn thanh đồ họa Progress Bar
+            // Tính toán tỷ lệ phần trăm co dãn thanh đồ họa Progress Bar
             const maxTong = Math.max(tongThuNhap, tongChiTieu);
             if (maxTong > 0) {
-                idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
-                idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
+                if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
+                if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
             } else {
-                idThanhThu.style.width = "0%";
-                idThanhChi.style.width = "0%";
+                if (idThanhThu) idThanhThu.style.width = "0%";
+                if (idThanhChi) idThanhChi.style.width = "0%";
             }
         });
 
-        
         // --------------------------------------------------------------------------
-        // X. LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
+        // VIII. LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
         // --------------------------------------------------------------------------
-        const idNutLamMoi = document.getElementById('nut-lam-moi-app');
-        
-        idNutLamMoi.addEventListener('click', () => {
-            const iconSvg = idNutLamMoi.querySelector('svg');
-            // 10.1 Tạo hiệu ứng xoay tròn icon bên trong
-            iconSvg.style.transform = 'rotate(360deg)';
-            iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-            
-            setTimeout(() => {
-                window.location.reload();
-            }, 350);
-        });
-
-        // Lấy thẻ input ngày và giờ
-        const inputNgay = document.getElementById('ngay-giao-dich');
-        const inputGio = document.getElementById('gio-giao-dich');
-
-        // Lấy thời gian hiện tại theo múi giờ địa phương
-        const bayGio = new Date();
-
-        // Định dạng ngày thành YYYY-MM-DD
-        const nam = bayGio.getFullYear();
-        const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
-        const ngay = String(bayGio.getDate()).padStart(2, '0');
-        inputNgay.value = `${nam}-${thang}-${ngay}`;
-
-        // Định dạng giờ thành HH:MM
-        const gio = String(bayGio.getHours()).padStart(2, '0');
-        const phut = String(bayGio.getMinutes()).padStart(2, '0');
-        inputGio.value = `${gio}:${phut}`;
-        
-        // --------------------------------------------------------------------------
-        // XI. CẬP NHẬT SỐ TIỀN CÓ ĐỊNH DẠNG NGHÌN LÊN TIÊU ĐỀ SỐ TIỀN
-        // --------------------------------------------------------------------------
-
-        const inputSoTien = document.getElementById('so-tien');
-        const labelSoTien = document.getElementById('label-so-tien');
-
-        inputSoTien.addEventListener('input', function () {
-        let value = this.value;
-    
-        // 11.1 Nếu ô nhập trống thì trả tiêu đề về mặc định
-        if (!value) {
-        labelSoTien.innerText = 'Số tiền (đ):';
-        return;
+        if (idNutLamMoi) {
+            idNutLamMoi.addEventListener('click', () => {
+                const iconSvg = idNutLamMoi.querySelector('svg');
+                if (iconSvg) {
+                    iconSvg.style.transform = 'rotate(360deg)';
+                    iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                }
+                setTimeout(() => {
+                    window.location.reload();
+                }, 350);
+            });
         }
-    
-        // 11.2 Định dạng số vừa nhập thành chuỗi có dấu chấm hàng nghìn
-        let soDaPhanCach = Number(value).toLocaleString('vi-VN');
-    
-        // 11.3 Cập nhật lên tiêu đề phía trên
-        labelSoTien.innerText = `Số tiền: ${soDaPhanCach}đ`;
-        });
-    </script>
+
+        // --------------------------------------------------------------------------
+        // IX. TỰ ĐỘNG ĐIỀN NGÀY GIỜ HIỆN TẠI VÀO INPUT LÚC KHỞI ĐỘNG
+        // --------------------------------------------------------------------------
+        const bayGio = new Date();
+        if (inputNgay && inputGio) {
+            const nam = bayGio.getFullYear();
+            const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
+            const ngay = String(bayGio.getDate()).padStart(2, '0');
+            inputNgay.value = `${nam}-${thang}-${ngay}`;
+
+            const gio = String(bayGio.getHours()).padStart(2, '0');
+            const phut = String(bayGio.getMinutes()).padStart(2, '0');
+            inputGio.value = `${gio}:${phut}`;
+        }
+        
+        // --------------------------------------------------------------------------
+        // X. CẬP NHẬT SỐ TIỀN CÓ ĐỊNH DẠNG NGHÌN LÊN TIÊU ĐỀ SỐ TIỀN
+        // --------------------------------------------------------------------------
+        if (idSoTien && labelSoTien) {
+            idSoTien.addEventListener('input', function () {
+                let value = this.value;
+            
+                if (!value) {
+                    labelSoTien.innerText = 'Số tiền (đ):';
+                    return;
+                }
+            
+                let soDaPhanCach = Number(value).toLocaleString('vi-VN');
+                labelSoTien.innerText = `Số tiền: ${soDaPhanCach}đ`;
+            });
+        }
+</script>
 </body>
 </html>
