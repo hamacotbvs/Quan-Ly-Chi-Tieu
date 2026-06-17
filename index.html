@@ -288,31 +288,32 @@
         }
 
         /* ==========================================================================
-           KHI ĐƯỢC CHỌN (ACTIVE) - ICON ĐỔ ĐẶC NGUYÊN KHỐI MÀU TRẮNG NHƯ HÌNH
+           KHI ĐƯỢC CHỌN (ACTIVE) - ẨN HIỆN GIỮA 2 ICON MENU VIỀN/MÀU
            ========================================================================== */
-/* Định dạng chung cho cả 2 ảnh icon ngôi nhà */
-.nut-tab .img-icon-2d {
-    width: 18px !important;
-    height: 18px !important;
-    object-fit: contain;
-    margin-bottom: 5px;
-}
+        
+       /* Định dạng chung cho cả 2 ảnh icon ngôi nhà */
+        .nut-tab .img-icon-2d {
+            width: 18px !important;
+            height: 18px !important;
+            object-fit: contain;
+            margin-bottom: 5px;
+        }
 
-/* 1. Mặc định khi KHÔNG CHỌN (Không có class active) */
-.nut-tab .icon-active {
-    display: none; /* Ẩn ảnh viền đi */
-}
-.nut-tab .icon-inactive {
-    display: block; /* Hiện ảnh màu (homemau.png) lên */
-}
+        /* 1. Mặc định khi KHÔNG CHỌN (Không có class active) */
+        .nut-tab .icon-active {
+            display: none; /* Ẩn ảnh viền đi */
+        }
+        .nut-tab .icon-inactive {
+            display: block; /* Hiện ảnh màu (homemau.png) lên */
+        }
 
-/* 2. Khi ĐƯỢC CHỌN (Có class active) */
-.nut-tab.active .icon-active {
-    display: block; /* Hiện ảnh viền (homevien.png) lên */
-}
-.nut-tab.active .icon-inactive {
-    display: none; /* Ẩn ảnh màu đi */
-}
+        /* 2. Khi ĐƯỢC CHỌN (Có class active) */
+        .nut-tab.active .icon-active {
+            display: block; /* Hiện ảnh viền (homevien.png) lên */
+        }
+        .nut-tab.active .icon-inactive {
+            display: none; /* Ẩn ảnh màu đi */
+        }
         
         /* NÚT THÊM (+) TRUNG TÂM PHONG CÁCH MỚI - ĐÃ CĂN CHỈNH GIỮA */
         .nut-tab-them-trung-tam .icon {
@@ -445,24 +446,20 @@
         </div>
 
 
-        <nav class="menu-day-app">
-<button class="nut-tab active" data-target="home">
-    <img src="homevien.png" class="img-icon-2d icon-active" alt="Tổng quan">
-    <img src="homemau.png" class="img-icon-2d icon-inactive" alt="Tổng quan">
-    <span class="chu-menu">Tổng quan</span>
-</button>
+            <nav class="menu-day-app menu dưới">
+                <button class="nut-tab active" data-target="home">
+                <img src="homemau.png" class="img-icon-2d icon-active" alt="Tổng quan">
+                <img src="homevien.png" class="img-icon-2d icon-inactive" alt="Tổng quan">
+                <span class="chu-menu">Tổng quan</span>
+                </button>
             <button class="nut-tab nut-tab-them-trung-tam" data-target="add">
                 <span class="icon">＋</span>
             </button>
-            <button class="nut-tab" data-target="report">
-                <span class="icon">
-                <svg viewBox="0 0 24 24" style="width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;">
-                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
-                <path d="M22 12A10 10 0 0 0 12 2v10z"/>
-                </svg>
-                </span>
+                <button class="nut-tab active" data-target="Baocao">
+                <img src="baocaomau.png" class="img-icon-2d icon-active" alt="Báo cáo">
+                <img src="baocaovien.png" class="img-icon-2d icon-inactive" alt="Báo cáo">
                 <span>Báo cáo</span>
-            </button>
+                </button>
         </nav>
     </div>
 
