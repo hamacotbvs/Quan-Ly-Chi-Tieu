@@ -587,27 +587,23 @@
              // 2.1 kích hoạt toàn bộ các lệnh bên trong nút bấm chạy    
                 if (idNutGhiDe) {
                     idNutGhiDe.addEventListener('click', async () => {
-                    // 2.2 lấy ra các giá trị hiện tại mà bạn đang gõ trong ô nhập liệu
+            // 2.2 lấy ra các giá trị hiện tại mà bạn đang gõ trong ô nhập liệu
                     const loai = idLoaiGiaoDich.value; 
                     const ten = idTen.value.trim();
                     const danhMuc = idDanhMuc.value;
-                    const soTien = parseInt(idSoTien.value);
-                
-            // Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
+                    const soTien = parseInt(idSoTien.value);                
+            // 2.3 Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
                     const ngayNhap = inputNgay ? inputNgay.value : "";
                     const gioNhap = inputGio ? inputGio.value : "";
-
-            // Kiểm tra dữ liệu đầu vào hợp lệ
+            // 2.4 Kiểm tra dữ liệu đầu vào hợp lệ
                     if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
                         alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
                         return;
                     }
-
                     try {
                     // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
                     const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
-
-            // Đẩy dữ liệu transaction mới lên Firestore
+            // 2.5 Đẩy dữ liệu transaction mới lên Firestore
                     await addDoc(boChonBoSuuTap, {
                         ten: ten,
                         soTien: soTien,
@@ -615,18 +611,15 @@
                         danhMuc: danhMuc,
                         thoiGian: chuoiThoiGianGop // Đã đồng bộ với input giao diện
                     });
-
-            // Dọn dẹp giao diện (Reset Form)
+            // 2.6 Dọn dẹp giao diện (Reset Form)
                     idTen.value = '';
                     idSoTien.value = ''; 
                     if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):';
-
-            // Tự động chuyển qua tab Tổng quan (HOME)
+            // 2.7 Tự động chuyển qua tab Tổng quan (HOME)
                     const nutHome = document.querySelector('[data-target="home"]');
                     if (nutHome) {
                         nutHome.click();
-                    }
-                    
+                    }                    
                 } catch (loi) {
                     console.error("Lỗi kết nối Firebase: ", loi);
                     alert("Không thể ghi nhận giao dịch lên đám mây!");
