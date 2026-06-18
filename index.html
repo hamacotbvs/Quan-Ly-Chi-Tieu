@@ -708,6 +708,8 @@
                             "Khác": "✨"
                         };
                         const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+                        // Tìm icon tương ứng, nếu không thấy thì mặc định lấy icon cặp tài liệu 📂 hoặc ✨
+                        const iconPhùHợp = danhSachIcon[tenDanhMucGoc] || "📂";
                         // Lấy chuỗi ngày giờ (Ví dụ: "18/06/2026 14:30" hoặc giữ nguyên chuỗi gốc)
                         const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
                 // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền (ĐÃ THÊM biến hienThiThoiGian vào HTML)
