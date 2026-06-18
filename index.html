@@ -707,9 +707,9 @@
                             "Thu nhập từ lương": "💰", // Thêm các danh mục thu nếu có
                             "Khác": "✨"
                         };
-                        const tenDanhMucGoc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+                        const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
                         // Tìm icon tương ứng, nếu không thấy thì mặc định lấy icon cặp tài liệu 📂 hoặc ✨
-                        const iconPhùHợp = danhSachIcon[tenDanhMucGoc] || "📂";
+                        const iconPhùHợp = danhSachIcon[hienThiDanhMuc] || "📂";
                         // Lấy chuỗi ngày giờ (Ví dụ: "18/06/2026 14:30" hoặc giữ nguyên chuỗi gốc)
                         const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
                 // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền (ĐÃ THÊM biến hienThiThoiGian vào HTML)
@@ -717,7 +717,8 @@
                         dongMoi.classList.add('dong-giao-dich');
                         dongMoi.innerHTML = `
                             <div class="giao-dich-trai" style="display: flex; flex-direction: column;">
-                                <span class="giao-dich-muc" style="font-size: 13px; color: #718096; margin-bottom: 2px;">📂 ${hienThiDanhMuc}</span>
+                            <div class="giao-dich-trai" style="display: flex; flex-direction: column;">
+                                <span class="giao-dich-muc" style="font-size: 13px; color: #718096; margin-bottom: 2px;">${iconPhùHợp} ${hienThiDanhMuc}</span>
                                 <span class="giao-dich-ten" style="font-weight: 500; font-size: 15px; color: #2d3748;">${giaoDich.ten}</span>
                             </div>
                             <div class="giao-dich-phai-cum" style="display: flex; flex-direction: column; align-items: flex-end;">
