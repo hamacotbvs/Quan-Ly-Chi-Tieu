@@ -686,25 +686,41 @@
                         let lopMauSac = '';
                 // 7.3.1 Bước A: Phân loại tiền và tính toán
                         if (giaoDich.loai === 'thu') {
-                            tongSoDu += giaoDich.soTien; // Cộng vào số dư
-                            tongThuNhap += giaoDich.soTien; // Cộng vào tổng thu
+                            tongSoDu += giaoDich.soTien; 
+                            tongThuNhap += giaoDich.soTien; 
                             kyTuDau = '+';
-                            lopMauSac = 'mau-thu'; // Đặt chữ màu xanh
+                            lopMauSac = 'mau-thu'; 
                         } else {
-                            tongSoDu -= giaoDich.soTien; // Trừ bớt số dư
-                            tongChiTieu += giaoDich.soTien; // Cộng vào tổng chi
+                            tongSoDu -= giaoDich.soTien; 
+                            tongChiTieu += giaoDich.soTien; 
                             kyTuDau = '-';
-                            lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
+                            lopMauSac = 'mau-chi'; 
                         }
-                        const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
-                        // Lấy chuỗi ngày giờ (Ví dụ: "18/06/2026 14:30" hoặc giữ nguyên chuỗi gốc)
-                        const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
-                // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền (ĐÃ THÊM biến hienThiThoiGian vào HTML)
+                        
+                        // 🟢 BẢNG ÁNH XẠ ICON THEO DANH MỤC GIỐNG BÊN NHẬP LIỆU
+                        // Chú ý: Bạn kiểm tra lại chữ hiển thị trong thẻ <option> của bạn để ghi đúng chính xác từng từ nhé
+                        const danhSachIcon = {
+                            "Ăn uống": "🍔",
+                            "Di chuyển": "🚗",
+                            "Mua sắm": "🛍️",
+                            "Hóa đơn & Tiện ích": "💵",
+                            "Giải trí & Cà phê": "🎬",
+                            "Thu nhập từ lương": "💰", // Thêm các danh mục thu nếu có
+                            "Khác": "✨"
+                        };
+
+                        const tenDanhMucGoc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+                        // Tìm icon tương ứng, nếu không thấy thì mặc định lấy icon cặp tài liệu 📂 hoặc ✨
+                        const iconPhùHợp = danhSachIcon[tenDanhMucGoc] || "📂";
+
+                        // Lấy chuỗi ngày giờ (Ví dụ: "2026-06-17 17:00")
+                        const hienThiThoiGian = giaoDich.ngayGioNhap ? giaoDich.ngayGioNhap : "--/--/---- --:--";
+                // 7.3.2 Bước B: Vẽ giao diện sắp xếp lại các cột thông tin
                         const dongMoi = document.createElement('div');
                         dongMoi.classList.add('dong-giao-dich');
                         dongMoi.innerHTML = `
                             <div class="giao-dich-trai" style="display: flex; flex-direction: column;">
-                                <span class="giao-dich-muc" style="font-size: 13px; color: #718096; margin-bottom: 2px;">📂 ${hienThiDanhMuc}</span>
+                                <span class="giao-dich-muc" style="font-size: 13px; color: #718096; margin-bottom: 2px;">${iconPhùHợp} ${tenDanhMucGoc}</span>
                                 <span class="giao-dich-ten" style="font-weight: 500; font-size: 15px; color: #2d3748;">${giaoDich.ten}</span>
                             </div>
                             <div class="giao-dich-phai-cum" style="display: flex; flex-direction: column; align-items: flex-end;">
@@ -727,23 +743,7 @@
                         if (idThanhThu) idThanhThu.style.width = "0%";
                         if (idThanhChi) idThanhChi.style.width = "0%";
                     }
-                    });
-        // B. ĐỊNH DẠNG
-        // --------------------------------------------------------------------------
-        // IX. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
-        // --------------------------------------------------------------------------
-                cacNutTab.forEach(nut => {
-                    nut.addEventListener('click', () => {
-                        const mucTieu = nut.getAttribute('data-target');                
-            // Cập nhật trạng thái active trên giao diện thanh menu đáy
-                cacNutTab.forEach(b => b.classList.remove('active'));
-                    nut.classList.add('active');                
-            // Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
-                cacVungNoiDung.forEach(content => content.classList.remove('active'));
-                    const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
-                    if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');
-                });
-                });   
+                    }); 
         // --------------------------------------------------------------------------
         // X. LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
         // --------------------------------------------------------------------------
