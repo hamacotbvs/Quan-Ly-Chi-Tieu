@@ -762,6 +762,37 @@
                                 }
                             });
                         });
+                // 7.3.4 THAO TÁC SỬA SỐ TIỀN NHANH TRÊN FIRESTORE
+                        document.querySelectorAll('.nut-sua-giao-dich').forEach(nut => {
+                            nut.addEventListener('click', async (e) => {
+                                e.preventDefault();        
+                                const idCanSua = nut.getAttribute('data-id');
+                                const dongGiaoDich = nut.closest('.dong-giao-dich');
+                                const tenKhoan = dongGiaoDich.querySelector('.giao-dich-ten').innerText;        
+                                // Hiện hộp thoại hỏi số tiền mới
+                                const soTienMoiGoc = prompt(`Nhập số tiền mới cho khoản "${tenKhoan}":`);        
+                                // Nếu người dùng không nhập hoặc bấm Hủy thì bỏ qua
+                                if (soTienMoiGoc === null || soTienMoiGoc.trim() === "") return;        
+                                const soTienMoi = Number(soTienMoiGoc.replace(/[^0-9]/g, '')); // Loại bỏ chữ nếu nhập nhầm        
+                                if (isNaN(soTienMoi) || soTienMoi <= 0) {
+                                    alert("Số tiền nhập vào không hợp lệ!");
+                                    return;
+                                }
+                                try {
+                                    // Nhớ đảm bảo đầu file đã import hàm "updateDoc" từ firebase-firestore
+                                    // Ví dụ: import { ..., updateDoc } from "https://www.gstatic.com/firebasejs/...";
+                                    const { updateDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");             
+                                    const taiLieuRef = doc(db, "QuanLyChiTieu", idCanSua);
+                                    await updateDoc(taiLieuRef, {
+                                        soTien: soTienMoi
+                                    });            
+                                    // Hệ thống real-time tự cập nhật tổng tiền mà không cần load lại trang!
+                                } catch (error) {
+                                    console.error("Lỗi khi cập nhật số tiền: ", error);
+                                    alert("Không thể cập nhật, vui lòng thử lại!");
+                                }
+                            });
+                        });
             // 7.4 Đưa số liệu sau khi tính toán lên giao diện trực quan
                     if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
                     if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
