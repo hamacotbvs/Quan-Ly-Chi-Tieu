@@ -138,6 +138,9 @@
                     .dong-giao-dich:last-child {
                         border-bottom: none;
                     }
+                /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
+                    .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
+                    .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
                 /* Phần nội dung chính nằm đè phía trên */
                     .giao-dich-noi-dung {
                         display: flex;
@@ -188,9 +191,39 @@
                         font-weight: 600; 
                         font-size: 15px;
                     }       
-                /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
-                    .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
-                    .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
+                /* LỚP NỀN ẨN PHÍA SAU KHI VUỐT */
+                    .nen-hanh-dong {
+                        position: absolute;
+                        top: 0;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        z-index: 1;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        font-weight: 600;
+                        font-size: 14px;
+                        color: white;
+                    }
+                    .hanh-dong-sua {
+                        background-color: #3498db; /* Nền xanh khi vuốt phải để sửa */
+                        height: 100%;
+                        width: 50%;
+                        display: flex;
+                        align-items: center;
+                        padding-left: 20px;
+                        justify-content: flex-start;
+                    }
+                    .hanh-dong-xoa {
+                        background-color: #e74c3c; /* Nền đỏ khi vuốt trái để xóa */
+                        height: 100%;
+                        width: 50%;
+                        display: flex;
+                        align-items: center;
+                        padding-right: 20px;
+                        justify-content: flex-end;
+                    }
         /* ==========================================================================
         III. TAB 3: NHẬP LIỆU (+)
         ========================================================================== */
