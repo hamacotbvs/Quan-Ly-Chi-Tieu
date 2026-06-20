@@ -721,20 +721,23 @@
                         const iconPhùHợp = danhSachIcon[hienThiDanhMuc] || "📂";
                         // Lấy chuỗi ngày giờ (Ví dụ: "18/06/2026 14:30" hoặc giữ nguyên chuỗi gốc)
                         const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
-                // 7.3.2 Bước B: Vẽ giao diện cho từng dòng tiền
+                // 7.3.2 Bước B: Vẽ giao diện
                         const dongMoi = document.createElement('div');
                         dongMoi.classList.add('dong-giao-dich');
                         dongMoi.innerHTML = `
                             <div class="giao-dich-trai">
                             <span class="giao-dich-muc">${iconPhùHợp} ${hienThiDanhMuc}</span>
                             <span class="giao-dich-ten">${giaoDich.ten}</span>
-                            </div>    
-                            <div class="giao-dich-phai-cum">
-                            <div class="dong-thoi-gian-xoa">
-                            <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span>
-                            <button class="nut-xoa-giao-dich" data-id="${doc.id}" title="Xóa lịch sử này">🗑️</button>
                             </div>
-                            <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
+                            <div class="giao-dich-phai-cum">
+                                <div class="dong-thoi-gian-xoa">
+                                    <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span>
+                                    <button class="nut-xoa-giao-dich" data-id="${doc.id}" title="Xóa lịch sử này">🗑️</button>
+                                </div>
+                                <div class="dong-tien-sua">
+                                    <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
+                                    <button class="nut-sua-giao-dich" data-id="${docId}" title="Sửa giao dịch này">✏️</button>
+                                </div>
                             </div>
                         `;
                         idVungLichSu.appendChild(dongMoi); 
