@@ -804,16 +804,18 @@
 
         // ĐẶNG NHẬP/ĐĂNG KÝ //
         // ==========================================================================
-// 1. CẤU HÌNH TRẠNG THÁI BIẾN BAN ĐẦU
-// ==========================================================================
-let cheDoHienTai = "dang-nhap"; // Mặc định là tab đăng nhập
+const db = firebase.firestore(); // Đảm bảo bạn đã kích hoạt Firestore trong app
+
+let cheDoHienTai = "dang-nhap";
 const txtEmail = document.getElementById('auth-email');
 const txtMatKhau = document.getElementById('auth-mat-khau');
 const nutChinh = document.getElementById('nut-xac-thuc-chinh');
 
-// ==========================================================================
-// 2. CHUYỂN ĐỔI TAB QUA LẠI GIỮA ĐĂNG NHẬP & ĐĂNG KÝ
-// ==========================================================================
+const khoiAuthGiaoDien = document.getElementById('khoi-giao-dich-auth');
+const hopThoaiChoDuyet = document.getElementById('hop-thoai-cho-duyet');
+const lopPhuAuth = document.getElementById('man-hinh-xac-thuc-overlay');
+
+// --- CHUYỂN TAB ĐĂNG NHẬP / ĐĂNG KÝ ---
 document.getElementById('tab-auth-dang-nhap')?.addEventListener('click', function() {
     cheDoHienTai = "dang-nhap";
     this.classList.add('active');
@@ -828,9 +830,7 @@ document.getElementById('tab-auth-dang-ky')?.addEventListener('click', function(
     if (nutChinh) nutChinh.innerText = "Tạo tài khoản mới";
 });
 
-// ==========================================================================
-// 3. XỬ LÝ SỰ KIỆN CLICK NÚT EMAIL VÀ MẬT KHẨU
-// ==========================================================================
+// --- ĐĂNG KÝ / ĐĂNG NHẬP EMAIL & PASSWORD ---
 nutChinh?.addEventListener('click', () => {
     const email = txtEmail?.value.trim();
     const matKhau = txtMatKhau?.value;
@@ -841,86 +841,109 @@ nutChinh?.addEventListener('click', () => {
     }
 
     if (cheDoHienTai === "dang-ky") {
-        // Thực hiện đăng ký tài khoản mới lên Firebase Auth
         firebase.auth().createUserWithEmailAndPassword(email, matKhau)
-            .then(() => alert("Đăng ký tài khoản thành công!"))
+            .then((userCredential) => {
+                // Đăng ký thành công -> Ghi thông tin chờ duyệt vào Database
+                ghiThongTinUserMoi(userCredential.user);
+            })
             .catch((err) => alert("Lỗi đăng ký: " + phanTichLoiFirebase(err.code)));
     } else {
-        // Thực hiện đăng nhập tài khoản có sẵn
         firebase.auth().signInWithEmailAndPassword(email, matKhau)
-            .then(() => alert("Đăng nhập thành công!"))
             .catch((err) => alert("Lỗi đăng nhập: " + phanTichLoiFirebase(err.code)));
     }
 });
 
-// ==========================================================================
-// 4. XỬ LÝ ĐĂNG NHẬP NHANH BẰNG TÀI KHOẢN GOOGLE
-// ==========================================================================
-// Đảm bảo nút được bind sự kiện chính xác sau khi DOM đã sẵn sàng
-document.addEventListener("DOMContentLoaded", () => {
-    const nutGoogle = document.getElementById('nut-auth-google');
-    
-    if (nutGoogle) {
-        nutGoogle.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation(); // Chặn lan sự kiện lên lớp nền modal bên trên
-            
-            console.log("Đang kích hoạt đăng nhập Google...");
-            
-            // Khởi tạo Provider cấu hình chuẩn của Firebase Auth
-            const provider = new firebase.auth.GoogleAuthProvider();
-            
-            // Cấu hình thêm tùy chọn tài khoản nếu cần (Không bắt buộc)
-            provider.addScope('profile');
-            provider.addScope('email');
-
-            // Gọi lệnh bật Popup đăng nhập của Google
-            firebase.auth().signInWithPopup(provider)
-                .then((result) => {
-                    console.log("Đăng nhập thành công:", result.user);
-                    alert("Đăng nhập bằng Google thành công! Chào " + result.user.displayName);
-                })
-                .catch((error) => {
-                    console.error("Lỗi chi tiết từ Firebase:", error);
-                    
-                    // Xử lý các mã lỗi phổ biến của Google Auth
-                    if (error.code === 'auth/popup-blocked') {
-                        alert("Trình duyệt của bạn đã chặn cửa sổ Popup! Vui lòng cho phép bật popup trên trang web này để đăng nhập.");
-                    } else if (error.code === 'auth/cancelled-popup-request') {
-                        console.log("Người dùng đóng popup trước khi đăng nhập xong.");
-                    } else {
-                        alert("Lỗi đăng nhập Google: " + error.message);
-                    }
-                });
-        });
-    } else {
-        console.error("Không tìm thấy thẻ HTML có id='nut-auth-google'!");
-    }
+// --- ĐĂNG NHẬP GOOGLE ---
+document.getElementById('nut-auth-google')?.addEventListener('click', () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider)
+        .then((result) => {
+            // Sau khi đăng nhập bằng Google, kiểm tra xem user này đã có trên DB chưa
+            // Nếu chưa có, tiến hành tạo mới với trạng thái "cho_duyet"
+            const userRef = db.collection('users').doc(result.user.uid);
+            userRef.get().then((doc) => {
+                if (!doc.exists) {
+                    ghiThongTinUserMoi(result.user);
+                }
+            });
+        })
+        .catch((err) => alert("Lỗi đăng nhập Google: " + err.message));
 });
 
-// ==========================================================================
-// 5. THEO DÕI ĐÓNG / MỞ MÀN HÌNH PHỦ CHẶN APP TỰ ĐỘNG
-// ==========================================================================
+// Hàm ghi nhận tài khoản mới tạo và đưa vào danh sách chờ duyệt
+function ghiThongTinUserMoi(user) {
+    db.collection('users').doc(user.uid).set({
+        uid: user.uid,
+        email: user.email,
+        tenHienThi: user.displayName || "Thành viên mới",
+        trangThai: "cho_duyet", // Trạng thái mặc định bắt buộc Admin phê duyệt
+        ngayDangKy: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        console.log("Đã lưu thông tin tài khoản chờ duyệt.");
+    }).catch((error) => {
+        console.error("Lỗi ghi DB: ", error);
+    });
+}
+
+// --- KIỂM TRA TRẠNG THÁI TÀI KHOẢN KHI USER ĐĂNG NHẬP ---
 firebase.auth().onAuthStateChanged((user) => {
-    const lopPhuAuth = document.getElementById('man-hinh-xac-thuc-overlay');
     if (lopPhuAuth) {
         if (user) {
-            // TRƯỜNG HỢP 1: ĐÃ ĐĂNG NHẬP -> Ẩn màn hình phủ đi, mở toàn bộ app bên dưới
-            lopPhuAuth.style.display = 'none';
-            console.log("Đang chạy tài khoản đăng nhập:", user.email);
-            
-            // Nếu bạn có dữ liệu cũ cần kích hoạt thanh hạn mức chi tiêu thì chạy lại ở đây:
-            if (window.duLieuSnapshotQuocTe) {
-                capNhatThanhHanMuc(window.duLieuSnapshotQuocTe);
-            }
+            // Đọc dữ liệu trạng thái từ bộ sưu tập users trên Firestore
+            db.collection('users').doc(user.uid).get().then((doc) => {
+                if (doc.exists) {
+                    const dataUser = doc.data();
+                    
+                    if (dataUser.trangThai === "da_duyet") {
+                        // KỊCH BẢN A: Đã được Admin duyệt -> Cho vào app sử dụng công cụ
+                        lopPhuAuth.style.display = 'none';
+                        if (window.duLieuSnapshotQuocTe) capNhatThanhHanMuc(window.duLieuSnapshotQuocTe);
+                    } else {
+                        // KỊCH BẢN B: Chưa được duyệt hoặc bị khóa -> Hiển thị hộp thoại Chờ Duyệt
+                        lopPhuAuth.style.display = 'flex';
+                        if (khoiAuthGiaoDien) khoiAuthGiaoDien.style.display = 'none';
+                        if (hopThoaiChoDuyet) hopThoaiChoDuyet.style.display = 'block';
+                    }
+                } else {
+                    // Phòng hờ nếu User tồn tại ở Auth nhưng mất dữ liệu ở Firestore
+                    lopPhuAuth.style.display = 'flex';
+                    if (khoiAuthGiaoDien) khoiAuthGiaoDien.style.display = 'block';
+                    if (hopThoaiChoDuyet) hopThoaiChoDuyet.style.display = 'none';
+                }
+            }).catch((err) => {
+                console.error("Lỗi kiểm tra quyền truy cập: ", err);
+                firebase.auth().signOut();
+            });
+
         } else {
-            // TRƯỜNG HỢP 2: CHƯA ĐĂNG NHẬP -> Hiện màn hình phủ lên bắt buộc đăng nhập mới được dùng app
-            lopPhuAuth.style.display = 'flex'; // Dùng 'flex' để giữ định dạng căn giữa dọc và ngang
+            // TRƯỜNG HỢP CHƯA ĐĂNG NHẬP: Quay về hiển thị form Đăng nhập/Đăng ký ban đầu
+            lopPhuAuth.style.display = 'flex';
+            if (khoiAuthGiaoDien) khoiAuthGiaoDien.style.display = 'block';
+            if (hopThoaiChoDuyet) hopThoaiChoDuyet.style.display = 'none';
             if (txtEmail) txtEmail.value = "";
             if (txtMatKhau) txtMatKhau.value = "";
         }
     }
 });
+
+// Nút bấm thoát màn hình chờ duyệt để quay lại giao diện đăng nhập tài khoản khác
+document.getElementById('nut-dang-xuat-cho-duyet')?.addEventListener('click', () => {
+    firebase.auth().signOut().then(() => {
+        if (khoiAuthGiaoDien) khoiAuthGiaoDien.style.display = 'block';
+        if (hopThoaiChoDuyet) hopThoaiChoDuyet.style.display = 'none';
+    });
+});
+
+function phanTichLoiFirebase(maLoi) {
+    switch (maLoi) {
+        case 'auth/invalid-email': return 'Định dạng tài khoản Email không hợp lệ.';
+        case 'auth/weak-password': return 'Mật khẩu quá ngắn (Yêu cầu ít nhất 6 ký tự).';
+        case 'auth/email-already-in-use': return 'Email này đã được đăng ký bởi tài khoản khác.';
+        case 'auth/user-not-found': return 'Tài khoản không tồn tại trên hệ thống.';
+        case 'auth/wrong-password': return 'Mật khẩu đã nhập không chính xác.';
+        default: return 'Có lỗi xảy ra, vui lòng thử lại sau.';
+    }
+}
         
         // A. DỮ LIỆU
         // --------------------------------------------------------------------------
@@ -1516,7 +1539,7 @@ capNhatChuHienThiThang();
             Đăng nhập bằng Google
         </button>
     </div>
-    
+
     <div id="man-hinh-xac-thuc-overlay" class="modal-auth-overlay">
     
     <div class="khung-dang-nhap-container" id="khoi-giao-dich-auth">
