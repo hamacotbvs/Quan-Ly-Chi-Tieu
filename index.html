@@ -736,6 +736,17 @@
                 const formDN = document.getElementById('form-dang-nhap');
                 const formDK = document.getElementById('form-dang-ky');
                 const titleAuth = document.getElementById('tieu-de-auth');
+        // --------------------------------------------------------------------------
+        // II. LOGIC CHUYỂN ĐỔI FORM ĐĂNG NHẬP / ĐĂNG KÝ
+        // --------------------------------------------------------------------------
+            document.getElementById('link-sang-dang-ky')?.addEventListener('click', () => {
+                formDN.style.display = 'none'; formDK.style.display = 'block';
+                titleAuth.innerText = "TẠO TÀI KHOẢN MỚI";
+            });
+            document.getElementById('link-sang-dang-nhap')?.addEventListener('click', () => {
+                formDK.style.display = 'none'; formDN.style.display = 'block';
+                titleAuth.innerText = "ĐĂNG NHẬP HỆ THỐNG";
+            });
 
         // --------------------------------------------------------------------------
         // II. ĐỊNH DANH TẤT CẢ CÁC BIẾN (BẮT BUỘC ĐỂ TRÊN ĐẦU)
