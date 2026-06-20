@@ -96,41 +96,63 @@
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     cursor: pointer;
-    user-select: none; /* Ngăn bôi đen chữ khi bấm nhanh nhiều lần */
+    user-select: none;
 }
 
-/* Hàng chứa tiêu đề và số tiền */
+/* Hàng tiêu đề trên cùng: Đẩy tiêu đề sang trái, cụm tháng sang phải */
 .han-muc-hang-dau {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
-/* Tiêu đề chữ đậm */
 .han-muc-tieu-de {
     font-weight: bold;
     font-size: 14px;
     color: #333333;
 }
 
-/* Số tiền hiển thị bên phải */
-#chu-ghi-han-muc {
-    font-size: 13px;
-    font-weight: 500;
-    color: #666666;
+/* Kén chứa 2 nút mũi tên thu nhỏ lại để vừa vặn góc phải */
+.bo-dieu-huong-thang {
+    display: flex;
+    align-items: center;
+    background-color: #f1f2f6;
+    border-radius: 15px;
+    padding: 1px 4px;
 }
 
-/* Thanh nền màu xám phía dưới */
+.nut-mui-ten {
+    background: none;
+    border: none;
+    font-size: 11px;
+    color: #57606f;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.nut-mui-ten:active {
+    transform: scale(0.85);
+}
+
+#hien-thi-thang-nam {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2f3542;
+    min-width: 85px;
+    text-align: center;
+}
+
+/* Thanh nền tiến trình */
 .han-muc-thanh-nen {
     width: 100%;
-    height: 12px;
+    height: 10px;
     background-color: #e0e0e0;
-    border-radius: 6px;
+    border-radius: 5px;
     overflow: hidden;
+    margin-bottom: 8px;
 }
 
-/* Thanh tiến trình chạy phần trăm màu xanh (sẽ đổi màu tự động bằng JS) */
 #thanh-phat-trien-han-muc {
     width: 0%;
     height: 100%;
@@ -138,60 +160,22 @@
     transition: width 0.3s ease, background-color: 0.3s ease;
 }
 
-/* Dòng chữ gợi ý nhỏ dưới cùng */
-#goi-y-han-muc {
-    font-size: 11px;
-    color: #999999;
-    margin-top: 6px;
-    text-align: right;
-}
-/* Khung chứa tiêu đề và cụm nút chọn tháng */
-.cum-chon-thang-home {
+/* Hàng thông tin dưới đáy thanh tiến trình */
+.han-muc-hang-day {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    margin-top: 10px;
 }
 
-.bieu-do-tieu-de {
-    font-weight: bold;
-    font-size: 16px;
-    color: #2c3e50;
+#goi-y-han-muc {
+    font-size: 11px;
+    color: #999999;
 }
 
-/* Kén bo tròn chứa 2 mũi tên và chữ */
-.bo-dieu-huong-thang {
-    display: flex;
-    align-items: center;
-    background-color: #f1f2f6;
-    border-radius: 20px;
-    padding: 2px 6px;
-}
-
-/* Nút mũi tên */
-.nut-mui-ten {
-    background: none;
-    border: none;
-    font-size: 14px;
-    color: #2c3e50;
-    padding: 6px 10px;
-    cursor: pointer;
-    user-select: none;
-    transition: transform 0.1s ease;
-}
-
-.nut-mui-ten:active {
-    transform: scale(0.85); /* Hiệu ứng nhấn lún tay */
-}
-
-/* Chữ hiển thị tháng chính giữa */
-#hien-thi-thang-nam {
-    font-size: 13px;
+#chu-ghi-han-muc {
+    font-size: 12px;
     font-weight: 600;
-    color: #34495e;
-    min-width: 95px;
-    text-align: center;
+    color: #444444;
 }
         /* ==========================================================================
         II. TAB 2: LỊCH SỬ
@@ -504,25 +488,27 @@
   
 <div id="tab-home" class="tab-content active">
 
-    <div class="cum-chon-thang-home">
-        <span class="bieu-do-tieu-de">Bảng điều khiển</span>
-        
-        <div class="bo-dieu-huong-thang">
-            <button id="nut-thang-truoc" class="nut-mui-ten">◀</button>
-            <span id="hien-thi-thang-nam">Tháng --/----</span>
-            <button id="nut-thang-sau" class="nut-mui-ten">▶</button>
-        </div>
-    </div>
-
     <div class="khung-han-muc-home" id="vung-han-muc">
+        
         <div class="han-muc-hang-dau">
-            <span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu tháng này</span>
-            <span id="chu-ghi-han-muc">0 / Chưa cài đặt</span>
+            <span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu</span>
+            
+            <div class="bo-dieu-huong-thang" id="cum-chuyen-thang-ngan-chan">
+                <button id="nut-thang-truoc" class="nut-mui-ten">◀</button>
+                <span id="hien-thi-thang-nam">Tháng --/----</span>
+                <button id="nut-thang-sau" class="nut-mui-ten">▶</button>
+            </div>
         </div>    
+        
         <div class="han-muc-thanh-nen">
             <div id="thanh-phat-trien-han-muc"></div>
         </div>    
-        <div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div>
+        
+        <div class="han-muc-hang-day">
+            <div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div>
+            <span id="chu-ghi-han-muc">0 / Chưa cài đặt</span>
+        </div>
+        
     </div>
 
 </div>
