@@ -1149,7 +1149,7 @@ function capNhatThanhHanMuc(docs) {
     let phanTram = (tongDaChi / hanMucThangDangXem) * 100;
     let phanTramHienThi = phanTram > 100 ? 100 : phanTram;
 
-    txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')} / ${hanMucThangDangXem.toLocaleString('vi-VN')}đ`;
+    txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')}/${hanMucThangDangXem.toLocaleString('vi-VN')}đ`;
     thanhPhanTram.style.width = `${phanTramHienThi}%`;
 
     // Thay đổi màu sắc thông minh dựa trên mức độ chi tiêu
