@@ -628,6 +628,21 @@
                     // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
                     const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
             // 4.5 Đẩy dữ liệu transaction mới lên Firestore
+            if (window.idGiaoDichDangSua) {
+    // SỬA: Nếu có ID đang sửa, tiến hành cập nhật dữ liệu thay vì thêm mới
+    const taiLieuRef = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
+    await updateDoc(taiLieuRef, {
+        ten: ten,
+        soTien: soTien,
+        loai: loai,
+        danhMuc: danhMuc,
+        thoiGian: chuoiThoiGianGop
+    });
+    window.idGiaoDichDangSua = null; // Xóa trạng thái sửa
+    idNutGhiDe.innerText = "Ghi đè / Thêm mới"; // Trả lại tên nút cũ (hoặc tên nút ban đầu của bạn)
+} else {
+    // THÊM MỚI: (Giữ nguyên đoạn addDoc cũ của bạn)
+
                     await addDoc(boChonBoSuuTap, {
                         ten: ten,
                         soTien: soTien,
@@ -635,6 +650,7 @@
                         danhMuc: danhMuc,
                         thoiGian: chuoiThoiGianGop // Đã đồng bộ với input giao diện
                     });
+                    }
             // 4.6 Dọn dẹp giao diện (Reset Form)
                     idTen.value = '';
                     idSoTien.value = ''; 
