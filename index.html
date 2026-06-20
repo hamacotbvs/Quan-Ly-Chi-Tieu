@@ -802,7 +802,7 @@
                             const tenGiaoDich = noiDung.querySelector('.giao-dich-ten')?.innerText || '';
                     // KỊCH BẢN 1: VUỐT TRÁI (Kéo sang trái < -60px) -> Thực hiện XÓA
                         if (xDiChuyen < -60) {
-                            noiDung.style.transform = 'translateX(-100%)'; // Đẩy hẳn ra ngoài màn hình để tạo hiệu ứng biến mất
+                            noiDung.style.transform = 'translateX(-50%)'; // Đẩy hẳn ra ngoài màn hình để tạo hiệu ứng biến mất
                             setTimeout(async () => {
                                 if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
                                     try {
