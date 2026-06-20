@@ -507,7 +507,7 @@
             <span class="chu-menu">Lịch sử</span>
         </button>
 
-        <button class="nut-tab nut-tab-them-trung-tam" data-target="plus">
+        <button class="nut-tab nut-tab-them-trung-tam" data-target="add">
             <span class="icon">＋</span>
         </button>
 
@@ -872,7 +872,7 @@ else if (xDiChuyen > 60) {
     if (idNutGhiDe) idNutGhiDe.innerText = "💾 Cập nhật thay đổi";                 
 
     // 7. Chuyển Tab nhập liệu nhanh
-    const tabNhapLieu = document.querySelector('[data-target="plus"]') || document.getElementById('tab-nhap-lieu');
+    const tabNhapLieu = document.querySelector('[data-target="add"]') || document.getElementById('tab-nhap-lieu');
     if (tabNhapLieu) {
         tabNhapLieu.click();
     }
