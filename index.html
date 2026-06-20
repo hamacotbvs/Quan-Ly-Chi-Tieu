@@ -88,18 +88,63 @@
         I. TAB 1: HOME
         ========================================================================== */
             /* 1.1 THANH HẠN MỨC CHI TIÊU TRONG THÁNG */
-                <div class="khung-han-muc-home" id="vung-han-muc" style="margin-top: 15px; padding: 15px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-weight: bold; font-size: 14px; color: #333;">🎯 Hạn mức chi tiêu tháng này</span>
-                        <span id="chu-ghi-han-muc" style="font-size: 13px; font-weight: 500; color: #666;">0 / Chưa cài đặt</span>
-                    </div>
-    
-                    <div style="width: 100%; height: 12px; background-color: #e0e0e0; border-radius: 6px; overflow: hidden;">
-                        <div id="thanh-phat-trien-han-muc" style="width: 0%; height: 100%; background-color: #2ecc71; transition: width 0.3s ease, background-color: 0.3s ease;"></div>
-                    </div>
-    
-                    <div id="goi-y-han-muc" style="font-size: 11px; color: #999; margin-top: 6px; text-align: right;">💡 Bấm vào đây để cài đặt hạn mức</div>
-                </div> 
+                /* Khung bọc bên ngoài của vùng hạn mức */
+.khung-han-muc-home {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    user-select: none; /* Ngăn bôi đen chữ khi bấm nhanh nhiều lần */
+}
+
+/* Hàng chứa tiêu đề và số tiền */
+.han-muc-hang-dau {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+/* Tiêu đề chữ đậm */
+.han-muc-tieu-de {
+    font-weight: bold;
+    font-size: 14px;
+    color: #333333;
+}
+
+/* Số tiền hiển thị bên phải */
+#chu-ghi-han-muc {
+    font-size: 13px;
+    font-weight: 500;
+    color: #666666;
+}
+
+/* Thanh nền màu xám phía dưới */
+.han-muc-thanh-nen {
+    width: 100%;
+    height: 12px;
+    background-color: #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* Thanh tiến trình chạy phần trăm màu xanh (sẽ đổi màu tự động bằng JS) */
+#thanh-phat-trien-han-muc {
+    width: 0%;
+    height: 100%;
+    background-color: #2ecc71;
+    transition: width 0.3s ease, background-color: 0.3s ease;
+}
+
+/* Dòng chữ gợi ý nhỏ dưới cùng */
+#goi-y-han-muc {
+    font-size: 11px;
+    color: #999999;
+    margin-top: 6px;
+    text-align: right;
+}
         /* ==========================================================================
         II. TAB 2: LỊCH SỬ
         ========================================================================== */        
@@ -410,7 +455,18 @@
     </button>
   
     <div id="tab-home" class="tab-content active">
-
+                <div class="khung-han-muc-home" id="vung-han-muc">
+    <div class="han-muc-hang-dau">
+        <span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu tháng này</span>
+        <span id="chu-ghi-han-muc">0 / Chưa cài đặt</span>
+    </div>
+    
+    <div class="han-muc-thanh-nen">
+        <div id="thanh-phat-trien-han-muc"></div>
+    </div>
+    
+    <div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div>
+</div>
     </div>
 
     <div id="tab-lich-su" class="tab-content">
