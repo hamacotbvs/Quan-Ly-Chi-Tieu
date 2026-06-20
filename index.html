@@ -835,15 +835,16 @@ else if (xDiChuyen > 60) {
             // Kích hoạt lại sự kiện hiển thị label số tiền định dạng (vi-VN)
             idSoTien.dispatchEvent(new Event('input')); 
         }
+        
         if (idLoaiGiaoDich) {
             idLoaiGiaoDich.value = dataGoc.loai || 'chi';
-            idLoaiGiaoDich.dispatchEvent(new Event('change')); // Để tự động đổi danh mục thu/chi tương ứng
+            idLoaiGiaoDich.dispatchEvent(new Event('change')); // Kích hoạt đổi danh mục tương ứng
         }
         
-        // Đợi một chút để idDanhMuc render xong các option theo Loại giao dịch vừa đổi
+        // Đợi 100ms để trình duyệt kịp render các <option> mới dựa trên loại giao dịch
         setTimeout(() => {
             if (idDanhMuc) idDanhMuc.value = dataGoc.danhMuc || 'Khác';
-        }, 50);
+        }, 100);
                      
         // Xử lý tách ngày/giờ từ chuỗi "YYYY-MM-DD HH:MM"
         if (dataGoc.thoiGian && dataGoc.thoiGian.includes(' ')) {
@@ -852,14 +853,15 @@ else if (xDiChuyen > 60) {
             if (inputGio) inputGio.value = mangPhanTach[1];   // Khớp giờ
         }
 
-        // Chuyển màn hình giao diện về Tab Nhập Liệu (Tìm nút tab có data-target là "plus" hoặc nút thêm của bạn)
-        const tabNhapLieu = document.querySelector('[data-target="plus"]') || document.getElementById('tab-nhap-lieu');
-        if (tabNhapLieu) tabNhapLieu.click();
-
         // Lưu lại ID đang sửa vào biến toàn cục để xử lý cập nhật sau này
         window.idGiaoDichDangSua = idTaiLieu;
-        if (idNutGhiDe) idNutGhiDe.innerText = "💾 Cập nhật thay đổi";                
-        alert(`Đã chuyển dữ liệu "${dataGoc.ten}" lên form nhập. Bạn có thể sửa rồi bấm Cập Nhật!`);
+        if (idNutGhiDe) idNutGhiDe.innerText = "💾 Cập nhật thay đổi";                 
+
+        // Chuyển màn hình giao diện về Tab Nhập Liệu
+        const tabNhapLieu = document.querySelector('[data-target="plus"]') || document.getElementById('tab-nhap-lieu');
+        if (tabNhapLieu) {
+            tabNhapLieu.click();
+        }
     }
 }         
                     // KỊCH BẢN 3: Vuốt hờ hờ chưa đủ lực -> Trả về ban đầu
