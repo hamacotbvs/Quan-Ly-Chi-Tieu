@@ -835,6 +835,55 @@
                     if(huyLangNgheLichSu) huyLangNgheLichSu();
                 }
             });
+        // --------------------------------------------------------------------------
+        // VI. LỌC DỮ LIỆU LỊCH SỬ CHỈ HIỂN THỊ CỦA RIÊNG USER ĐĂNG NHẬP
+        // --------------------------------------------------------------------------
+            function khoiChayLichSuChiTieuCuaRiengUser() {
+                // Tạo câu lệnh truy vấn lọc riêng: userId == userHienTai.uid
+                const truyVanMoi = query(
+                    boChonBoSuuTap, 
+                    where("userId", "==", userHienTai.uid), 
+                    orderBy("thoiGian", "desc")
+                );
+                // Đóng bộ lắng nghe cũ nếu có để tránh tràn dữ liệu khi logout/login tài khoản khác
+                if(huyLangNgheLichSu) huyLangNgheLichSu();
+                // Gán logic lắng nghe cũ của bạn vào biến này (Giữ nguyên toàn bộ logic vẽ giao diện VII cũ của bạn ở đây)
+                huyLangNgheLichSu = onSnapshot(truyVanMoi, (snapshot) => {
+                    const idVungLichSu = document.getElementById('lich-su-giao-dich');
+                    if (!idVungLichSu) return;            
+                    idVungLichSu.innerHTML = '';  
+                    let tongSoDu = 0; let tongThuNhap = 0; let tongChiTieu = 0;
+                    if (typeof capNhatThanhHanMuc === "function") capNhatThanhHanMuc(snapshot.docs);
+                    if (snapshot.empty) {
+                        idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào!</div>';
+                        // Reset các trường số dư về 0 ... (Phần code cũ đoạn 2 của bạn)
+                        return;
+                    }
+                    snapshot.forEach((doc) => {
+                        const giaoDich = doc.data();
+                        const docId = doc.id;
+                        // --- Toàn bộ đoạn code render div class="dong-giao-dich", tính toán thu/chi, vuốt chạm swipe xóa/sửa của bạn giữ nguyên ở đây ---
+                        // Chỉ cần đảm bảo khi chèn code giao diện cũ, logic chạy bình thường.
+                    });
+                    // Cập nhật số tiền hiển thị lên màn hình chính...
+                    const idHienThiSoDu = document.getElementById('so-du');
+                    if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
+                    // ... (đoạn code cập nhật UI cũ của bạn)
+                });
+            }
+
+    // Cập nhật lại Hàm Thêm/Sửa giao dịch (Mục IV ở Đoạn 1 của bạn) để nạp trường userId
+    // Tìm đến nút Ghi đè / Thêm mới trong mã nguồn của bạn và sửa cấu trúc object lưu dữ liệu:
+    /*
+    await addDoc(boChonBoSuuTap, {
+        userId: userHienTai.uid, // ĐÂY LÀ ĐIỀU KIỆN TIÊN QUYẾT ĐỂ PHÂN BIỆT DỮ LIỆU CÁC USER TRÊN CLOUD
+        ten: ten,
+        soTien: soTien,
+        loai: loai,
+        danhMuc: danhMuc,
+        thoiGian: chuoiThoiGianGop
+    });
+    */
         
 
         // --------------------------------------------------------------------------
