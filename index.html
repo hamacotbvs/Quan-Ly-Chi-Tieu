@@ -724,7 +724,18 @@
             };        
                 const app = initializeApp(firebaseConfig);  // 1.2 Lệnh này ra lệnh cho ứng dụng nạp các thông số cấu hình ở trên vào hệ thống để bắt đầu mở cổng kết nối lên Cloud
                 const db = getFirestore(app);   // 1.3 Lệnh này kích hoạt dịch vụ Firestore
+                const auth = getAuth(app); // Kích hoạt bộ xác thực tài khoản
                 const boChonBoSuuTap = collection(db, "giao_dich_business");    // 1.4 Chỉ định ngăn tủ chứa dữ liệu
+                const boSuuTapUsers = collection(db, "danh_sach_users");
+                // Biến toàn cục lưu thông tin user đang đăng nhập hệ thống hiện tại
+                let userHienTai = null;
+                let thongTinChiTietUser = null;
+                let huyLangNgheLichSu = null; // Để clear bộ lắng nghe cũ khi đổi user
+                // Định danh các thẻ DOM Authentication
+                const screenAuth = document.getElementById('man-hinh-xac-thuc');
+                const formDN = document.getElementById('form-dang-nhap');
+                const formDK = document.getElementById('form-dang-ky');
+                const titleAuth = document.getElementById('tieu-de-auth');
 
         // --------------------------------------------------------------------------
         // II. ĐỊNH DANH TẤT CẢ CÁC BIẾN (BẮT BUỘC ĐỂ TRÊN ĐẦU)
