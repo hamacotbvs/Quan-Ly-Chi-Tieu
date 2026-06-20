@@ -14,19 +14,18 @@
 
     /* A. PHẦN CSS - ĐỊNH DẠNG*/
     /* A.1 ĐỊNH DẠNG KHUNG APP
-        /*===========================================================================
-        I. FORM ĐĂNG NHẬP/ĐĂNG KÝ HIỆN PHỦ TRÊN KHI CHƯA ĐĂNG NHẬP
-        ========================================================================== */
-        /* Lớp phủ mờ chiếm toàn bộ màn hình, chặn mọi tương tác bên dưới */
+        /* ==========================================================================
+   GIAO DIỆN MÀN HÌNH PHỦ ĐĂNG NHẬP (MODAL OVERLAY ĐÈ TOÀN APP)
+   ========================================================================== */
 .modal-auth-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Nền đen mờ 60% */
-    backdrop-filter: blur(5px); /* Làm nhòe nhẹ các tab app phía dưới */
-    z-index: 99999; /* Đảm bảo nổi lên trên cùng, đè cả thanh menu */
+    background-color: rgba(0, 0, 0, 0.6); /* Lớp nền đen mờ 60% */
+    backdrop-filter: blur(5px); /* Làm nhòe nhẹ các tab app ở phía dưới */
+    z-index: 99999; /* Đảm bảo nổi hẳn lên trên cùng, khóa mọi tương tác */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -34,7 +33,7 @@
     box-sizing: border-box;
 }
 
-/* Khung trắng chứa form (Căn giữa hoàn hảo nhờ flexbox của lớp cha) */
+/* Khung nội dung trắng chứa Form */
 .khung-dang-nhap-container {
     width: 100%;
     max-width: 380px;
@@ -45,33 +44,132 @@
     animation: hieuUngMoModal 0.3s ease-out;
 }
 
-/* Hiệu ứng trồi lên nhẹ khi xuất hiện màn hình phủ */
+/* Hiệu ứng trồi từ trên xuống nhẹ nhàng khi hiện Modal */
 @keyframes hieuUngMoModal {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- GIỮ NGUYÊN CÁC CSS CON BÊN TRONG CŨ --- */
-.tab-dieu-huong-auth { display: flex; background-color: #f1f2f6; border-radius: 25px; padding: 3px; margin-bottom: 20px; }
-.nut-tab-auth { flex: 1; border: none; background: none; padding: 8px; font-size: 14px; font-weight: 600; color: #747d8c; cursor: pointer; border-radius: 22px; transition: all 0.2s ease; }
-.nut-tab-auth.active { background-color: #ffffff; color: #2f3542; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-.nhom-input-auth { display: flex; flex-direction: column; margin-bottom: 15px; }
-.nhom-input-auth label { font-size: 12px; font-weight: 600; color: #57606f; margin-bottom: 6px; text-align: left; }
-.nhom-input-auth input { padding: 10px 14px; border: 1px solid #ced6e0; border-radius: 8px; font-size: 14px; outline: none; }
-.nhom-input-auth input:focus { border-color: #3498db; }
-.nut-bam-auth-chinh { width: 100%; padding: 12px; background-color: #3498db; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 5px; }
-.nut-bam-auth-chinh:active { transform: scale(0.98); }
-.duong-chia-auth { text-align: center; position: relative; margin: 20px 0; }
-.duong-chia-auth::before { content: ""; position: absolute; left: 0; top: 50%; width: 100%; height: 1px; background-color: #f1f2f6; z-index: 1; }
-.duong-chia-auth span { position: relative; z-index: 2; background-color: #ffffff; padding: 0 10px; font-size: 11px; color: #a4b0be; }
-.nut-bam-google { width: 100%; padding: 10px; background-color: #ffffff; border: 1px solid #ced6e0; border-radius: 8px; font-size: 14px; font-weight: 500; color: #2f3542; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
-.nut-bam-google:active { transform: scale(0.98); }
+/* Thanh kén chọn Đăng nhập / Đăng ký */
+.tab-dieu-huong-auth {
+    display: flex;
+    background-color: #f1f2f6;
+    border-radius: 25px;
+    padding: 3px;
+    margin-bottom: 20px;
+}
+
+.nut-tab-auth {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #747d8c;
+    cursor: pointer;
+    border-radius: 22px;
+    transition: all 0.2s ease;
+}
+
+.nut-tab-auth.active {
+    background-color: #ffffff;
+    color: #2f3542;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Ô nhập liệu */
+.nhom-input-auth {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.nhom-input-auth label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #57606f;
+    margin-bottom: 6px;
+    text-align: left;
+}
+
+.nhom-input-auth input {
+    padding: 10px 14px;
+    border: 1px solid #ced6e0;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+}
+
+.nhom-input-auth input:focus {
+    border-color: #3498db;
+}
+
+/* Nút bấm chính tài khoản */
+.nut-bam-auth-chinh {
+    width: 100%;
+    padding: 12px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.nut-bam-auth-chinh:active {
+    transform: scale(0.98);
+}
+
+/* Đường gạch ngang chữ HOẶC */
+.duong-chia-auth {
+    text-align: center;
+    position: relative;
+    margin: 20px 0;
+}
+
+.duong-chia-auth::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background-color: #f1f2f6;
+    z-index: 1;
+}
+
+.duong-chia-auth span {
+    position: relative;
+    z-index: 2;
+    background-color: #ffffff;
+    padding: 0 10px;
+    font-size: 11px;
+    color: #a4b0be;
+}
+
+/* Nút Google */
+.nut-bam-google {
+    width: 100%;
+    padding: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ced6e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2f3542;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.nut-bam-google:active {
+    transform: scale(0.98);
+}
         /* ==========================================================================
         I. NÚT RESET PHONG CÁCH MỚI
         ========================================================================== */
