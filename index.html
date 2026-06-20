@@ -1019,6 +1019,7 @@
                     // SỬA: Nếu có ID đang sửa, tiến hành cập nhật dữ liệu thay vì thêm mới
                     const taiLieuRef = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
                     await updateDoc(taiLieuRef, {
+                        userId: userHienTai.uid, // ĐÂY LÀ ĐIỀU KIỆN TIÊN QUYẾT ĐỂ PHÂN BIỆT DỮ LIỆU CÁC USER TRÊN CLOUD
                         ten: ten,
                         soTien: soTien,
                         loai: loai,
@@ -1030,13 +1031,13 @@
                     } else {
                     // THÊM MỚI: (Giữ nguyên đoạn addDoc cũ của bạn)
                     await addDoc(boChonBoSuuTap, {
+                        userId: userHienTai.uid, // ĐÂY LÀ ĐIỀU KIỆN TIÊN QUYẾT ĐỂ PHÂN BIỆT DỮ LIỆU CÁC USER TRÊN CLOUD
                         ten: ten,
                         soTien: soTien,
                         loai: loai,
                         danhMuc: danhMuc,
-                        thoiGian: chuoiThoiGianGop // Đã đồng bộ với input giao diện
+                        thoiGian: chuoiThoiGianGop
                     });
-                    }
             // 4.6 Dọn dẹp giao diện (Reset Form)
                     idTen.value = '';
                     idSoTien.value = ''; 
