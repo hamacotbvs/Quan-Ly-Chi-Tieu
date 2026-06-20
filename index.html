@@ -145,6 +145,54 @@
     margin-top: 6px;
     text-align: right;
 }
+/* Khung chứa tiêu đề và cụm nút chọn tháng */
+.cum-chon-thang-home {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    margin-top: 10px;
+}
+
+.bieu-do-tieu-de {
+    font-weight: bold;
+    font-size: 16px;
+    color: #2c3e50;
+}
+
+/* Kén bo tròn chứa 2 mũi tên và chữ */
+.bo-dieu-huong-thang {
+    display: flex;
+    align-items: center;
+    background-color: #f1f2f6;
+    border-radius: 20px;
+    padding: 2px 6px;
+}
+
+/* Nút mũi tên */
+.nut-mui-ten {
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #2c3e50;
+    padding: 6px 10px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s ease;
+}
+
+.nut-mui-ten:active {
+    transform: scale(0.85); /* Hiệu ứng nhấn lún tay */
+}
+
+/* Chữ hiển thị tháng chính giữa */
+#hien-thi-thang-nam {
+    font-size: 13px;
+    font-weight: 600;
+    color: #34495e;
+    min-width: 95px;
+    text-align: center;
+}
         /* ==========================================================================
         II. TAB 2: LỊCH SỬ
         ========================================================================== */        
@@ -454,20 +502,30 @@
         </svg>
     </button>
   
-    <div id="tab-home" class="tab-content active">
-                <div class="khung-han-muc-home" id="vung-han-muc">
-    <div class="han-muc-hang-dau">
-        <span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu tháng này</span>
-        <span id="chu-ghi-han-muc">0 / Chưa cài đặt</span>
+<div id="tab-home" class="tab-content active">
+
+    <div class="cum-chon-thang-home">
+        <span class="bieu-do-tieu-de">Bảng điều khiển</span>
+        
+        <div class="bo-dieu-huong-thang">
+            <button id="nut-thang-truoc" class="nut-mui-ten">◀</button>
+            <span id="hien-thi-thang-nam">Tháng --/----</span>
+            <button id="nut-thang-sau" class="nut-mui-ten">▶</button>
+        </div>
     </div>
-    
-    <div class="han-muc-thanh-nen">
-        <div id="thanh-phat-trien-han-muc"></div>
+
+    <div class="khung-han-muc-home" id="vung-han-muc">
+        <div class="han-muc-hang-dau">
+            <span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu tháng này</span>
+            <span id="chu-ghi-han-muc">0 / Chưa cài đặt</span>
+        </div>    
+        <div class="han-muc-thanh-nen">
+            <div id="thanh-phat-trien-han-muc"></div>
+        </div>    
+        <div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div>
     </div>
-    
-    <div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div>
+
 </div>
-    </div>
 
     <div id="tab-lich-su" class="tab-content">
         <div class="vi-tong-quan">
