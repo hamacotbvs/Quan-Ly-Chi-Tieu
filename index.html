@@ -776,6 +776,65 @@
                     alert("Lỗi đăng ký: " + error.message);
                 }
             });
+        // --------------------------------------------------------------------------
+        // IV. XỬ LÝ ĐĂNG NHẬP HỆ THỐNG
+        // --------------------------------------------------------------------------
+            document.getElementById('nut-dang-nhap')?.addEventListener('click', async () => {
+                const email = document.getElementById('dn-email').value.trim();
+                const matKhau = document.getElementById('dn-mat-khau').value;
+                try {
+                    await signInWithEmailAndPassword(auth, email, matKhau);
+                } catch (error) {
+                    alert("Tài khoản hoặc mật khẩu không chính xác!");
+                }
+            });
+            // Xử lý nút Đăng xuất
+            document.getElementById('nut-dang-xuat')?.addEventListener('click', () => {
+                signOut(auth).then(() => window.location.reload());
+            });
+        // --------------------------------------------------------------------------
+        // V. THEO DÕI TRẠNG THÁI ĐĂNG NHẬP (TRÒNG CỐT LÕI HỆ THỐNG)
+        // --------------------------------------------------------------------------
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // Kiểm tra phân quyền và trạng thái phê duyệt của user trên Firestore
+                    const userDoc = await getDoc(doc(db, "danh_sach_users", user.uid));            
+                    if (!userDoc.exists()) {
+                        alert("Tài khoản không tồn tại trên hệ thống!");
+                        await signOut(auth); return;
+                    }
+                    const thongTinNguoiDung = userDoc.data();
+                    // KIỂM TRA QUYỀN SỬ DỤNG APP: Nếu chưa duyệt hoặc bị khóa
+                    if (thongTinNguoiDung.trangThai !== "da_duyet" && thongTinNguoiDung.vaiTro !== "admin") {
+                        alert(`Tài khoản của bạn đang ở trạng thái: [${thongTinNguoiDung.trangThai}]. Vui lòng đợi Admin phê duyệt!`);
+                        await signOut(auth); return;
+                    }
+                    // Gán dữ liệu thành công vào app
+                    userHienTai = user;
+                    thongTinChiTietUser = thongTinNguoiDung;
+                    // Ẩn màn hình đăng nhập khóa app
+                    screenAuth.classList.remove('active');
+                    // Đổ dữ liệu lên Tab tài khoản công khai
+                    if(document.getElementById('txt-user-email')) document.getElementById('txt-user-email').innerText = user.email;
+                    const nhanVaiTro = document.getElementById('nhan-vai-tro');
+                    if(nhanVaiTro) {
+                        nhanVaiTro.innerText = thongTinNguoiDung.vaiTro === 'admin' ? "Quản trị viên (Admin)" : "Thành viên";
+                        if(thongTinNguoiDung.vaiTro === 'admin') nhanVaiTro.classList.add('admin');
+                    }
+                    // Kích hoạt tính năng dành riêng cho Admin nếu quyền là admin
+                    if (thongTinNguoiDung.vaiTro === "admin") {
+                        document.getElementById('khu-vuc-admin').style.display = 'block';
+                        khoiChayKhuVucAdmin();
+                    }
+                    // BẮT ĐẦU KÍCH HOẠT LẮNG NGHE DỮ LIỆU SỐ DƯ CHI TIÊU ĐỘC LẬP
+                    khoiChayLichSuChiTieuCuaRiengUser();
+                } else {
+                    // Nếu chưa đăng nhập, ép buộc hiện màn hình đăng nhập khóa toàn app
+                    userHienTai = null;
+                    screenAuth.classList.add('active');
+                    if(huyLangNgheLichSu) huyLangNgheLichSu();
+                }
+            });
         
 
         // --------------------------------------------------------------------------
