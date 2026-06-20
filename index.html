@@ -757,57 +757,125 @@
                             `;
                         idVungLichSu.appendChild(dongMoi); 
                         });
-                // 7.3.3 THAO TÁC XÓA DỮ LIỆU THỰC TẾ TRÊN FIRESTORE
-                        document.querySelectorAll('.nut-xoa-giao-dich').forEach(nut => {
-                            nut.addEventListener('click', async (e) => {
-                                e.preventDefault(); // Ngăn chặn hành vi mặc định                            
-                                const idCanXoa = nut.getAttribute('data-id');
-                                const tenKhoan = nut.closest('.dong-giao-dich').querySelector('.giao-dich-ten').innerText;
-                                if (confirm(`Bạn có chắc chắn muốn xóa lịch sử "${tenKhoan}" này không?`)) {
-                                    try {
-                                    // ⚠️ Lưu ý: Đảm bảo bạn đã import { doc, deleteDoc } từ Firebase SDK ở đầu file script của mình.
-                                    // Thay "QuanLyChiTieu" bằng đúng tên Collection (bảng) lưu trữ trên Firestore của bạn nếu có khác biệt.
-                                        const taiLieuRef = doc(db, "giao_dich_business", idCanXoa);                                    
-                                        await deleteDoc(taiLieuRef);
-                                    // Vì sử dụng onSnapshot (real-time), giao diện và số dư tổng sẽ tự động cập nhật ngay lập tức sau khi xóa thành công!
-                                    } catch (error) {
-                                        console.error("Lỗi khi thực hiện thao tác xóa dữ liệu: ", error);
-                                        alert("Đã xảy ra lỗi hệ thống, không thể xóa lịch sử này!");
-                                    }
-                                }
-                            });
-                        });
-                // 7.3.4 THAO TÁC SỬA SỐ TIỀN NHANH TRÊN FIRESTORE
-                        document.querySelectorAll('.nut-sua-giao-dich').forEach(nut => {
-                            nut.addEventListener('click', async (e) => {
-                                e.preventDefault();        
-                                const idCanSua = nut.getAttribute('data-id');
-                                const dongGiaoDich = nut.closest('.dong-giao-dich');
-                                const tenKhoan = dongGiaoDich.querySelector('.giao-dich-ten').innerText;        
-                                // Hiện hộp thoại hỏi số tiền mới
-                                const soTienMoiGoc = prompt(`Nhập số tiền mới cho khoản "${tenKhoan}":`);        
-                                // Nếu người dùng không nhập hoặc bấm Hủy thì bỏ qua
-                                if (soTienMoiGoc === null || soTienMoiGoc.trim() === "") return;        
-                                const soTienMoi = Number(soTienMoiGoc.replace(/[^0-9]/g, '')); // Loại bỏ chữ nếu nhập nhầm        
-                                if (isNaN(soTienMoi) || soTienMoi <= 0) {
-                                    alert("Số tiền nhập vào không hợp lệ!");
-                                    return;
-                                }
-                                try {
-                                    // Nhớ đảm bảo đầu file đã import hàm "updateDoc" từ firebase-firestore
-                                    // Ví dụ: import { ..., updateDoc } from "https://www.gstatic.com/firebasejs/...";
-                                    const { updateDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");             
-                                    const taiLieuRef = doc(db, "QuanLyChiTieu", idCanSua);
-                                    await updateDoc(taiLieuRef, {
-                                        soTien: soTienMoi
-                                    });            
-                                    // Hệ thống real-time tự cập nhật tổng tiền mà không cần load lại trang!
-                                } catch (error) {
-                                    console.error("Lỗi khi cập nhật số tiền: ", error);
-                                    alert("Không thể cập nhật, vui lòng thử lại!");
-                                }
-                            });
-                        });
+// 7.3.3 BỘ XỬ LÝ SỰ KIỆN VUỐT CHẠM (SWIPE) VÀ KÍCH HOẠT HÀNH ĐỘNG
+document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
+    let xBatDau = 0;
+    let xDiChuyen = 0;
+    let dangVuot = false;
+
+    // --- Hàm bắt đầu chạm / click giữ ---
+    const batDauVuot = (e) => {
+        dangVuot = true;
+        xBatDau = e.touches ? e.touches[0].clientX : e.clientX;
+    };
+
+    // --- Hàm đang kéo trượt ---
+    const dangKeo = (e) => {
+        if (!dangVuot) return;
+        const xHienTai = e.touches ? e.touches[0].clientX : e.clientX;
+        xDiChuyen = xHienTai - xBatDau;
+
+        // Giới hạn khoảng cách kéo trực quan (tối đa trượt 100px về mỗi bên)
+        if (xDiChuyen > 100) xDiChuyen = 100;
+        if (xDiChuyen < -100) xDiChuyen = -100;
+
+        noiDung.style.transform = `translateX(${xDiChuyen}px)`;
+        noiDung.style.transition = 'none'; // Tắt animation khi đang bám theo tay
+    };
+
+    // --- Hàm thả tay / buông chuột ---
+    const ketThucVuot = async () => {
+        if (!dangVuot) return;
+        dangVuot = false;
+        
+        noiDung.style.transition = 'transform 0.2s ease-out';
+        const idTaiLieu = noiDung.getAttribute('data-id');
+        const tenGiaoDich = noiDung.querySelector('.giao-dich-ten').innerText;
+
+        // KỊCH BẢN 1: VUỐT TRÁI (Kéo sang trái < -60px) -> Thực hiện XÓA
+        if (xDiChuyen < -60) {
+            noiDung.style.transform = 'translateX(-100%)'; // Đẩy hẳn ra ngoài màn hình để tạo hiệu ứng biến mất
+            setTimeout(async () => {
+                if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
+                    try {
+                        const taiLieuRef = doc(db, "QuanLyChiTieu", idTaiLieu);
+                        await deleteDoc(taiLieuRef);
+                    } catch (error) {
+                        console.error("Lỗi xóa:", error);
+                        alert("Không thể xóa giao dịch!");
+                        noiDung.style.transform = 'translateX(0)'; // Trả về nếu lỗi
+                    }
+                } else {
+                    noiDung.style.transform = 'translateX(0)'; // Trả về vị trí cũ nếu bấm Hủy
+                }
+            }, 200);
+        }
+        
+        // KỊCH BẢN 2: VUỐT PHẢI (Kéo sang phải > 60px) -> Điền dữ liệu lên form để SỬA
+        else if (xDiChuyen > 60) {
+            noiDung.style.transform = 'translateX(0)'; // Trả thanh lịch sử về trạng thái cũ ban đầu
+            
+            // Tìm tài liệu tương ứng trong bộ snapshot hiện tại để lấy dữ liệu gốc đầy đủ
+            const docGoc = snapshot.docs.find(d => d.id === idTaiLieu);
+            if (docGoc) {
+                const dataGoc = docGoc.data();
+                
+                // --- ĐỔ DỮ LIỆU LÊN MÀN HÌNH NHẬP LIỆU GIỐNG NHƯ THÊM MỚI ---
+                // Bạn hãy kiểm tra và thay đổi đúng ID của các ô Input trong file HTML của bạn nhé:
+                const txtTen = document.getElementById('txtTenGiaoDich') || document.getElementById('ten');
+                const txtSoTien = document.getElementById('txtSoTien') || document.getElementById('soTien');
+                const slLoai = document.getElementById('slLoaiDongTien') || document.getElementById('loai');
+                const slDanhMuc = document.getElementById('slDanhMuc') || document.getElementById('danhMuc');
+                const txtNgay = document.getElementById('txtNgayThang') || document.getElementById('ngayThang');
+                const txtGio = document.getElementById('txtThoiGian') || document.getElementById('thoiGian');
+                const btnCapNhat = document.getElementById('btnCapNhatVi') || document.querySelector('.btn-submit');
+
+                if (txtTen) txtTen.value = dataGoc.ten || '';
+                if (txtSoTien) txtSoTien.value = dataGoc.soTien || '';
+                if (slLoai) {
+                    slLoai.value = dataGoc.loai || 'chi';
+                    slLoai.dispatchEvent(new Event('change')); // Kích hoạt sự kiện đổi màu hoặc lọc danh mục nếu có
+                }
+                if (slDanhMuc) slDanhMuc.value = dataGoc.danhMuc || 'Khác';
+                
+                // Xử lý tách ngày/giờ từ chuỗi "YYYY-MM-DD HH:mm" để điền lại vào ô Input loại Date/Time
+                if (dataGoc.thoiGian && dataGoc.thoiGian.includes(' ')) {
+                    const mangPhanTach = dataGoc.thoiGian.split(' ');
+                    if (txtNgay) txtNgay.value = mangPhanTach[0]; // Khớp "2026-06-18"
+                    if (txtGio) txtGio.value = mangPhanTach[1];   // Khớp "07:11"
+                }
+
+                // Chuyển màn hình giao diện về Tab Nhập Liệu (Tab dấu +)
+                // Ví dụ bạn có hàm switchTab('nhap') hoặc click vào nút chuyển tab:
+                const tabNhapLieu = document.getElementById('tab-nhap-lieu') || document.querySelector('.nut-tab-them');
+                if (tabNhapLieu) tabNhapLieu.click();
+
+                // Lưu lại ID đang sửa vào một biến toàn cục hoặc thuộc tính của Form để lúc bấm nút "Cập nhật ví", 
+                // thay vì gọi addDoc() ta sẽ kiểm tra xem nếu có ID đang sửa thì gọi updateDoc()
+                window.idGiaoDichDangSua = idTaiLieu;
+                if (btnCapNhat) btnCapNhat.innerText = "💾 Cập nhật thay đổi";
+                
+                alert(`Đã chuyển dữ liệu "${dataGoc.ten}" lên form nhập. Bạn có thể sửa bất cứ mục nào rồi bấm Cập Nhật!`);
+            }
+        } 
+        
+        // KỊCH BẢN 3: Vuốt hờ hờ chưa đủ lực -> Trả về ban đầu
+        else {
+            noiDung.style.transform = 'translateX(0)';
+        }
+        xDiChuyen = 0;
+    };
+
+    // Đăng ký sự kiện cho thiết bị di động (Touch)
+    noiDung.addEventListener('touchstart', batDauVuot);
+    noiDung.addEventListener('touchmove', dangKeo);
+    noiDung.addEventListener('touchend', ketThucVuot);
+
+    // Đăng ký sự kiện cho máy tính (Mouse)
+    noiDung.addEventListener('mousedown', batDauVuot);
+    window.addEventListener('mousemove', dangKeo);
+    window.addEventListener('mouseup', ketThucVuot);
+});
             // 7.4 Đưa số liệu sau khi tính toán lên giao diện trực quan
                     if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
                     if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
