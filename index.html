@@ -975,7 +975,8 @@
                         if (idThanhThu) idThanhThu.style.width = "0%";
                         if (idThanhChi) idThanhChi.style.width = "0%";
                     }
-            // 7.6 Thanh hạn mức chi tiêu tháng
+                    });
+            // --- KHỞI TẠO CÁC BIẾN VÀ LẮNG NGHE SỰ KIỆN HẠN MỨC ---
 // Dữ liệu trong localStorage sẽ có dạng: {"2026-05": 5000000, "2026-06": 10000000}
 let boSuoTapHanMuc = JSON.parse(localStorage.getItem('bo_suo_tap_han_muc')) || {};
 
@@ -1098,10 +1099,7 @@ function capNhatThanhHanMuc(docs) {
             txtGoiY.style.color = '#999';
         }
     }
-}        
-                
-                
-                });
+}
         // B. ĐỊNH DẠNG
         // --------------------------------------------------------------------------
         // IX. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
