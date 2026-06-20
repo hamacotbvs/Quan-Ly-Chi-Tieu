@@ -14,165 +14,7 @@
 
     /* A. PHẦN CSS - ĐỊNH DẠNG*/
     /* A.1 ĐỊNH DẠNG KHUNG APP
-        /* ==========================================================================
-   GIAO DIỆN MÀN HÌNH PHỦ ĐĂNG NHẬP (MODAL OVERLAY ĐÈ TOÀN APP)
-   ========================================================================== */
-.modal-auth-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Lớp nền đen mờ 60% */
-    backdrop-filter: blur(5px); /* Làm nhòe nhẹ các tab app ở phía dưới */
-    z-index: 99999; /* Đảm bảo nổi hẳn lên trên cùng, khóa mọi tương tác */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-/* Khung nội dung trắng chứa Form */
-.khung-dang-nhap-container {
-    width: 100%;
-    max-width: 380px;
-    padding: 25px;
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    animation: hieuUngMoModal 0.3s ease-out;
-}
-
-/* Hiệu ứng trồi từ trên xuống nhẹ nhàng khi hiện Modal */
-@keyframes hieuUngMoModal {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Thanh kén chọn Đăng nhập / Đăng ký */
-/* Thanh nền bo tròn chứa 2 nút */
-.tab-dieu-huong-auth {
-    display: flex;
-    background-color: #f1f2f6;
-    border-radius: 25px;
-    padding: 3px;
-    margin-bottom: 20px;
-}
-
-/* Định dạng mặc định cho cả 2 nút (Khi chưa được chọn) */
-.nut-tab-auth {
-    flex: 1;
-    border: none;
-    background: none;
-    padding: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #747d8c; /* Chữ màu xám mờ */
-    cursor: pointer;
-    border-radius: 22px;
-    transition: all 0.2s ease;
-}
-
-/* Lớp kích hoạt (Khi bấm qua tab nào thì tab đó ăn class này) */
-.nut-tab-auth.active {
-    background-color: #ffffff !important; /* Nền trắng nổi lên */
-    color: #2f3542 !important;        /* Chữ màu đen đậm */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-/* Ô nhập liệu */
-.nhom-input-auth {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 15px;
-}
-
-.nhom-input-auth label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #57606f;
-    margin-bottom: 6px;
-    text-align: left;
-}
-
-.nhom-input-auth input {
-    padding: 10px 14px;
-    border: 1px solid #ced6e0;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-}
-
-.nhom-input-auth input:focus {
-    border-color: #3498db;
-}
-
-/* Nút bấm chính tài khoản */
-.nut-bam-auth-chinh {
-    width: 100%;
-    padding: 12px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 5px;
-}
-
-.nut-bam-auth-chinh:active {
-    transform: scale(0.98);
-}
-
-/* Đường gạch ngang chữ HOẶC */
-.duong-chia-auth {
-    text-align: center;
-    position: relative;
-    margin: 20px 0;
-}
-
-.duong-chia-auth::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 100%;
-    height: 1px;
-    background-color: #f1f2f6;
-    z-index: 1;
-}
-
-.duong-chia-auth span {
-    position: relative;
-    z-index: 2;
-    background-color: #ffffff;
-    padding: 0 10px;
-    font-size: 11px;
-    color: #a4b0be;
-}
-
-/* Nút Google */
-.nut-bam-google {
-    width: 100%;
-    padding: 10px;
-    background-color: #ffffff;
-    border: 1px solid #ced6e0;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #2f3542;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    cursor: pointer;
-}
-
-.nut-bam-google:active {
-    transform: scale(0.98);
-}
+        
         /* ==========================================================================
         I. NÚT RESET PHONG CÁCH MỚI
         ========================================================================== */
@@ -248,94 +90,83 @@
         ========================================================================== */
             /* 1.1 THANH HẠN MỨC CHI TIÊU TRONG THÁNG */
                 /* Khung bọc bên ngoài của vùng hạn mức */
-.khung-han-muc-home {
-    margin-top: 15px;
-    padding: 15px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    cursor: pointer;
-    user-select: none;
-}
-
-/* Hàng tiêu đề trên cùng: Đẩy tiêu đề sang trái, cụm tháng sang phải */
-.han-muc-hang-dau {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.han-muc-tieu-de {
-    font-weight: bold;
-    font-size: 14px;
-    color: #333333;
-}
-
-/* Kén chứa 2 nút mũi tên thu nhỏ lại để vừa vặn góc phải */
-.bo-dieu-huong-thang {
-    display: flex;
-    align-items: center;
-    background-color: #f1f2f6;
-    border-radius: 15px;
-    padding: 1px 4px;
-}
-
-.nut-mui-ten {
-    background: none;
-    border: none;
-    font-size: 11px;
-    color: #57606f;
-    padding: 4px 8px;
-    cursor: pointer;
-}
-
-.nut-mui-ten:active {
-    transform: scale(0.85);
-}
-
-#hien-thi-thang-nam {
-    font-size: 12px;
-    font-weight: 600;
-    color: #2f3542;
-    min-width: 85px;
-    text-align: center;
-}
-
-/* Thanh nền tiến trình */
-.han-muc-thanh-nen {
-    width: 100%;
-    height: 10px;
-    background-color: #e0e0e0;
-    border-radius: 5px;
-    overflow: hidden;
-    margin-bottom: 8px;
-}
-
-#thanh-phat-trien-han-muc {
-    width: 0%;
-    height: 100%;
-    background-color: #2ecc71;
-    transition: width 0.3s ease, background-color: 0.3s ease;
-}
-
-/* Hàng thông tin dưới đáy thanh tiến trình */
-.han-muc-hang-day {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#goi-y-han-muc {
-    font-size: 11px;
-    color: #999999;
-}
-
-#chu-ghi-han-muc {
-    font-size: 12px;
-    font-weight: 600;
-    color: #444444;
-}
+                    .khung-han-muc-home {
+                        margin-top: 15px;
+                        padding: 15px;
+                        background-color: #ffffff;
+                        border-radius: 12px;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                        cursor: pointer;
+                        user-select: none;
+                    }
+                /* Hàng tiêu đề trên cùng: Đẩy tiêu đề sang trái, cụm tháng sang phải */
+                    .han-muc-hang-dau {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 12px;
+                    }
+                    .han-muc-tieu-de {
+                        font-weight: bold;
+                        font-size: 14px;
+                        color: #333333;
+                    }
+                /* Kén chứa 2 nút mũi tên thu nhỏ lại để vừa vặn góc phải */
+                    .bo-dieu-huong-thang {
+                        display: flex;
+                        align-items: center;
+                        background-color: #f1f2f6;
+                        border-radius: 15px;
+                        padding: 1px 4px;
+                    }
+                    .nut-mui-ten {
+                        background: none;
+                        border: none;
+                        font-size: 11px;
+                        color: #57606f;
+                        padding: 4px 8px;
+                        cursor: pointer;
+                    }
+                    .nut-mui-ten:active {
+                        transform: scale(0.85);
+                    }
+                    #hien-thi-thang-nam {
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: #2f3542;
+                        min-width: 85px;
+                        text-align: center;
+                    }
+                /* Thanh nền tiến trình */
+                    .han-muc-thanh-nen {
+                        width: 100%;
+                        height: 10px;
+                        background-color: #e0e0e0;
+                        border-radius: 5px;
+                        overflow: hidden;
+                        margin-bottom: 8px;
+                    }
+                    #thanh-phat-trien-han-muc {
+                        width: 0%;
+                        height: 100%;
+                        background-color: #2ecc71;
+                        transition: width 0.3s ease, background-color: 0.3s ease;
+                    }
+                /* Hàng thông tin dưới đáy thanh tiến trình */
+                    .han-muc-hang-day {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    #goi-y-han-muc {
+                        font-size: 11px;
+                        color: #999999;
+                    }
+                    #chu-ghi-han-muc {
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: #444444;
+                    }
         /* ==========================================================================
         II. TAB 2: LỊCH SỬ
         ========================================================================== */        
