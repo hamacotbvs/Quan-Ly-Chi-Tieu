@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Chi Tiêu Nội Bộ</title>
-    
+    <title>Ứng dụng Quản lý Chi Tiêu</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="manifest" href="manifest.json">
+
+    /* A. PHẦN CSS - ĐỊNH DẠNG*/
     <style>
         /* ==========================================================================
-           I. CẤU HÌNH BIẾN MÀU SẮC (Dễ dàng thay đổi giao diện tại đây)
-           ========================================================================== */
+        A.1 ĐẶNG NHẬP/ĐĂNG KÝ
+        ========================================================================== */
         :root {
             --mau-nen-chinh: #f4f6f9;
             --mau-trang: #ffffff;
             --mau-chu-toi: #2c3e50;
             --mau-chu-nhat: #7f8c8d;
-            --border-bo-goc: 12px;
-            
+            --border-bo-goc: 12px;   
             /* Màu sắc trạng thái hành động */
             --mau-dang-nhap: #2ecc71;  /* Xanh lá */
             --mau-dang-ky: #3498db;    /* Xanh dương */
@@ -23,10 +26,9 @@
             --mau-thu-tien: #2ecc71;
             --mau-chi-tien: #e74c3c;
         }
-
         /* ==========================================================================
-           II. CSS CHO KHUNG ĐĂNG NHẬP / ĐĂNG KÝ (AUTH WINDOW)
-           ========================================================================== */
+        II. CSS CHO KHUNG ĐĂNG NHẬP / ĐĂNG KÝ (AUTH WINDOW)
+        ========================================================================== */
         #man-hinh-auth {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--mau-nen-chinh); z-index: 99999; 
@@ -40,16 +42,14 @@
             width: 90%; max-width: 380px; text-align: center;
         }
         .hop-dang-nhap h2 { margin: 0 0 10px 0; color: var(--mau-chu-toi); font-size: 24px; }
-        .hop-dang-nhap p { margin: 0 0 25px 0; color: var(--mau-chu-nhat); font-size: 14px; }
-        
+        .hop-dang-nhap p { margin: 0 0 25px 0; color: var(--mau-chu-nhat); font-size: 14px; }        
         .o-nhap-lieu {
             width: 100%; padding: 12px 15px; margin-bottom: 15px; 
             border: 1px solid #e0e0e0; border-radius: 8px; 
             box-sizing: border-box; font-size: 15px; outline: none;
             transition: border 0.2s;
         }
-        .o-nhap-lieu:focus { border-color: var(--mau-dang-ky); }
-        
+        .o-nhap-lieu:focus { border-color: var(--mau-dang-ky); }    
         .cum-nut-bam { display: flex; gap: 12px; margin-top: 10px; }
         .nut-bam {
             flex: 1; padding: 13px; border: none; border-radius: 8px;
@@ -59,10 +59,9 @@
         .nut-bam:hover { opacity: 0.9; }
         .nut-dang-nhap { background-color: var(--mau-dang-nhap); }
         .nut-dang-ky { background-color: var(--mau-dang-ky); }
-
         /* ==========================================================================
-           III. CSS NÚT ĐĂNG XUẤT NỔI (FLOATING LOGOUT BUTTON)
-           ========================================================================== */
+        III. CSS NÚT ĐĂNG XUẤT NỔI (FLOATING LOGOUT BUTTON)
+        ========================================================================== */
         #nut-dang-xuat-he-thong {
             position: fixed; top: 15px; right: 15px; z-index: 9998;
             background-color: var(--mau-dang-xuat); color: white;
@@ -70,11 +69,873 @@
             font-weight: bold; font-size: 13px; cursor: pointer;
             box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); display: none;
         }
+        /* ==========================================================================
+        A.2 ĐỊNH DẠNG KHUNG APP
+        ========================================================================== */
+            /* ==========================================================================
+            I. NÚT RESET PHONG CÁCH MỚI
+            ========================================================================== */
+                .nut-reset-treo {
+                    position: absolute;
+                    top: 15px;
+                    right: 15px;
+                    z-index: 1000;
+                    background-color: #ffffff; /* 👈 Nền trắng tinh */
+                    border: 1px solid #edf2f4;
+                    width: 40px;  /* Tăng nhẹ kích thước lên 40px cho dễ bấm */
+                    height: 40px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Đổ bóng mịn màng */
+                    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+                    padding: 0;
+                    -webkit-tap-highlight-color: transparent;
+                }
+            /* Định cấu hình màu sắc cho icon SVG bên trong */
+                .nut-reset-treo svg {
+                    width: 20px;
+                    height: 20px;
+                    fill: none;
+                    stroke: #0082C8; /* 👈 Màu xanh hoàng gia cho mũi tên */
+                    stroke-width: 2.5; /* Độ dày của nét vẽ */
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                    transition: transform 0.3s ease;
+                }
+                .nut-reset-treo:active {
+                    transform: scale(0.92); /* Hiệu ứng lún nút khi nhấn */
+                    background-color: #f8fafc; /* Nền xám cực nhẹ khi chạm ngón tay */
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+                }
+            /* ==========================================================================
+            II. CẤU HÌNH CHUNG & LAYOUT ỨNG DỤNG
+            ========================================================================== */
+                /* 2.1 Cấu hình nền và căn giữa ứng dụng */
+
+                body {
+
+                    font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+                    background-color: #f7f9fa; /* Màu nền xám nhạt toàn màn hình máy tính */
+
+                    color: #333;               /* Màu chữ mặc định (đen xám) */
+
+                    margin: 0; padding: 0;     /* Xóa bỏ khoảng cách thừa ở rìa màn hình */
+
+                    display: flex;
+
+                    justify-content: center;   /* Đưa toàn bộ ứng dụng ra chính giữa màn hình */
+
+                }        
+
+            /* 2.2 Khung mô phỏng ứng dụng điện thoại tiện lợi */
+
+                .app-container {
+
+                    background-color: #f7f9fa;     /* Nền của ứng dụng là màu xám */
+
+                    width: 100%;
+
+                    max-width: 450px;           /* Chiều rộng tối đa là 450px (chuẩn kích thước điện thoại) */
+
+                    min-height: 100vh;          /* Chiều cao tối thiểu bằng 100% màn hình thiết bị */
+
+                    box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ đổ xung quanh khung */
+
+                    position: relative;
+
+                    padding-bottom: 75px;       /* Đẩy nội dung bên trong lên 75px để không bị thanh menu đáy đè lên */
+
+                    box-sizing: border-box;
+
+                }
+
+            /* 2.3 Quản lý ẩn/hiện các Tab nội dung */
+
+                .tab-content {
+
+                    display: none; /* Ẩn mặc định: Tất cả các tab (Home, Nhập số, Báo cáo) đều bị giấu đi */
+
+                    padding: 20px; /* Tạo khoảng cách 20px từ rìa ứng dụng vào nội dung bên trong cho dễ nhìn */
+
+                }
+
+                .tab-content.active {
+
+                    display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */
+
+                }
+
+    /* A.2 ĐỊNH DẠNG TỪNG TRANG */
+
+        /* ==========================================================================
+
+        I. TAB 1: HOME
+
+        ========================================================================== */
+
+            /* 1.1 THANH HẠN MỨC CHI TIÊU TRONG THÁNG */
+
+                /* Khung bọc bên ngoài của vùng hạn mức */
+
+                    .khung-han-muc-home {
+
+                        margin-top: 15px;
+
+                        padding: 15px;
+
+                        background-color: #ffffff;
+
+                        border-radius: 12px;
+
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+                        cursor: pointer;
+
+                        user-select: none;
+
+                    }
+
+                /* Hàng tiêu đề trên cùng: Đẩy tiêu đề sang trái, cụm tháng sang phải */
+
+                    .han-muc-hang-dau {
+
+                        display: flex;
+
+                        justify-content: space-between;
+
+                        align-items: center;
+
+                        margin-bottom: 12px;
+
+                    }
+
+                    .han-muc-tieu-de {
+
+                        font-weight: bold;
+
+                        font-size: 14px;
+
+                        color: #333333;
+
+                    }
+
+                /* Kén chứa 2 nút mũi tên thu nhỏ lại để vừa vặn góc phải */
+
+                    .bo-dieu-huong-thang {
+
+                        display: flex;
+
+                        align-items: center;
+
+                        background-color: #f1f2f6;
+
+                        border-radius: 15px;
+
+                        padding: 1px 4px;
+
+                    }
+
+                    .nut-mui-ten {
+
+                        background: none;
+
+                        border: none;
+
+                        font-size: 11px;
+
+                        color: #57606f;
+
+                        padding: 4px 8px;
+
+                        cursor: pointer;
+
+                    }
+
+                    .nut-mui-ten:active {
+
+                        transform: scale(0.85);
+
+                    }
+
+                    #hien-thi-thang-nam {
+
+                        font-size: 12px;
+
+                        font-weight: 600;
+
+                        color: #2f3542;
+
+                        min-width: 85px;
+
+                        text-align: center;
+
+                    }
+
+                /* Thanh nền tiến trình */
+
+                    .han-muc-thanh-nen {
+
+                        width: 100%;
+
+                        height: 10px;
+
+                        background-color: #e0e0e0;
+
+                        border-radius: 5px;
+
+                        overflow: hidden;
+
+                        margin-bottom: 8px;
+
+                    }
+
+                    #thanh-phat-trien-han-muc {
+
+                        width: 0%;
+
+                        height: 100%;
+
+                        background-color: #2ecc71;
+
+                        transition: width 0.3s ease, background-color: 0.3s ease;
+
+                    }
+
+                /* Hàng thông tin dưới đáy thanh tiến trình */
+
+                    .han-muc-hang-day {
+
+                        display: flex;
+
+                        justify-content: space-between;
+
+                        align-items: center;
+
+                    }
+
+                    #goi-y-han-muc {
+
+                        font-size: 11px;
+
+                        color: #999999;
+
+                    }
+
+                    #chu-ghi-han-muc {
+
+                        font-size: 12px;
+
+                        font-weight: 600;
+
+                        color: #444444;
+
+                    }
+
+        /* ==========================================================================
+
+        II. TAB 2: LỊCH SỬ
+
+        ========================================================================== */        
+
+             /* 1.1 KHUNG HIỂN THỊ SỐ DƯ HIỆN TẠI */
+
+                .vi-tong-quan {
+
+                    background-color: #0082C8; /* Màu xanh hoàng gia */
+
+                    color: white;                            /* Chữ bên trong màu trắng */
+
+                    padding: 20px;                           /* Khoảng cách từ chữ đến viền khung là 20px */
+
+                    border-radius: 12px;                     /* Bo tròn 4 góc của khung (độ cong 12px) */
+
+                    text-align: center;                      /* Căn giữa toàn bộ chữ bên trong */
+
+                    margin-top: 10px; margin-bottom: 25px;   /* Tạo khoảng cách trống phía trên và dưới khung */
+
+                    box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2); /* Tạo hiệu ứng đổ bóng màu xanh mờ giúp khung trông nổi lên bệ bề mặt */
+
+                }
+
+                .vi-tong-quan .nhan {
+
+                    font-size: 14px;      /* Chữ dòng "Số dư hiện tại" nhỏ vừa phải */
+
+                    opacity: 0.9;         /* Làm mờ nhẹ chữ đi một chút (90%) để tạo độ phụ */
+
+                    margin-bottom: 5px;   /* Cách dòng số tiền bên dưới 5px */
+
+                }
+
+                .vi-tong-quan .so-tien-vi {
+
+                    font-size: 28px;      /* Số tiền hiển thị rất to (28px) */
+
+                    font-weight: 700;     /* In đậm số tiền để tạo điểm nhấn */
+
+                }
+
+            /* 2.1 định dạng khung lịch sử */
+
+                .danh-sach-lich-su {
+
+                    margin-top: 20px;                 /* Đẩy khối lịch sử cách xa khung ví phía trên một chút */
+
+                    background-color: #ffffff;        /* 👈 Đổ nền màu TRẮNG tinh cho toàn bộ khối */
+
+                    border-radius: 14px;              /* Bo tròn 4 góc của khung trắng */
+
+                    padding: 16px;                    /* Tạo khoảng trống từ viền trắng dịch vào trong để nội dung dễ thở */
+
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); /* Đổ bóng siêu mờ nhẹ để khung nổi lên trên nền xám */
+
+                    border: 1px solid #edf2f4;        /* Tạo đường viền mảnh xung quanh khung trắng */
+
+                }
+
+            /* 2.2 định dạng phần tiêu đề lịch sử */
+
+                .tieu-de-khoang {
+
+                    font-size: 16px;
+
+                    color: #7f8c8d;                   /* Màu chữ xám thanh lịch */
+
+                    border-bottom: 1px solid #edf2f4; /* Tạo một đường kẻ ngang mờ ngăn cách ở dưới tiêu đề */
+
+                    padding-bottom: 10px;             /* Khoảng cách từ chữ tiêu đề xuống đường kẻ */
+
+                    margin-bottom: 5px;
+
+                    font-weight: 600;                 /* Chữ hơi in đậm một chút */
+
+                }      
+
+            /* 2.3 Định dạng từng dòng lịch sử (Cấu trúc Vuốt Chạm Swipe-to-Action) */
+
+                    .dong-giao-dich {
+
+                        position: relative;
+
+                        overflow: hidden;
+
+                        background-color: #ffffff;
+
+                        border-bottom: 1px solid #f8fafc;
+
+                        user-select: none; /* Tránh bôi đen chữ khi vuốt bằng chuột trên PC */
+
+                    }
+
+                    .dong-giao-dich:last-child {
+
+                        border-bottom: none;
+
+                    }
+
+                /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
+
+                    .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
+
+                    .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
+
+                /* Phần nội dung chính nằm đè phía trên */
+
+                    .giao-dich-noi-dung {
+
+                        display: flex;
+
+                        justify-content: space-between;     /* Đẩy phần tên sang sát lề trái, phần số tiền sang sát lề phải */
+
+                        align-items: center;                /* Căn cho hai bên thẳng hàng nhau theo chiều dọc */
+
+                        padding: 14px 10px;                 /* Tăng nhẹ khoảng cách trên dưới giữa các hàng */
+
+                        background-color: #ffffff;        /* Đường kẻ ngang siêu mờ dưới mỗi giao dịch */
+
+                        position: relative;
+
+                        z-index: 2;
+
+                        transition: transform 0.2s ease-out; /* Tạo hiệu ứng trượt mượt mà */
+
+                        cursor: grab;
+
+                    }
+
+                    .giao-dich-noi-dung:active {
+
+                        cursor: grabbing;
+
+                    }
+
+                    .dong-giao-dich:last-child {
+
+                    border-bottom: none;                /* Xóa đường kẻ ngang ở dòng giao dịch cuối cùng cho đẹp */
+
+                    }
+
+                /* Cụm bên trái: Danh mục & Tên */
+
+                    .giao-dich-trai {
+
+                        display: flex;
+
+                        flex-direction: column;
+
+                        text-align: left;
+
+                    }
+
+                    .giao-dich-muc {
+
+                        font-size: 13px;
+
+                        color: #718096;
+
+                        margin-bottom: 2px;
+
+                    }  
+
+                    .giao-dich-ten {
+
+                        font-size: 15px;
+
+                        font-weight: 500;
+
+                        color: #2d3748;
+
+                    }
+
+                /* Cụm bên phải: Ngày giờ & Số tiền */
+
+                    .giao-dich-phai-cum {
+
+                        display: flex;
+
+                        flex-direction: column;
+
+                        align-items: flex-end;
+
+                        text-align: right;
+
+                    }
+
+                    .giao-dich-thoi-gian {
+
+                        font-size: 12px;
+
+                        color: #a0aec0;
+
+                        margin-bottom: 2px;
+
+                    }
+
+                    .giao-dich-phai {
+
+                        font-weight: 600;
+
+                        font-size: 15px;
+
+                    }      
+
+                /* LỚP NỀN ẨN PHÍA SAU KHI VUỐT */
+
+                    .nen-hanh-dong {
+
+                        position: absolute;
+
+                        top: 0;
+
+                        bottom: 0;
+
+                        left: 0;
+
+                        right: 0;
+
+                        z-index: 1;
+
+                        display: flex;
+
+                        align-items: center;
+
+                        justify-content: space-between;
+
+                        font-weight: 600;
+
+                        font-size: 14px;
+
+                        color: white;
+
+                    }
+
+                    .hanh-dong-sua {
+
+                        background-color: #3498db; /* Nền xanh khi vuốt phải để sửa */
+
+                        height: 100%;
+
+                        width: 50%;
+
+                        display: flex;
+
+                        align-items: center;
+
+                        padding-left: 20px;
+
+                        justify-content: flex-start;
+
+                    }
+
+                    .hanh-dong-xoa {
+
+                        background-color: #e74c3c; /* Nền đỏ khi vuốt trái để xóa */
+
+                        height: 100%;
+
+                        width: 50%;
+
+                        display: flex;
+
+                        align-items: center;
+
+                        padding-right: 20px;
+
+                        justify-content: flex-end;
+
+                    }
+
+        /* ==========================================================================
+
+        III. TAB 3: NHẬP LIỆU (+)
+
+        ========================================================================== */
+
+                .form-group { margin-bottom: 18px; }
+
+                .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #555; }
+
+                .form-group input, .form-group select {
+
+                    width: 100%;
+
+                    padding: 12px;
+
+                    border: 1px solid #cbd5e1;
+
+                    border-radius: 8px;
+
+                    box-sizing: border-box;
+
+                    font-size: 15px;
+
+                    background-color: #fff;
+
+                    transition: border 0.2s;
+
+                }
+
+                .form-group input:focus, .form-group select:focus { border-color: #3498db; outline: none; }        
+
+            /* Nút Lưu giao dịch */
+
+                .nut-bam-luu {
+
+                    width: 100%;
+
+                    padding: 14px;
+
+                    background-color: #3498db;
+
+                    color: white;
+
+                    border: none;
+
+                    border-radius: 8px;
+
+                    font-size: 16px;
+
+                    cursor: pointer;
+
+                    font-weight: bold;
+
+                    margin-top: 10px;
+
+                    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+
+                }
+
+                .nut-bam-luu:hover { background-color: #2980b9; }
+
+        /* ==========================================================================
+
+        IV. TAB 4: BÁO CÁO
+
+        ========================================================================== */
+
+                .the-bao-cao {
+
+                    background: white;
+
+                    border-radius: 12px;
+
+                    padding: 15px;
+
+                    margin-bottom: 15px;
+
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+
+                    border: 1px solid #edf2f4;
+
+                }
+
+                .thong-ke-dong { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
+
+                .thong-ke-so { font-weight: bold; }        
+
+            /* Thanh đồ họa tiến trình (Progress Bar) so sánh trực quan */
+
+                .thanh-phan-tram-khung { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
+
+                .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
+
+                .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
+
+    /* A.3 ĐỊNH DẠNG THANH MENU DƯỚI */    
+
+            /* định dạng khung nền menu */
+
+                .menu-day-app {
+
+                    position: fixed;
+
+                    bottom: 15px;                 /* Đẩy menu bay lơ lửng cách đáy màn hình 15px */
+
+                    left: 50%;
+
+                    transform: translateX(-50%);  /* Căn giữa menu theo chiều ngang */
+
+                    width: calc(100% - 30px);     /* Thu hẹp chiều rộng lại để lộ khoảng trống 2 bên rìa */
+
+                    max-width: 420px;             /* Giới hạn lại chiều rộng tối đa cho cân đối */
+
+                    height: 65px;
+
+                    background-color: #0082C8;    /* Nền màu XANH HOÀNG GIA */
+
+                    border-radius: 999px;         /* Bo tròn dạng viên thuốc (Capsule) */
+
+                    display: flex;
+
+                    justify-content: space-around;
+
+                    align-items: center;
+
+                    z-index: 100;
+
+                    padding: 0 15px;              
+
+                    box-sizing: border-box;
+
+            /* 👇 THAY ĐỔI: Đổ bóng thông minh tạo vùng nền sáng phía dưới và xung quanh menu */
+
+                    box-shadow:
+
+                        0 10px 28px rgba(0, 130, 200, 0.25), /* Bóng xanh mờ của menu */
+
+                        0 25px 0 20px #ffffff,               /* 👈 Tạo một lớp nền trắng cứng lót hẳn phía dưới */
+
+                        0 15px 30px 25px rgba(255, 255, 255, 0.95); /* 👈 Tạo vùng chuyển mờ trắng (Blur) che nội dung khi cuộn */
+
+                    }
+
+            /* Định dạng chữ, icon */
+
+                .nut-tab {
+
+                    display: flex;
+
+                    flex-direction: column;
+
+                    align-items: center;
+
+                    justify-content: center;
+
+                    background: none;
+
+                    border: none;
+
+                    color: rgba(255, 255, 255, 0.65); /* Chữ và icon mặc định màu trắng mờ trên nền xanh */
+
+                    cursor: pointer;            
+
+            /* 👇 THAY ĐỔI: Sử dụng flex: 1 thay vì width cố định để phân bổ khoảng trống thông minh */
+
+                    flex: 1;                      
+
+                    height: 100%;
+
+                    font-size: 11px;
+
+                    font-weight: 500;
+
+                    transition: color 0.2s, transform 0.2s;
+
+                    -webkit-tap-highlight-color: transparent;
+
+                }        
+
+            /* Trạng thái mặc định (Không chọn): Icon chỉ có đường viền mờ, ruột rỗng */
+
+                .nut-tab .icon svg {
+
+                    fill: none;
+
+                    stroke: currentColor;
+
+                    transition: fill 0.2s, transform 0.2s;
+
+                }
+
+            /* KHI ĐƯỢC CHỌN (ACTIVE) - ẨN HIỆN GIỮA 2 ICON MENU VIỀN/MÀU */        
+
+            /* Định dạng chung cho cả 2 ảnh icon ngôi nhà */
+
+                .nut-tab .img-icon-2d {
+
+                    width: 18px !important;
+
+                    height: 18px !important;
+
+                    object-fit: contain;
+
+                    margin-bottom: 5px;
+
+                }
+
+            /* 1. Mặc định khi KHÔNG CHỌN (Không có class active) */
+
+                .nut-tab .icon-active {
+
+                    display: none; /* Ẩn ảnh viền đi */
+
+                }
+
+                .nut-tab .icon-inactive {
+
+                    display: block; /* Hiện ảnh màu (homemau.png) lên */
+
+                }
+
+            /* 2. Khi ĐƯỢC CHỌN (Có class active) */
+
+                .nut-tab.active .icon-active {
+
+                    display: block; /* Hiện ảnh viền (homevien.png) lên */
+
+                }
+
+                .nut-tab.active .icon-inactive {
+
+                display: none; /* Ẩn ảnh màu đi */
+
+                }      
+
+            /* 3. Màu chữ mặc định cho tất cả các menu khi KHÔNG CHỌN */
+
+                .nut-tab .chu-menu {
+
+                    font-size: 11px;
+
+                    color: #b3dbf2;      /* Màu xanh nhạt hoặc xám mờ tùy bạn chỉnh */
+
+                    opacity: 0.7;        /* Làm mờ nhẹ đi để nhấn mạnh nút đang chọn */
+
+                    transition: all 0.2s ease;
+
+                }
+
+            /* 4. Khi ĐƯỢC CHỌN (có class active) - Chữ sẽ trắng tinh và đậm lên */
+
+                .nut-tab.active .chu-menu {
+
+                    color: #ffffff !important;   /* Mã màu trắng tinh mã Hex */
+
+                    opacity: 1 !important;       /* Hiện rõ nét 100% */
+
+                    font-weight: bold;           /* Chữ đậm lên nhìn cho rõ ràng */
+
+                }
+
+            /* NÚT THÊM (+) TRUNG TÂM PHONG CÁCH MỚI - ĐÃ CĂN CHỈNH GIỮA */
+
+                .nut-tab-them-trung-tam .icon {
+
+                    font-size: 26px;
+
+                    background-color: #ffffff;    /* Quả bóng màu TRẮNG tinh */
+
+                    color: #0082C8;               /* Dấu (+) bên trong mang màu xanh hoàng gia */
+
+                    width: 46px;                  /* Kích thước quả bóng cân đối */
+
+                    height: 46px;
+
+                    border-radius: 50%;
+
+                    display: flex;
+
+                    align-items: center;
+
+                    justify-content: center;
+
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+                    margin-bottom: 0;             /* Giữ nút nằm chính giữa theo chiều dọc */
+
+                    transition: transform 0.2s, background-color 0.2s, color 0.2s;
+
+                }
+
+            /* Khi người dùng đang nhấn giữ hoặc đang ở tab Nhập số (+) */
+
+                .nut-tab-them-trung-tam.active .icon {
+
+                    background-color: #2c3e50;    /* Quả bóng chuyển sang màu xám đen sang trọng */
+
+                    color: #ffffff;               /* Dấu (+) chuyển sang màu trắng */
+
+                    transform: scale(1.08);      
+
+                }
+
+            /* Dòng trạng thái trống */
+
+                .trang-thai-trong {
+
+                    text-align: center;
+
+                    color: #94a3b8;
+
+                    font-style: italic;
+
+                    padding: 30px 0;
+
+                    font-size: 14px;
+
+                }
+
     </style>
+
 </head>
+
 <body>
 
-    <div id="man-hinh-auth">
+<div id="man-hinh-auth">
         <div class="hop-dang-nhap">
             <h2>Quản Lý Chi Tiêu</h2>
             <p>Đăng nhập tài khoản hoặc đăng ký để sử dụng</p>
@@ -96,57 +957,396 @@
          <h1 style="text-align: center;">Giao diện quản lý chi tiêu của bạn</h1>
     </div>
 
+<div class="app-container">
+
+       
+
+    <button id="nut-lam-moi-app" class="nut-reset-treo" title="Tải lại ứng dụng">
+
+        <svg viewBox="0 0 24 24">
+
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/>
+
+        </svg>
+
+    </button>
+
+ 
+
+<div id="tab-home" class="tab-content active">
 
 
-    <script type="module">
+
+    <div class="khung-han-muc-home" id="vung-han-muc">
+
+       
+
+        <div class="han-muc-hang-dau">
+
+            <span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu</span>
+
+           
+
+            <div class="bo-dieu-huong-thang" id="cum-chuyen-thang-ngan-chan">
+
+                <button id="nut-thang-truoc" class="nut-mui-ten">◀</button>
+
+                <span id="hien-thi-thang-nam">Tháng --/----</span>
+
+                <button id="nut-thang-sau" class="nut-mui-ten">▶</button>
+
+            </div>
+
+        </div>    
+
+       
+
+        <div class="han-muc-thanh-nen">
+
+            <div id="thanh-phat-trien-han-muc"></div>
+
+        </div>    
+
+       
+
+        <div class="han-muc-hang-day">
+
+            <div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div>
+
+            <span id="chu-ghi-han-muc">0 / Chưa cài đặt</span>
+
+        </div>
+
+       
+
+    </div>
+
+
+
+</div>
+
+
+
+    <div id="tab-lich-su" class="tab-content">
+
+        <div class="vi-tong-quan">
+
+            <div class="nhan">Số dư hiện tại</div>
+
+            <div class="so-tien-vi"><span id="so-du">0</span> đ</div>
+
+        </div>
+
+        <div class="danh-sach-lich-su">
+
+            <div class="tieu-de-khoang">Lịch sử dòng tiền chi tiết</div>
+
+            <div id="lich-su-giao-dich">
+
+                <div id="danh-sach-lich-su-toan-bo">
+
+                    <div class="trang-thai-trong">Đang tải danh sách lịch sử...</div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div id="tab-add" class="tab-content">
+
+        <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
+
+       
+
+        <div class="form-group">
+
+            <label>Loại dòng tiền:</label>
+
+            <select id="loai-giao-dich">
+
+                <option value="chi">💸 Chi tiêu (Khoản ra)</option>
+
+                <option value="thu">💰 Thu nhập (Khoản vào)</option>
+
+            </select>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+            <label>Phân loại danh mục:</label>
+
+            <select id="danh-muc-giao-dich">
+
+                <option value="Ăn uống">🍔 Ăn uống</option>
+
+                <option value="Di chuyển">🚗 Di chuyển</option>
+
+                <option value="Mua sắm">🛍️ Mua sắm</option>
+
+                <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
+
+                <option value="Giải trí">🎬 Giải trí & Cà phê</option>
+
+                <option value="Khác">✨ Khác</option>
+
+            </select>
+
+        </div>
+
+
+
+        <div class="form-group">
+
+            <label>Tên khoản thu/chi:</label>
+
+            <input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng...">
+
+        </div>
+
+
+
+        <div class="form-group">
+
+            <label id="label-so-tien">Số tiền (đ):</label>
+
+            <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
+
+        </div>
+
+
+
+        <div class="form-group-row" style="display: flex; gap: 10px;">
+
+            <div class="form-group" style="flex: 1;">
+
+                <label>Ngày tháng:</label>
+
+                <input type="date" id="ngay-giao-dich">
+
+            </div>
+
+            <div class="form-group" style="flex: 1;">
+
+                <label>Thời gian:</label>
+
+                <input type="time" id="gio-giao-dich">
+
+            </div>
+
+        </div>            
+
+
+
+        <button id="nut-ghi-de" class="nut-bam-luu">Cập nhật ví</button>
+
+    </div>
+
+
+
+    <div id="tab-report" class="tab-content">
+
+        <div class="tieu-de-khoang" style="margin-top: 10px;">Tổng quan chu kỳ tài chính</div>
+
+       
+
+        <div class="the-bao-cao">
+
+            <div class="thong-ke-dong">
+
+                <span>Tổng thu nhập (vào):</span>
+
+                <span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span>
+
+            </div>
+
+            <div class="thanh-phan-tram-khung">
+
+                <div id="thanh-thu-ti-le" class="thanh-tien-vao"></div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="the-bao-cao">
+
+            <div class="thong-ke-dong">
+
+                <span>Tổng chi tiêu (ra):</span>
+
+                <span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span>
+
+            </div>
+
+            <div class="thanh-phan-tram-khung">
+
+                <div id="thanh-chi-ti-le" class="thanh-tien-ra"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div id="tab-tai-khoan" class="tab-content">
+
+        <div class="tieu-de-khoang" style="margin-top: 10px;">Thông tin cá nhân</div>
+
+        <div style="padding: 20px; text-align: center; background: white; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+
+            <div style="font-size: 45px; margin-bottom: 10px;">👤</div>
+
+            <h3 style="margin: 5px 0;">Người dùng App Business</h3>
+
+            <p style="color: #777; font-size: 13px; margin: 5px 0;">Hệ thống quản lý chi tiêu đám mây</p>
+
+        </div>
+
+    </div>
+
+
+
+    <nav class="menu-day-app menu dưới">
+
+        <button class="nut-tab active" data-target="home">
+
+            <img src="homemau.png" class="img-icon-2d icon-active" alt="Tổng quan">
+
+            <img src="homevien.png" class="img-icon-2d icon-inactive" alt="Tổng quan">
+
+            <span class="chu-menu">HOME</span>
+
+        </button>
+
+
+
+        <button class="nut-tab" data-target="lich-su">
+
+            <img src="lichsumau.png" class="img-icon-2d icon-active" alt="Lịch sử">
+
+            <img src="lichsuvien.png" class="img-icon-2d icon-inactive" alt="Lịch sử">
+
+            <span class="chu-menu">Lịch sử</span>
+
+        </button>
+
+
+
+        <button class="nut-tab nut-tab-them-trung-tam" data-target="add">
+
+            <span class="icon">＋</span>
+
+        </button>
+
+
+
+        <button class="nut-tab" data-target="report">
+
+            <img src="baocaomau.png" class="img-icon-2d icon-active" alt="Báo cáo">
+
+            <img src="baocaovien.png" class="img-icon-2d icon-inactive" alt="Báo cáo">
+
+            <span class="chu-menu">Báo cáo</span>
+
+        </button>
+
+
+
+        <button class="nut-tab" data-target="tai-khoan">
+
+            <img src="taikhoanmau.png" class="img-icon-2d icon-active" alt="Tài khoản">
+
+            <img src="taikhoanvien.png" class="img-icon-2d icon-inactive" alt="Tài khoản">
+
+            <span class="chu-menu">Tài khoản</span>
+
+        </button>
+
+    </nav>
+
+
+
+</div>
+
+
+
+
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        // Thêm doc và deleteDoc vào cuối dòng dưới đây:
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, doc, deleteDoc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Cấu hình kết nối Firebase Firestore
-        const firebaseConfig = {
-            apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
-            authDomain: "quanlychitieu-af553.firebaseapp.com",
-            projectId: "quanlychitieu-af553",
-            storageBucket: "quanlychitieu-af553.firebasestorage.app",
-            messagingSenderId: "800322270032",
-            appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
-            measurementId: "G-3NQYVR3VFB"
-        };        
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        
-        const boChonGiaoDich = collection(db, "giao_dich_business");
-        const boChonUser = collection(db, "danh_sach_user");
+        // A. DỮ LIỆU
+        // --------------------------------------------------------------------------
+        // I. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
+        // --------------------------------------------------------------------------
+            // 1.1 Chứng minh thư và địa chỉ nhà của App
+            const firebaseConfig = {
+                apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",  // Mật khẩu, Chìa khóa bảo mật để app của bạn có quyền kết nối vào hệ thống
+                authDomain: "quanlychitieu-af553.firebaseapp.com",
+                projectId: "quanlychitieu-af553",   // Tên dự án của bạn trên hệ thống Google
+                // Giống như số nhà, ngõ ngách, mã bưu điện để định vị chính xác tuyệt đối cơ sở dữ liệu của riêng bạn
+                storageBucket: "quanlychitieu-af553.firebasestorage.app",
+                messagingSenderId: "800322270032",
+                appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
+                measurementId: "G-3NQYVR3VFB"
+            };        
+                const app = initializeApp(firebaseConfig);  // 1.2 Lệnh này ra lệnh cho ứng dụng nạp các thông số cấu hình ở trên vào hệ thống để bắt đầu mở cổng kết nối lên Cloud
+                const db = getFirestore(app);   // 1.3 Lệnh này kích hoạt dịch vụ Firestore
+                const boChonBoSuuTap = collection(db, "giao_dich_business");                // 1.4 Chỉ định ngăn tủ chứa dữ liệu
+                const boChonUser = collection(db, "danh_sach_user");
 
-        // Quản lý trạng thái phiên đăng nhập
+        // --------------------------------------------------------------------------
+        // II. QUẢN LÝ TRẠNG THÁI PHIÊN ĐĂNG NHẬP
+        // --------------------------------------------------------------------------
         window.userHienTai = localStorage.getItem("user_dang_nhap") || null;
         window.laAdmin = localStorage.getItem("user_la_admin") === "true";
 
-        // Định danh các thành phần DOM Auth
-        const mhAuth = document.getElementById('man-hinh-auth');
-        const txtUser = document.getElementById('auth-username');
-        const txtPass = document.getElementById('auth-password');
-        const btnLogin = document.getElementById('btn-dang-nhap');
-        const btnRegister = document.getElementById('btn-dang-ky');
-        const btnLogout = document.getElementById('nut-dang-xuat-he-thong');
-        
-        // Định danh khung bọc App cũ của bạn
-        const khungAppCu = document.getElementById('khung-app-cu-cua-ban');
-
-        // Định danh các nút xử lý của app cũ (Sẽ tự kiểm tra tránh lỗi null nếu bạn chưa dán code HTML cũ)
-        const idNutGhiDe = document.getElementById('nut-ghi-de');
-        const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
-        const idTen = document.getElementById('ten-khoan-chi');
-        const idDanhMuc = document.getElementById('danh-muc-giao-dich');
-        const idSoTien = document.getElementById('so-tien');
-        const idVungLichSu = document.getElementById('lich-su-giao-dich');
-        const idHienThiSoDu = document.getElementById('so-du');
-        const idBcThu = document.getElementById('bao-cao-thu');
-        const idBcChi = document.getElementById('bao-cao-chi');
-
-        let huyLangNgheRealtime = null;
-
-        // --- Kiểm tra quyền truy cập đầu trang ---
+        // --------------------------------------------------------------------------
+        // III. ĐỊNH DANH CÁC THÀNH PHẦN (BẮT BUỘC ĐỂ TRÊN ĐẦU)
+        // --------------------------------------------------------------------------
+            // 3.1 Định danh các thành phần DOM Auth
+                const mhAuth = document.getElementById('man-hinh-auth');
+                const txtUser = document.getElementById('auth-username');
+                const txtPass = document.getElementById('auth-password');
+                const btnLogin = document.getElementById('btn-dang-nhap');
+                const btnRegister = document.getElementById('btn-dang-ky');
+                const btnLogout = document.getElementById('nut-dang-xuat-he-thong');
+            // 3.2 Định danh khung bọc App cũ của bạn 
+                const khungAppCu = document.getElementById('khung-app-cu-cua-ban');
+            // 3.3 // Định danh các nút xử lý của app cũ
+                const idNutGhiDe = document.getElementById('nut-ghi-de');
+                const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
+                const idTen = document.getElementById('ten-khoan-chi');
+                const idDanhMuc = document.getElementById('danh-muc-giao-dich');
+                const idSoTien = document.getElementById('so-tien');
+                const idHienThiSoDu = document.getElementById('so-du');
+                const idVungLichSu = document.getElementById('lich-su-giao-dich');
+            // 3.4 Các biến hiển thị của TAB BÁO CÁO
+                const idBcThu = document.getElementById('bao-cao-thu');
+                const idBcChi = document.getElementById('bao-cao-chi');
+                const idThanhThu = document.getElementById('thanh-thu-ti-le');
+                const idThanhChi = document.getElementById('thanh-chi-ti-le');
+            // 3.5 Các thẻ input ngày, giờ và label số tiền
+                const inputNgay = document.getElementById('ngay-giao-dich');
+                const inputGio = document.getElementById('gio-giao-dich');
+                const labelSoTien = document.getElementById('label-so-tien');
+                const cacNutTab = document.querySelectorAll('.nut-tab');
+                const cacVungNoiDung = document.querySelectorAll('.tab-content');
+                const idNutLamMoi = document.getElementById('nut-lam-moi-app');
+            let huyLangNgheRealtime = null;
+            // --- Kiểm tra quyền truy cập đầu trang ---
         kiemTraPhienLamViec();
 
         function kiemTraPhienLamViec() {
@@ -216,7 +1416,6 @@
             window.userHienTai = null; window.laAdmin = false;
             kiemTraPhienLamViec();
         });
-
         // --- LẮNG NGHE & TỰ ĐỘNG LỌC DỮ LIỆU ---
         function kichHoatBoLocDuLieuRealtime() {
             if (huyLangNgheRealtime) huyLangNgheRealtime();
@@ -225,12 +1424,10 @@
             let truyVanLoc = window.laAdmin 
                 ? query(boChonGiaoDich, orderBy("thoiGian", "desc")) 
                 : query(boChonGiaoDich, where("nguoiDung", "==", window.userHienTai), orderBy("thoiGian", "desc"));
-
-            huyLangNgheRealtime = onSnapshot(truyVanLoc, (snapshot) => {
+                huyLangNgheRealtime = onSnapshot(truyVanLoc, (snapshot) => {
                 if (!idVungLichSu) return; // Nếu chưa dán HTML cũ thì bỏ qua không lỗi script
                 idVungLichSu.innerHTML = '';
                 let tongSoDu = 0, thu = 0, chi = 0;
-
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     if (data.loai === 'thu') { tongSoDu += data.soTien; thu += data.soTien; } 
@@ -259,7 +1456,6 @@
                 if (idBcChi) idBcChi.innerText = chi.toLocaleString() + " đ";
             });
         }
-
         // --- XỬ LÝ LƯU GIAO DỊCH MỚI (TỰ GẮN USER ĐANG ĐĂNG NHẬP) ---
         if (idNutGhiDe) {
             idNutGhiDe.addEventListener('click', async () => {
@@ -281,6 +1477,594 @@
                 } catch (e) { console.error(e); }
             });
         }
-    </script>
+        // --------------------------------------------------------------------------
+        // III. THAY ĐỔI DANH MỤC THU/CHI TƯƠNG ỨNG
+        // --------------------------------------------------------------------------
+                if (idLoaiGiaoDich && idDanhMuc) {
+                    idLoaiGiaoDich.addEventListener('change', () => {
+                    idDanhMuc.innerHTML = ''; // Xóa sạch các option cũ
+                if (idLoaiGiaoDich.value === 'chi') {
+                    idDanhMuc.innerHTML = `
+                        <option value="Ăn uống">🍔 Ăn uống</option>
+                        <option value="Di chuyển">🚗 Di chuyển</option>
+                        <option value="Mua sắm">🛍️ Mua sắm</option>
+                        <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
+                        <option value="Giải trí">🎬 Giải trí & Cà phê</option>
+                        <option value="Khác">✨ Khác</option>
+                    `;
+                } else if (idLoaiGiaoDich.value === 'thu') {
+                    idDanhMuc.innerHTML = `
+                        <option value="Thu nhập từ lương">💵 Thu nhập từ lương</option>
+                        <option value="Thu nhập khác">💰 Thu nhập khác</option>
+                    `;
+                }
+                });
+                }
+        // --------------------------------------------------------------------------
+        // IV. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
+        // --------------------------------------------------------------------------
+             // 4.1 kích hoạt toàn bộ các lệnh bên trong nút bấm chạy    
+
+                if (idNutGhiDe) {
+
+                    idNutGhiDe.addEventListener('click', async () => {
+
+            // 4.2 lấy ra các giá trị hiện tại mà bạn đang gõ trong ô nhập liệu
+
+                    const loai = idLoaiGiaoDich.value;
+
+                    const ten = idTen.value.trim();
+
+                    const danhMuc = idDanhMuc.value;
+
+                    const soTien = parseInt(idSoTien.value);                
+
+            // 4.3 Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
+
+                    const ngayNhap = inputNgay ? inputNgay.value : "";
+
+                    const gioNhap = inputGio ? inputGio.value : "";
+
+            // 4.4 Kiểm tra dữ liệu đầu vào hợp lệ
+
+                    if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
+
+                        alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
+
+                        return;
+
+                    }
+
+                    try {
+
+                    // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
+
+                    const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
+
+            // 4.5 Đẩy dữ liệu transaction mới lên Firestore
+
+                    if (window.idGiaoDichDangSua) {
+
+                    // SỬA: Nếu có ID đang sửa, tiến hành cập nhật dữ liệu thay vì thêm mới
+
+                    const taiLieuRef = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
+
+                    await updateDoc(taiLieuRef, {
+
+                        ten: ten,
+
+                        soTien: soTien,
+
+                        loai: loai,
+
+                        danhMuc: danhMuc,
+
+                        thoiGian: chuoiThoiGianGop
+
+                    });
+
+                    window.idGiaoDichDangSua = null; // Xóa trạng thái sửa
+
+                    idNutGhiDe.innerText = "Ghi đè / Thêm mới"; // Trả lại tên nút cũ (hoặc tên nút ban đầu của bạn)
+
+                    } else {
+
+                    // THÊM MỚI: (Giữ nguyên đoạn addDoc cũ của bạn)
+
+                    await addDoc(boChonBoSuuTap, {
+
+                        ten: ten,
+
+                        soTien: soTien,
+
+                        loai: loai,
+
+                        danhMuc: danhMuc,
+
+                        thoiGian: chuoiThoiGianGop // Đã đồng bộ với input giao diện
+
+                    });
+
+                    }
+
+            // 4.6 Dọn dẹp giao diện (Reset Form)
+
+                    idTen.value = '';
+
+                    idSoTien.value = '';
+
+                    if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):';
+
+                    // --- Thêm đoạn này để reset về ngày giờ hiện tại ---
+
+                    const bayGio = new Date();
+
+                    const muiGioVN = new Date(bayGio.getTime() + (7 * 60 * 60 * 1000)); // Định dạng chuẩn UTC+7
+
+                    if (inputNgay) inputNgay.value = muiGioVN.toISOString().split('T')[0];
+
+                    if (inputGio) {
+
+                        const gio = String(muiGioVN.getUTCHours()).padStart(2, '0');
+
+                        const phut = String(muiGioVN.getUTCMinutes()).padStart(2, '0');
+
+                        inputGio.value = `${gio}:${phut}`;
+
+                    }
+
+            // 4.7 Tự động chuyển qua tab Tổng quan (HOME)
+
+                    const nutHome = document.querySelector('[data-target="home"]');
+
+                    if (nutHome) {
+
+                        nutHome.click();
+
+                    }                    
+
+                } catch (loi) {
+
+                    console.error("Lỗi kết nối Firebase: ", loi);
+
+                    alert("Không thể ghi nhận giao dịch lên đám mây!");
+
+                }
+
+                });
+
+                }
+
+        // --------------------------------------------------------------------------
+
+        // V. TỰ ĐỘNG ĐIỀN NGÀY GIỜ HIỆN TẠI VÀO INPUT LÚC KHỞI ĐỘNG
+
+        // --------------------------------------------------------------------------
+
+                const bayGio = new Date();
+
+                if (inputNgay && inputGio) {
+
+                const nam = bayGio.getFullYear();
+
+                const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
+
+                const ngay = String(bayGio.getDate()).padStart(2, '0');
+
+                inputNgay.value = `${nam}-${thang}-${ngay}`;
+
+
+
+                const gio = String(bayGio.getHours()).padStart(2, '0');
+
+                const phut = String(bayGio.getMinutes()).padStart(2, '0');
+
+                inputGio.value = `${gio}:${phut}`;
+
+                }      
+
+        // --------------------------------------------------------------------------
+
+        // VI. CẬP NHẬT SỐ TIỀN CÓ ĐỊNH DẠNG NGHÌN LÊN TIÊU ĐỀ SỐ TIỀN
+
+        // --------------------------------------------------------------------------
+
+                if (idSoTien && labelSoTien) {
+
+                    idSoTien.addEventListener('input', function () {
+
+                        let value = this.value;          
+
+                if (!value) {
+
+                    labelSoTien.innerText = 'Số tiền (đ):';
+
+                    return;
+
+                }            
+
+                let soDaPhanCach = Number(value).toLocaleString('vi-VN');
+
+                labelSoTien.innerText = `Số tiền: ${soDaPhanCach}đ`;
+
+                });
+
+                }
+
+        // --------------------------------------------------------------------------
+
+        // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
+
+        // --------------------------------------------------------------------------
+
+                    const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
+        // --------------------------------------------------------------------------
+        // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
+        // --------------------------------------------------------------------------
+            // 7.1 Khởi tạo và làm sạch (Mở đầu)
+                onSnapshot(truyVanSapXep, (snapshot) => {
+                    if (!idVungLichSu) return;            
+                    idVungLichSu.innerHTML = ''; 
+                    let tongSoDu = 0;
+                    let tongThuNhap = 0;
+                    let tongChiTieu = 0;
+                    // Thêm dòng này ở cuối hàm đó để truyền dữ liệu cho thanh hạn mức tự động tính toán lại
+                    capNhatThanhHanMuc(snapshot.docs);
+            // 7.2 Kiểm tra bộ lưu trữ rỗng
+                    if (snapshot.empty) {
+                        idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
+                        if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
+                        if (idBcThu) idBcThu.innerText = "0 đ";
+                        if (idBcChi) idBcChi.innerText = "0 đ";
+                        if (idThanhThu) idThanhThu.style.width = "0%";
+                        if (idThanhChi) idThanhChi.style.width = "0%";
+                        return;
+                    }
+            // 7.3 Vòng lặp tính toán và dựng dòng lịch sử (Phần cốt lõi)
+                    snapshot.forEach((doc) => {
+                        const giaoDich = doc.data();
+                        const docId = doc.id; // 🔑 Lấy ID duy nhất của tài liệu để xử lý xóa
+                        let kyTuDau = '';
+                        let lopMauSac = '';
+                // 7.3.1 Bước A: Phân loại tiền và tính toán
+                        if (giaoDich.loai === 'thu') {
+                            tongSoDu += giaoDich.soTien; // Cộng vào số dư
+                            tongThuNhap += giaoDich.soTien; // Cộng vào tổng thu
+                            kyTuDau = '+';
+                            lopMauSac = 'mau-thu'; // Đặt chữ màu xanh
+                        } else {
+                            tongSoDu -= giaoDich.soTien; // Trừ bớt số dư
+                            tongChiTieu += giaoDich.soTien; // Cộng vào tổng chi
+                            kyTuDau = '-';
+                            lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
+                        }
+                        // 🟢 BẢNG ÁNH XẠ ICON THEO DANH MỤC GIỐNG BÊN NHẬP LIỆU
+                        const danhSachIcon = {
+                            "Ăn uống": "🍔",
+                            "Di chuyển": "🚗",
+                            "Mua sắm": "🛍️",
+                            "Hóa đơn & Tiện ích": "💵",
+                            "Giải trí & Cà phê": "🎬",
+                            "Thu nhập từ lương": "💰", // Thêm các danh mục thu nếu có
+                            "Khác": "✨"
+                        };
+                        const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+                        // Tìm icon tương ứng, nếu không thấy thì mặc định lấy icon cặp tài liệu 📂 hoặc ✨
+                        const iconPhùHợp = danhSachIcon[hienThiDanhMuc] || "📂";
+                        // Lấy chuỗi ngày giờ (Ví dụ: "18/06/2026 14:30" hoặc giữ nguyên chuỗi gốc)
+                        const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
+                // 7.3.2 Bước B: Vẽ giao diện
+                        const dongMoi = document.createElement('div');
+                        dongMoi.classList.add('dong-giao-dich');
+                        dongMoi.innerHTML = `
+                            <div class="nen-hanh-dong">
+                                <div class="hanh-dong-sua">✏️ Sửa</div>
+                                <div class="hanh-dong-xoa">🗑️ Xóa</div>
+                            </div>
+                            <div class="giao-dich-noi-dung" data-id="${docId}">
+                                <div class="giao-dich-trai">
+                                    <span class="giao-dich-muc">${iconPhùHợp} ${hienThiDanhMuc}</span>
+                                    <span class="giao-dich-ten">${giaoDich.ten}</span>
+                                </div>
+        
+                                <div class="giao-dich-phai-cum">
+                                    <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span>
+                                    <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
+                                </div>
+                            </div>
+                            `;
+                        idVungLichSu.appendChild(dongMoi); 
+                        });
+                // 7.3.3 BỘ XỬ LÝ SỰ KIỆN VUỐT CHẠM (SWIPE) VÀ KÍCH HOẠT HÀNH ĐỘNG
+                    document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
+                        let xBatDau = 0;
+                        let xDiChuyen = 0;
+                        let dangVuot = false;
+                    // --- Hàm bắt đầu chạm / click giữ ---
+                        const batDauVuot = (e) => {
+                        dangVuot = true;
+                        xBatDau = e.touches ? e.touches[0].clientX : e.clientX;
+                        };
+                    // --- Hàm đang kéo trượt ---
+                        const dangKeo = (e) => {
+                        if (!dangVuot) return;
+                        const xHienTai = e.touches ? e.touches[0].clientX : e.clientX;
+                        xDiChuyen = xHienTai - xBatDau;
+                    // Giới hạn khoảng cách kéo trực quan (tối đa trượt 100px về mỗi bên)
+                        if (xDiChuyen > 100) xDiChuyen = 100;
+                        if (xDiChuyen < -100) xDiChuyen = -100;
+                        noiDung.style.transform = `translateX(${xDiChuyen}px)`;
+                        noiDung.style.transition = 'none'; // Tắt animation khi đang bám theo tay
+                        };
+                    // --- Hàm thả tay / buông chuột ---
+                        const ketThucVuot = async () => {
+                            if (!dangVuot) return;
+                            dangVuot = false;        
+                            noiDung.style.transition = 'transform 0.2s ease-out';
+                            const idTaiLieu = noiDung.getAttribute('data-id');
+                            const tenGiaoDich = noiDung.querySelector('.giao-dich-ten')?.innerText || '';
+                    // KỊCH BẢN 1: VUỐT TRÁI (Kéo sang trái < -60px) -> Thực hiện XÓA
+                        if (xDiChuyen < -60) {
+                            noiDung.style.transform = 'translateX(-50%)'; // Đẩy hẳn ra ngoài màn hình để tạo hiệu ứng biến mất
+                            setTimeout(async () => {
+                                if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
+                                    try {
+                                        const taiLieuRef = doc(db, "giao_dich_business", idTaiLieu);
+                                        await deleteDoc(taiLieuRef);
+                                    } catch (error) {
+                                        console.error("Lỗi xóa:", error);
+                                        alert("Không thể xóa giao dịch!");
+                                        noiDung.style.transform = 'translateX(0)'; // Trả về nếu lỗi
+                                    }
+                                } else {
+                                    noiDung.style.transform = 'translateX(0)'; // Trả về vị trí cũ nếu bấm Hủy
+                                }
+                            }, 200);
+                        }        
+                    // KỊCH BẢN 2: VUỐT PHẢI (Kéo sang phải > 60px) -> Điền dữ liệu lên form để SỬA
+                        else if (xDiChuyen > 60) {
+                            noiDung.style.transform = 'translateX(0)'; // Trả thanh lịch sử về vị trí cũ    
+                    // Lấy trực tiếp dữ liệu từ chính dòng HTML vừa vuốt (Không cần dò trong snapshot nữa)
+                        const idTaiLieu = noiDung.getAttribute('data-id');
+                        const tenGiaoDich = noiDung.querySelector('.giao-dich-ten')?.innerText || '';
+                        const danhMucGiaoDich = noiDung.querySelector('.giao-dich-muc')?.innerText || '';
+                        const thoiGianGiaoDich = noiDung.querySelector('.giao-dich-thoi-gian')?.innerText || '';
+                        const soTienGiaoDich = noiDung.querySelector('.giao-dich-phai')?.innerText || '';
+                    // 1. Đổ Tên giao dịch
+                        if (idTen) idTen.value = tenGiaoDich;
+                    // 2. Xử lý và đổ Số tiền (Bỏ chữ 'đ', dấu chấm phân cách và dấu +/-)
+                        if (idSoTien) {
+                            let soTienSạch = soTienGiaoDich.replace(/[^\d]/g, ''); // Chỉ giữ lại số
+                            idSoTien.value = soTienSạch;
+                            idSoTien.dispatchEvent(new Event('input')); 
+                        }    
+                    // 3. Xác định loại giao dịch (Thu hay Chi) dựa trên màu sắc hoặc ký tự gốc
+                        if (idLoaiGiaoDich) {
+                        if (soTienGiaoDich.includes('+')) {
+                            idLoaiGiaoDich.value = 'thu';
+                        } else {
+                            idLoaiGiaoDich.value = 'chi';
+                        }
+                        idLoaiGiaoDich.dispatchEvent(new Event('change')); 
+                        }    
+                    // 4. Xử lý đổ Danh mục (Tách bỏ Icon cảm xúc ở đầu chuỗi)
+                        setTimeout(() => {
+                            if (idDanhMuc) {
+                                // Loại bỏ icon (ví dụ: "🍔 Ăn uống" -> "Ăn uống")
+                                    let danhMucSạch = danhMucGiaoDich.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, "").trim();
+                                idDanhMuc.value = danhMucSạch || 'Khác';
+                            }
+                        }, 100);                 
+                    // 5. Tách chuỗi thời gian "🕒 YYYY-MM-DD HH:MM" hoặc "🕒 DD/MM/YYYY HH:MM"
+                        let thoiGianSạch = thoiGianGiaoDich.replace('🕒', '').trim();
+                            if (thoiGianSạch && thoiGianSạch.includes(' ')) {
+                                const mangPhanTach = thoiGianSạch.split(' ');
+                            if (inputNgay) inputNgay.value = mangPhanTach[0]; 
+                            if (inputGio) inputGio.value = mangPhanTach[1];   
+                            }
+                    // 6. Ghi nhận trạng thái đang sửa
+                        window.idGiaoDichDangSua = idTaiLieu;
+                        if (idNutGhiDe) idNutGhiDe.innerText = "💾 Cập nhật thay đổi";                 
+                    // 7. Chuyển Tab nhập liệu nhanh
+                        const tabNhapLieu = document.querySelector('[data-target="add"]') || document.getElementById('tab-nhap-lieu');
+                        if (tabNhapLieu) {
+                            tabNhapLieu.click();
+                        }
+                        }         
+                    // KỊCH BẢN 3: Vuốt hờ hờ chưa đủ lực -> Trả về ban đầu
+                                else {
+                                noiDung.style.transform = 'translateX(0)';
+                                }
+                                xDiChuyen = 0;
+                            };
+                    // Đăng ký sự kiện cho thiết bị di động (Touch)
+                            noiDung.addEventListener('touchstart', batDauVuot);
+                            noiDung.addEventListener('touchmove', dangKeo);
+                            noiDung.addEventListener('touchend', ketThucVuot);
+                    // Đăng ký sự kiện cho máy tính (Mouse)
+                            noiDung.addEventListener('mousedown', batDauVuot);
+                            window.addEventListener('mousemove', dangKeo);
+                            window.addEventListener('mouseup', ketThucVuot);
+                            });
+            // 7.4 Đưa số liệu sau khi tính toán lên giao diện trực quan
+                    if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
+                    if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
+                    if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
+            // 7.5 Cập nhật thanh đồ họa
+                    const maxTong = Math.max(tongThuNhap, tongChiTieu);
+                    if (maxTong > 0) {
+                        if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
+                        if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
+                    } else {
+                        if (idThanhThu) idThanhThu.style.width = "0%";
+                        if (idThanhChi) idThanhChi.style.width = "0%";
+                    }
+                    });
+            // --- KHỞI TẠO CÁC BIẾN VÀ LẮNG NGHE SỰ KIỆN HẠN MỨC ---
+            // --- 1. KHỞI TẠO CÁC BIẾN TOÀN CỤC ---
+                    let boSuoTapHanMuc = JSON.parse(localStorage.getItem('bo_suo_tap_han_muc')) || {};
+                    if (typeof thoiGianDangXem === 'undefined') {
+                        window.thoiGianDangXem = new Date(); // Sử dụng Date() mặc định cho app
+                    }
+                    // Hàm hỗ trợ chuyển đổi Object Date thành chuỗi "YYYY-MM" để truy vấn
+                    function layChuoiThangNam(dateObj) {
+                        const nam = dateObj.getFullYear();
+                        const thang = String(dateObj.getMonth() + 1).padStart(2, '0');
+                        return `${nam}-${thang}`;
+                    }
+                    // Hàm cập nhật chữ hiển thị tháng (Ví dụ: "Tháng 06/2026")
+                    function capNhatChuHienThiThang() {
+                        const txtThangNam = document.getElementById('hien-thi-thang-nam');
+                        if (txtThangNam) {
+                            const thang = String(window.thoiGianDangXem.getMonth() + 1).padStart(2, '0');
+                            const nam = window.thoiGianDangXem.getFullYear();
+                            txtThangNam.innerText = `Tháng ${thang}/${nam}`;
+                        }
+                    }
+            // --- 2. LẮNG NGHE SỰ KIỆN CLICK KHUNG HẠN MỨC ĐỂ ĐẶT TIỀN ---
+                    document.getElementById('vung-han-muc')?.addEventListener('click', () => {
+                        let thangDangXem = layChuoiThangNam(window.thoiGianDangXem);
+                        let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;    
+                        const [nam, thg] = thangDangXem.split('-');
+                        let thongBaoThang = `tháng ${thg}/${nam}`;
+                        let loiNhac = hanMucThangDangXem > 0 
+                            ? `Hạn mức ${thongBaoThang} hiện tại là ${hanMucThangDangXem.toLocaleString('vi-VN')} đ.\nNhập hạn mức mới (đ):` 
+                            : `Nhập hạn mức chi tiêu bạn muốn đặt cho ${thongBaoThang} (đ):`;        
+                        let nhapVao = prompt(loiNhac, hanMucThangDangXem > 0 ? hanMucThangDangXem : "");    
+                        if (nhapVao !== null) {
+                            let soTienMoi = parseFloat(nhapVao.toString().replace(/[^0-9]/g, ''));         
+                            if (!isNaN(soTienMoi) && soTienMoi > 0) {
+                                boSuoTapHanMuc[thangDangXem] = soTienMoi;
+                            } else if (nhapVao === "0" || nhapVao === "") {
+                                delete boSuoTapHanMuc[thangDangXem];
+                            } else {
+                                alert("Số tiền nhập vào không hợp lệ!");
+                                return;
+                            }
+                            localStorage.setItem('bo_suo_tap_han_muc', JSON.stringify(boSuoTapHanMuc));
+                            // Cập nhật giao diện thanh tiến trình lập tức nếu có dữ liệu cũ
+                            if (window.duLieuSnapshotQuocTe) {
+                                capNhatThanhHanMuc(window.duLieuSnapshotQuocTe);
+                            }
+                        }
+                    });
+                    // Chặn không cho hộp thoại đặt hạn mức bật lên khi bấm vào vùng chuyển tháng
+                    document.getElementById('cum-chuyen-thang-ngan-chan')?.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                    // --- 3. SỰ KIỆN ĐỔI THÁNG KHI BẤM 2 MŨI TÊN ---
+                    document.getElementById('nut-thang-truoc')?.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() - 1);
+                        chayLaiHeThongGiaoDien();
+                    });
+                    document.getElementById('nut-thang-sau')?.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() + 1);
+                        chayLaiHeThongGiaoDien();
+                    });
+                    // Hàm tập trung xử lý làm mới biểu đồ và thanh hạn mức
+                    function chayLaiHeThongGiaoDien() {
+                        capNhatChuHienThiThang();
+                        if (window.duLieuSnapshotQuocTe) {
+                            capNhatThanhHanMuc(window.duLieuSnapshotQuocTe);
+                            // Nếu có hàm vẽ biểu đồ thu chi của bạn thì mở chú thích dòng dưới:
+                            // if (typeof veBieuDoThuChiTrongThang === 'function') veBieuDoThuChiTrongThang(window.duLieuSnapshotQuocTe);
+                        }
+                    }
+                    // --- 4. HÀM TÍNH TOÁN VÀ ĐỔ DỮ LIỆU LÊN THANH PROGRESS BAR ---
+                        function capNhatThanhHanMuc(docs) {
+                        // Lưu lại dữ liệu snapshot từ Firebase để các hàm khác sử dụng chung
+                        window.duLieuSnapshotQuocTe = docs;
+                        let thangDangXem = layChuoiThangNam(window.thoiGianDangXem);
+                        // Tính tổng số tiền đã chi của tháng đang xem
+                        let tongDaChi = 0;
+                        docs.forEach(doc => {
+                            const data = doc.data();
+                            if (data.thoiGian && data.thoiGian.startsWith(thangDangXem) && data.loai === 'chi') {
+                                tongDaChi += parseFloat(data.soTien) || 0;
+                            }
+                        });
+                        let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
+                        const txtChu = document.getElementById('chu-ghi-han-muc');
+                        const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
+                        const txtGoiY = document.getElementById('goi-y-han-muc');
+                        if (!txtChu || !thanhPhanTram) return;
+                        // KỊCH BẢN 1: CHƯA ĐẶT HẠN MỨC
+                        if (hanMucThangDangXem === 0) {
+                            txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')} đ / Chưa đặt`;
+                            thanhPhanTram.style.width = '0%';
+                            thanhPhanTram.style.backgroundColor = '#e0e0e0';
+                            if (txtGoiY) {
+                                txtGoiY.innerText = "💡 Bấm vào đây để cài đặt hạn mức";
+                                txtGoiY.style.color = '#999999';
+                            }
+                            return;
+                        }
+                        // KỊCH BẢN 2: ĐÃ ĐẶT HẠN MỨC -> Cập nhật tỷ lệ % tiến trình
+                        let phanTram = (tongDaChi / hanMucThangDangXem) * 100;
+                        let phanTramHienThi = phanTram > 100 ? 100 : phanTram;
+                        txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')}/${hanMucThangDangXem.toLocaleString('vi-VN')}đ`;
+                        thanhPhanTram.style.width = `${phanTramHienThi}%`;
+                        // Thay đổi màu sắc thông minh dựa trên mức độ chi tiêu
+                        if (phanTram >= 100) {
+                            thanhPhanTram.style.backgroundColor = '#e74c3c'; // Đỏ: Vượt ngưỡng
+                            if (txtGoiY) {
+                                txtGoiY.innerText = `⚠️ Bạn đã tiêu vượt quá hạn mức ${(phanTram - 100).toFixed(0)}%!`;
+                                txtGoiY.style.color = '#e74c3c';
+                            }
+                        } else if (phanTram >= 75) {
+                            thanhPhanTram.style.backgroundColor = '#f1c40f'; // Vàng: Cảnh báo sắp hết
+                            if (txtGoiY) {
+                                txtGoiY.innerText = `🔔 Cẩn thận, đã tiêu hết ${phanTram.toFixed(0)}% hạn mức!`;
+                                txtGoiY.style.color = '#f1c40f';
+                            }
+                        } else {
+                            thanhPhanTram.style.backgroundColor = '#2ecc71'; // Xanh: An toàn
+                            if (txtGoiY) {
+                                txtGoiY.innerText = `✅ Còn ${(hanMucThangDangXem - tongDaChi).toLocaleString('vi-VN')}đ chi tiêu`;
+                                txtGoiY.style.color = '#999999';
+                            }
+                        }
+                    }
+                    // --- 5. ĐỒNG BỘ ĐỂ CHẠY NGAY KHI TẢI TRANG LẦN ĐẦU ---
+                    capNhatChuHienThiThang();
+        // B. ĐỊNH DẠNG
+        // --------------------------------------------------------------------------
+        // IX. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
+        // --------------------------------------------------------------------------
+                cacNutTab.forEach(nut => {
+                    nut.addEventListener('click', () => {
+                        const mucTieu = nut.getAttribute('data-target');                
+            // Cập nhật trạng thái active trên giao diện thanh menu đáy
+                cacNutTab.forEach(b => b.classList.remove('active'));
+                    nut.classList.add('active');                
+            // Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
+                cacVungNoiDung.forEach(content => content.classList.remove('active'));
+                    const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
+                    if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');
+                });
+                });   
+        // --------------------------------------------------------------------------
+        // X. LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
+        // --------------------------------------------------------------------------
+                    if (idNutLamMoi) {
+                        idNutLamMoi.addEventListener('click', () => {
+                            const iconSvg = idNutLamMoi.querySelector('svg');
+                            if (iconSvg) {
+                                iconSvg.style.transform = 'rotate(360deg)';
+                                iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                            }
+                            setTimeout(() => {
+                            window.location.reload();
+                    }, 350);
+                    });
+                    }
+
+
+</script>
+
+
+</div>
 </body>
 </html>
