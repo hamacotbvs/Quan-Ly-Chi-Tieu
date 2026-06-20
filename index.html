@@ -739,23 +739,24 @@
                         const dongMoi = document.createElement('div');
                         dongMoi.classList.add('dong-giao-dich');
                         dongMoi.innerHTML = `
-                            <div class="giao-dich-trai">
-                            <span class="giao-dich-muc">${iconPhùHợp} ${hienThiDanhMuc}</span>
-                            <span class="giao-dich-ten">${giaoDich.ten}</span>
+                            <div class="nen-hanh-dong">
+                                <div class="hanh-dong-sua">✏️ Sửa</div>
+                                <div class="hanh-dong-xoa">🗑️ Xóa</div>
                             </div>
-                            <div class="giao-dich-phai-cum">
-                                <div class="dong-thoi-gian-xoa">
+                            <div class="giao-dich-noi-dung" data-id="${docId}">
+                                <div class="giao-dich-trai">
+                                    <span class="giao-dich-muc">${iconPhùHợp} ${hienThiDanhMuc}</span>
+                                    <span class="giao-dich-ten">${giaoDich.ten}</span>
+                                </div>
+        
+                                <div class="giao-dich-phai-cum">
                                     <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span>
-                                    <button class="nut-xoa-giao-dich" data-id="${doc.id}" title="Xóa lịch sử này">🗑️</button>
-                                </div>
-                                <div class="dong-tien-sua">
                                     <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
-                                    <button class="nut-sua-giao-dich" data-id="${docId}" title="Sửa giao dịch này">✏️</button>
                                 </div>
                             </div>
-                        `;
+                            `;
                         idVungLichSu.appendChild(dongMoi); 
-                    });
+                        });
                 // 7.3.3 THAO TÁC XÓA DỮ LIỆU THỰC TẾ TRÊN FIRESTORE
                         document.querySelectorAll('.nut-xoa-giao-dich').forEach(nut => {
                             nut.addEventListener('click', async (e) => {
