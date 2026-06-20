@@ -154,13 +154,14 @@
                     font-weight: 500; 
                     color: #2d3748; 
                 }
-                /* Cụm bên phải: Ngày giờ + Nút xóa ở trên, Số tiền ở dưới */
+                /* Cụm bên phải: Hàng trên (Ngày giờ + Xóa), Hàng dưới (Số tiền + Sửa) */
                 .giao-dich-phai-cum {
                     display: flex;
                     flex-direction: column;
                     align-items: flex-end;
                     text-align: right;
                 }
+                /* Hàng trên: Ngày giờ + Thùng rác */
                 .dong-thoi-gian-xoa {
                     display: flex;
                     align-items: center;
@@ -183,10 +184,28 @@
                 .nut-xoa-giao-dich:hover {
                     opacity: 0.6;
                 }
-                /* Số tiền bên phải */
+                /* Hàng dưới: Số tiền + Nút sửa */
+                .dong-tien-sua {
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                }
                 .giao-dich-phai { 
                     font-weight: 600; 
                     font-size: 15px;
+                }
+                .nut-sua-giao-dich {
+                    background: none;
+                    border: none;
+                    color: #3498db; /* Màu xanh dương biểu thị trạng thái chỉnh sửa */
+                    cursor: pointer;
+                    font-size: 13px;
+                    margin-left: 8px; /* Đẩy cách số tiền ra một khoảng bằng với nút xóa ở trên */
+                    padding: 0 2px;
+                    transition: opacity 0.2s;
+                }
+                .nut-sua-giao-dich:hover {
+                    opacity: 0.6;
                 }       
                 /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
                     .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
