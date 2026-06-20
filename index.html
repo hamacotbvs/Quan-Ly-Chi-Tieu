@@ -975,7 +975,133 @@
                         if (idThanhThu) idThanhThu.style.width = "0%";
                         if (idThanhChi) idThanhChi.style.width = "0%";
                     }
-                    });
+            // 7.6 Thanh hạn mức chi tiêu tháng
+// Dữ liệu trong localStorage sẽ có dạng: {"2026-05": 5000000, "2026-06": 10000000}
+let boSuoTapHanMuc = JSON.parse(localStorage.getItem('bo_suo_tap_han_muc')) || {};
+
+document.getElementById('vung-han-muc')?.addEventListener('click', () => {
+    // 1. Xác định tháng đang cần xử lý (Lấy theo tháng của bộ chọn biểu đồ, nếu không có thì lấy tháng hiện tại)
+    const idChonThang = document.getElementById('chon-thang-bieu-do');
+    let thangDangXem = idChonThang ? idChonThang.value : "";
+    
+    if (!thangDangXem) {
+        const ngayHienTai = new Date();
+        thangDangXem = `${ngayHienTai.getFullYear()}-${String(ngayHienTai.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    // 2. Lấy hạn mức riêng của tháng đang xem
+    let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
+    
+    // Tách chuỗi năm-tháng để hiển thị thông báo thân thiện (Ví dụ: "tháng 06/2026")
+    const [nam, thg] = thangDangXem.split('-');
+    let thongBaoThang = `tháng ${thg}/${nam}`;
+
+    let loiNhac = hanMucThangDangXem > 0 
+        ? `Hạn mức ${thongBaoThang} hiện tại là ${hanMucThangDangXem.toLocaleString('vi-VN')} đ.\nNhập hạn mức mới (đ):` 
+        : `Nhập hạn mức chi tiêu bạn muốn đặt cho ${thongBaoThang} (đ):`;
+        
+    let nhapVao = prompt(loiNhac, hanMucThangDangXem > 0 ? hanMucThangDangXem : "");
+    
+    if (nhapVao !== null) {
+        // Nếu người dùng nhập chữ hoặc có định dạng tiền dính chữ, lọc chỉ lấy số
+        let soTienMoi = parseFloat(nhapVao.toString().replace(/[^0-9]/g, '')); 
+        
+        if (!isNaN(soTienMoi) && soTienMoi > 0) {
+            // Cập nhật hạn mức cho riêng tháng này
+            boSuoTapHanMuc[thangDangXem] = soTienMoi;
+            localStorage.setItem('bo_suo_tap_han_muc', JSON.stringify(boSuoTapHanMuc));
+        } else if (nhapVao === "0" || nhapVao === "") {
+            // Nếu nhập 0 hoặc xóa trống, tiến hành xóa hẳn hạn mức tháng đó
+            delete boSuoTapHanMuc[thangDangXem];
+            localStorage.setItem('bo_suo_tap_han_muc', JSON.stringify(boSuoTapHanMuc));
+        } else {
+            alert("Số tiền nhập vào không hợp lệ!");
+            return;
+        }
+
+        // Cập nhật lại giao diện thanh tiến trình ngay lập tức
+        if (window.duLieuSnapshotQuocTe) {
+            capNhatThanhHanMuc(window.duLieuSnapshotQuocTe);
+        }
+    }
+});
+
+// --- HÀM TÍNH TOÁN VÀ ĐỔ DỮ LIỆU LÊN THANH PROGRESS BAR ---
+function capNhatThanhHanMuc(docs) {
+    window.duLieuSnapshotQuocTe = docs;
+
+    // 1. Xác định tháng cần tính toán dựa theo bộ chọn tháng của Biểu đồ
+    const idChonThang = document.getElementById('chon-thang-bieu-do');
+    let thangDangXem = idChonThang ? idChonThang.value : "";
+    
+    if (!thangDangXem) {
+        const ngayHienTai = new Date();
+        thangDangXem = `${ngayHienTai.getFullYear()}-${String(ngayHienTai.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    // 2. Tính tổng chi tiêu của riêng tháng đang được chọn xem
+    let tongDaChi = 0;
+    docs.forEach(doc => {
+        const data = doc.data();
+        if (data.thoiGian && data.thoiGian.startsWith(thangDangXem) && data.loai === 'chi') {
+            tongDaChi += parseFloat(data.soTien) || 0;
+        }
+    });
+
+    // 3. Lấy hạn mức riêng biệt được lưu trữ của tháng đang xem
+    let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
+
+    // 4. Lấy các phần tử giao diện
+    const txtChu = document.getElementById('chu-ghi-han-muc');
+    const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
+    const txtGoiY = document.getElementById('goi-y-han-muc');
+
+    if (!txtChu || !thanhPhanTram) return;
+
+    // 5. KỊCH BẢN CHƯA CÀI ĐẶT HẠN MỨC CHO THÁNG ĐANG XEM
+    if (hanMucThangDangXem === 0) {
+        txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')} đ / Chưa đặt`;
+        thanhPhanTram.style.width = '0%';
+        thanhPhanTram.style.backgroundColor = '#e0e0e0';
+        if (txtGoiY) {
+            txtGoiY.innerText = "💡 Bấm vào đây để cài đặt hạn mức cho tháng này";
+            txtGoiY.style.color = '#999';
+        }
+        return;
+    }
+
+    // 6. KỊCH BẢN ĐÃ CÓ HẠN MỨC -> Tiến hành tính toán tỷ lệ %
+    let phanTram = (tongDaChi / hanMucThangDangXem) * 100;
+    let phanTramHienThi = phanTram > 100 ? 100 : phanTram; // Khóa cứng thanh hiển thị tối đa 100% hình ảnh
+
+    // Cập nhật chữ hiển thị số tiền dạng: Đã chi / Hạn mức
+    txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')} / ${hanMucThangDangXem.toLocaleString('vi-VN')} đ`;
+    thanhPhanTram.style.width = `${phanTramHienThi}%`;
+
+    // 7. Thay đổi trạng thái màu sắc cảnh báo thông minh
+    if (phanTram >= 100) {
+        thanhPhanTram.style.backgroundColor = '#e74c3c'; // Màu Đỏ: Vượt lố
+        if (txtGoiY) {
+            txtGoiY.innerText = `⚠️ Bạn đã tiêu vượt quá hạn mức ${(phanTram - 100).toFixed(0)}%!`;
+            txtGoiY.style.color = '#e74c3c';
+        }
+    } else if (phanTram >= 75) {
+        thanhPhanTram.style.backgroundColor = '#f1c40f'; // Màu Vàng: Cảnh báo (>75%)
+        if (txtGoiY) {
+            txtGoiY.innerText = `🔔 Cẩn thận, đã tiêu hết ${phanTram.toFixed(0)}% hạn mức tháng!`;
+            txtGoiY.style.color = '#f1c40f';
+        }
+    } else {
+        thanhPhanTram.style.backgroundColor = '#2ecc71'; // Màu Xanh lá: An toàn
+        if (txtGoiY) {
+            txtGoiY.innerText = `✅ Bạn còn ${(hanMucThangDangXem - tongDaChi).toLocaleString('vi-VN')} đ chi tiêu an toàn`;
+            txtGoiY.style.color = '#999';
+        }
+    }
+}        
+                
+                
+                });
         // B. ĐỊNH DẠNG
         // --------------------------------------------------------------------------
         // IX. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
