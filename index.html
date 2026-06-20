@@ -127,86 +127,67 @@
                     margin-bottom: 5px; 
                     font-weight: 600;                 /* Chữ hơi in đậm một chút */
                 }       
-            /* 2.3 Định dạng từng dòng lịch sử */
-                .dong-giao-dich {
-                    display: flex;
-                    justify-content: space-between;   /* Đẩy phần tên sang sát lề trái, phần số tiền sang sát lề phải */
-                    align-items: center;              /* Căn cho hai bên thẳng hàng nhau theo chiều dọc */
-                    padding: 14px 0;                  /* Tăng nhẹ khoảng cách trên dưới giữa các hàng */
-                    border-bottom: 1px solid #f8fafc; /* Đường kẻ ngang siêu mờ dưới mỗi giao dịch */
-                }        
-                .dong-giao-dich:last-child {
+            /* 2.3 Định dạng từng dòng lịch sử (Cấu trúc Vuốt Chạm Swipe-to-Action) */
+                    .dong-giao-dich {
+                        position: relative;
+                        overflow: hidden;
+                        background-color: #ffffff;
+                        border-bottom: 1px solid #f8fafc;
+                        user-select: none; /* Tránh bôi đen chữ khi vuốt bằng chuột trên PC */
+                    }
+                    .dong-giao-dich:last-child {
+                        border-bottom: none;
+                    }
+                /* Phần nội dung chính nằm đè phía trên */
+                    .giao-dich-noi-dung {
+                        display: flex;
+                        justify-content: space-between;     /* Đẩy phần tên sang sát lề trái, phần số tiền sang sát lề phải */
+                        align-items: center;                /* Căn cho hai bên thẳng hàng nhau theo chiều dọc */
+                        padding: 14px 10px;                 /* Tăng nhẹ khoảng cách trên dưới giữa các hàng */
+                        background-color: #ffffff;        /* Đường kẻ ngang siêu mờ dưới mỗi giao dịch */
+                        position: relative;
+                        z-index: 2;
+                        transition: transform 0.2s ease-out; /* Tạo hiệu ứng trượt mượt mà */
+                        cursor: grab;
+                    }
+                    .giao-dich-noi-dung:active {
+                        cursor: grabbing;
+                    }
+                    .dong-giao-dich:last-child {
                     border-bottom: none;                /* Xóa đường kẻ ngang ở dòng giao dịch cuối cùng cho đẹp */
-                }
-                /* Cụm bên trái: Danh mục ở trên, Tên ở dưới */
-                .giao-dich-trai { 
-                    display: flex; 
-                    flex-direction: column; 
-                    text-align: left;
-                }
-                .giao-dich-muc { 
-                    font-size: 13px; 
-                    color: #718096; 
-                    margin-bottom: 2px; 
-                }   
-                .giao-dich-ten { 
-                    font-size: 15px; 
-                    font-weight: 500; 
-                    color: #2d3748; 
-                }
-                /* Cụm bên phải: Hàng trên (Ngày giờ + Xóa), Hàng dưới (Số tiền + Sửa) */
-                .giao-dich-phai-cum {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: flex-end;
-                    text-align: right;
-                }
-                /* Hàng trên: Ngày giờ + Thùng rác */
-                .dong-thoi-gian-xoa {
-                    display: flex;
-                    align-items: center;
-                    margin-bottom: 2px;
-                }
-                .giao-dich-thoi-gian {
-                    font-size: 12px;
-                    color: #a0aec0;
-                }
-                .nut-xoa-giao-dich {
-                    background: none;
-                    border: none;
-                    color: #e74c3c;
-                    cursor: pointer;
-                    font-size: 13px;
-                    margin-left: 8px;
-                    padding: 0 2px;
-                    transition: opacity 0.2s;
-                }
-                .nut-xoa-giao-dich:hover {
-                    opacity: 0.6;
-                }
-                /* Hàng dưới: Số tiền + Nút sửa */
-                .dong-tien-sua {
-                    display: flex;
-                    align-items: center;
-                    justify-content: flex-end;
-                }
-                .giao-dich-phai { 
-                    font-weight: 600; 
-                    font-size: 15px;
-                }
-                .nut-sua-giao-dich {
-                    background: none;
-                    border: none;
-                    color: #3498db; /* Màu xanh dương biểu thị trạng thái chỉnh sửa */
-                    cursor: pointer;
-                    font-size: 13px;
-                    margin-left: 8px; /* Đẩy cách số tiền ra một khoảng bằng với nút xóa ở trên */
-                    padding: 0 2px;
-                    transition: opacity 0.2s;
-                }
-                .nut-sua-giao-dich:hover {
-                    opacity: 0.6;
-                }       
+                    }
+                /* Cụm bên trái: Danh mục & Tên */
+                    .giao-dich-trai { 
+                        display: flex; 
+                        flex-direction: column; 
+                        text-align: left;
+                    }
+                    .giao-dich-muc { 
+                        font-size: 13px; 
+                        color: #718096; 
+                        margin-bottom: 2px; 
+                    }   
+                    .giao-dich-ten { 
+                        font-size: 15px; 
+                        font-weight: 500; 
+                        color: #2d3748; 
+                    }
+                /* Cụm bên phải: Ngày giờ & Số tiền */
+                    .giao-dich-phai-cum {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: flex-end;
+                        text-align: right;
+                    }
+                    .giao-dich-thoi-gian {
+                        font-size: 12px;
+                        color: #a0aec0;
+                        margin-bottom: 2px;
+                    }
+                    .giao-dich-phai { 
+                        font-weight: 600; 
+                        font-size: 15px;
+                    }       
                 /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
                     .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
                     .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
