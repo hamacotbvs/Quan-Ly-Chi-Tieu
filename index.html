@@ -871,19 +871,76 @@
                     // ... (đoạn code cập nhật UI cũ của bạn)
                 });
             }
+            // Cập nhật lại Hàm Thêm/Sửa giao dịch (Mục IV ở Đoạn 1 của bạn) để nạp trường userId
+            // Tìm đến nút Ghi đè / Thêm mới trong mã nguồn của bạn và sửa cấu trúc object lưu dữ liệu:
+            /*
+            await addDoc(boChonBoSuuTap, {
+                userId: userHienTai.uid, // ĐÂY LÀ ĐIỀU KIỆN TIÊN QUYẾT ĐỂ PHÂN BIỆT DỮ LIỆU CÁC USER TRÊN CLOUD
+                ten: ten,
+                soTien: soTien,
+                loai: loai,
+                danhMuc: danhMuc,
+                thoiGian: chuoiThoiGianGop
+            });
+            */
+        // --------------------------------------------------------------------------
+        // VII. KHU VỰC DÀNH RIÊNG CHO TÀI KHOẢN ADMIN: DUYỆT THÀNH VIÊN
+        // --------------------------------------------------------------------------
+            function khoiChayKhuVucAdmin() {
+                const vungDanhSachAdmin = document.getElementById('danh-sach-user-admin');
+                // Lắng nghe thời gian thực toàn bộ danh sách User trên hệ thống
+                onSnapshot(boSuuTapUsers, (snapshot) => {
+                    if (!vungDanhSachAdmin) return;
+                    vungDanhSachAdmin.innerHTML = '';
 
-    // Cập nhật lại Hàm Thêm/Sửa giao dịch (Mục IV ở Đoạn 1 của bạn) để nạp trường userId
-    // Tìm đến nút Ghi đè / Thêm mới trong mã nguồn của bạn và sửa cấu trúc object lưu dữ liệu:
-    /*
-    await addDoc(boChonBoSuuTap, {
-        userId: userHienTai.uid, // ĐÂY LÀ ĐIỀU KIỆN TIÊN QUYẾT ĐỂ PHÂN BIỆT DỮ LIỆU CÁC USER TRÊN CLOUD
-        ten: ten,
-        soTien: soTien,
-        loai: loai,
-        danhMuc: danhMuc,
-        thoiGian: chuoiThoiGianGop
-    });
-    */
+                    if (snapshot.empty) {
+                        vungDanhSachAdmin.innerHTML = '<p style="text-align:center; color:#999;">Chưa có user nào đăng ký.</p>';
+                        return;
+                    }
+                    snapshot.forEach((userDoc) => {
+                        const duLieuUser = userDoc.data();
+                        // Bỏ qua không hiển thị chính mình (tài khoản Admin hiện tại) trong danh sách duyệt
+                        if (duLieuUser.uid === userHienTai.uid) return;
+                        const bieuTuongTrangThai = duLieuUser.trangThai === 'da_duyet' ? '✅ Đã duyệt' : '⏳ Chờ duyệt';
+                        const khoiUserHTML = document.createElement('div');
+                        khoiUserHTML.className = `dong-user-admin ${duLieuUser.trangThai}`;
+                        khoiUserHTML.innerHTML = `
+                            <div class="user-admin-trai">
+                                <strong>👤 ${duLieuUser.tenHienThi}</strong>
+                                <span style="font-size:13px; color:#555;">✉️ ${duLieuUser.email}</span>
+                                <span style="font-size:12px; font-weight:bold;">Trạng thái: ${bieuTuongTrangThai}</span>
+                            </div>
+                            <div class="user-admin-phai">
+                                ${duLieuUser.trangThai !== 'da_duyet' ? 
+                                    `<button class="btn-duyet" data-id="${duLieuUser.uid}">Kích hoạt duyệt 🟢</button>` : 
+                                    `<button class="btn-khoa" data-id="${duLieuUser.uid}">Khóa tài khoản 🔴</button>`
+                                }
+                            </div>
+                        `;
+                        vungDanhSachAdmin.appendChild(khoiUserHTML);
+                    });
+                    // Gắn sự kiện click xử lý trực tiếp cho các nút Phê duyệt của Admin
+                    vungDanhSachAdmin.querySelectorAll('.btn-duyet').forEach(nut => {
+                        nut.addEventListener('click', async (e) => {
+                            const uidCanSua = e.target.getAttribute('data-id');
+                            await updateDoc(doc(db, "danh_sach_users", uidCanSua), {
+                                trangThai: "da_duyet"
+                            });
+                        });
+                    });
+                    // Gắn sự kiện click xử lý trực tiếp cho các nút Khóa tài khoản
+                    vungDanhSachAdmin.querySelectorAll('.btn-khoa').forEach(nut => {
+                        nut.addEventListener('click', async (e) => {
+                            const uidCanSua = e.target.getAttribute('data-id');
+                            if(confirm("Bạn có chắc chắn muốn khóa quyền truy cập app của thành viên này?")) {
+                                await updateDoc(doc(db, "danh_sach_users", uidCanSua), {
+                                    trangThai: "bi_khoa"
+                                });
+                            }
+                        });
+                    });
+                });
+            }
         
 
         // --------------------------------------------------------------------------
