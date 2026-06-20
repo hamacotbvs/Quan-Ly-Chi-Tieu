@@ -856,24 +856,47 @@ nutChinh?.addEventListener('click', () => {
 // ==========================================================================
 // 4. XỬ LÝ ĐĂNG NHẬP NHANH BẰNG TÀI KHOẢN GOOGLE
 // ==========================================================================
-document.getElementById('nut-auth-google')?.addEventListener('click', () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider)
-        .then((result) => alert("Đăng nhập Google thành công! Chào " + result.user.displayName))
-        .catch((err) => alert("Lỗi đăng nhập Google: " + err.message));
-});
+// Đảm bảo nút được bind sự kiện chính xác sau khi DOM đã sẵn sàng
+document.addEventListener("DOMContentLoaded", () => {
+    const nutGoogle = document.getElementById('nut-auth-google');
+    
+    if (nutGoogle) {
+        nutGoogle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation(); // Chặn lan sự kiện lên lớp nền modal bên trên
+            
+            console.log("Đang kích hoạt đăng nhập Google...");
+            
+            // Khởi tạo Provider cấu hình chuẩn của Firebase Auth
+            const provider = new firebase.auth.GoogleAuthProvider();
+            
+            // Cấu hình thêm tùy chọn tài khoản nếu cần (Không bắt buộc)
+            provider.addScope('profile');
+            provider.addScope('email');
 
-// Hàm hỗ trợ dịch lỗi tiếng Anh Firebase sang Tiếng Việt
-function phanTichLoiFirebase(maLoi) {
-    switch (maLoi) {
-        case 'auth/invalid-email': return 'Định dạng tài khoản Email không hợp lệ.';
-        case 'auth/weak-password': return 'Mật khẩu quá ngắn (Yêu cầu ít nhất 6 ký tự).';
-        case 'auth/email-already-in-use': return 'Email này đã được đăng ký bởi tài khoản khác.';
-        case 'auth/user-not-found': return 'Tài khoản không tồn tại trên hệ thống.';
-        case 'auth/wrong-password': return 'Mật khẩu đã nhập không chính xác.';
-        default: return 'Có lỗi xảy ra, vui lòng thử lại sau.';
+            // Gọi lệnh bật Popup đăng nhập của Google
+            firebase.auth().signInWithPopup(provider)
+                .then((result) => {
+                    console.log("Đăng nhập thành công:", result.user);
+                    alert("Đăng nhập bằng Google thành công! Chào " + result.user.displayName);
+                })
+                .catch((error) => {
+                    console.error("Lỗi chi tiết từ Firebase:", error);
+                    
+                    // Xử lý các mã lỗi phổ biến của Google Auth
+                    if (error.code === 'auth/popup-blocked') {
+                        alert("Trình duyệt của bạn đã chặn cửa sổ Popup! Vui lòng cho phép bật popup trên trang web này để đăng nhập.");
+                    } else if (error.code === 'auth/cancelled-popup-request') {
+                        console.log("Người dùng đóng popup trước khi đăng nhập xong.");
+                    } else {
+                        alert("Lỗi đăng nhập Google: " + error.message);
+                    }
+                });
+        });
+    } else {
+        console.error("Không tìm thấy thẻ HTML có id='nut-auth-google'!");
     }
-}
+});
 
 // ==========================================================================
 // 5. THEO DÕI ĐÓNG / MỞ MÀN HÌNH PHỦ CHẶN APP TỰ ĐỘNG
