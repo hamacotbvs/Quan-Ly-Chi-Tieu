@@ -135,38 +135,61 @@
                     padding: 14px 0;                  /* Tăng nhẹ khoảng cách trên dưới giữa các hàng */
                     border-bottom: 1px solid #f8fafc; /* Đường kẻ ngang siêu mờ dưới mỗi giao dịch */
                 }        
-                /* Xóa đường kẻ ngang ở dòng giao dịch cuối cùng cho đẹp */
                 .dong-giao-dich:last-child {
-                    border-bottom: none;
+                    border-bottom: none;                /* Xóa đường kẻ ngang ở dòng giao dịch cuối cùng cho đẹp */
                 }
-                /* Định dạng ngày giờ */
-                .nhom-ngay-tieude {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    background-color: #f8fafc;        /* Nền xám siêu nhẹ để phân biệt */
-                    padding: 8px 10px;
-                    margin: 12px -10px 4px -10px;     /* Ăn gian lề ra một chút cho đẹp */
-                    border-radius: 6px;
-                    font-size: 13px;
-                    font-weight: 600;
-                    color: #64748b;                   /* Màu chữ ngày tháng */
-                }        
-                .nhom-ngay-tong-tien {
-                    font-size: 13px;
-                    color: #475569;                   /* Màu chữ của số tổng */
-                }
-                /* Định dạng phân bổ nằm trái phải*/
+                /* Cụm bên trái: Danh mục ở trên, Tên ở dưới */
                 .giao-dich-trai { 
                     display: flex; 
-                    flex-direction: column;           /* Xếp tên giao dịch và tên danh mục theo hàng dọc (Tên ở trên, danh mục ở dưới) */
+                    flex-direction: column; 
+                    text-align: left;
                 }
-                .giao-dich-ten { font-size: 12px; font-weight: 500; color: #2c3e50; } /* Tên khoản chi màu đen đậm */
-                .giao-dich-muc { font-size: 15px; color: #95a5a6; margin-top: 4px; }   /* Biểu tượng 📂 và tên danh mục nhỏ hơn, màu xám mờ */
-                .giao-dich-phai { font-weight: 600; font-size: 15px; }                 /* Số tiền bên phải được in đậm */        
+                .giao-dich-muc { 
+                    font-size: 13px; 
+                    color: #718096; 
+                    margin-bottom: 2px; 
+                }   
+                .giao-dich-ten { 
+                    font-size: 15px; 
+                    font-weight: 500; 
+                    color: #2d3748; 
+                }
+                /* Cụm bên phải: Ngày giờ + Nút xóa ở trên, Số tiền ở dưới */
+                .giao-dich-phai-cum {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-end;
+                    text-align: right;
+                }
+                .dong-thoi-gian-xoa {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 2px;
+                }
+                .giao-dich-thoi-gian {
+                    font-size: 12px;
+                    color: #a0aec0;
+                }
+                .nut-xoa-giao-dich {
+                    background: none;
+                    border: none;
+                    color: #e74c3c;
+                    cursor: pointer;
+                    font-size: 13px;
+                    margin-left: 8px;
+                    padding: 0 2px;
+                    transition: opacity 0.2s;
+                }
+                .nut-xoa-giao-dich:hover {
+                    opacity: 0.6;
+                }
+                /* Số tiền bên phải */
+                .giao-dich-phai { 
+                    font-weight: 600; 
+                    font-size: 15px;       
                 /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
-                .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
-                .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
+                    .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
+                    .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
         /* ==========================================================================
         III. TAB 3: NHẬP LIỆU (+)
         ========================================================================== */
