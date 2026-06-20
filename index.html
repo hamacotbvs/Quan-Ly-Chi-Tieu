@@ -606,7 +606,7 @@
                 });
                 }
         // --------------------------------------------------------------------------
-        // IV. THÊM HOẶC CẬP NHẬT GIAO DỊCH LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
+        // IV. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
         // --------------------------------------------------------------------------
              // 4.1 kích hoạt toàn bộ các lệnh bên trong nút bấm chạy    
                 if (idNutGhiDe) {
@@ -627,19 +627,20 @@
                     try {
                     // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
                     const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
-                    // Chuẩn bị cục dữ liệu để đưa lên Firebase
-                        const duLieuGiaoDich = {
-                            ten: ten,
-                            soTien: soTien,
-                            loai: loai,
-                            danhMuc: danhMuc,
-                            thoiGian: chuoiThoiGianGop
-                        };
+            // 4.5 Đẩy dữ liệu transaction mới lên Firestore
+                    await addDoc(boChonBoSuuTap, {
+                        ten: ten,
+                        soTien: soTien,
+                        loai: loai,
+                        danhMuc: danhMuc,
+                        thoiGian: chuoiThoiGianGop // Đã đồng bộ với input giao diện
+                    });
                     // --- ĐOẠN PHÂN TÁCH GIỮA SỬA VÀ THÊM MỚI Ở ĐÂY ---
                         if (window.idGiaoDichDangSua) {
                             // HÀNH ĐỘNG SỬA: Nếu tồn tại ID đang sửa, tiến hành ghi đè dữ liệu cũ
                             const taiLieuRef = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
-                            await updateDoc(taiLieuRef, duLieuGiaoDich);                            
+                            await updateDoc(taiLieuRef, duLieuGiaoDich);
+                            
                             // Reset lại biến toàn cục về trạng thái trống
                             window.idGiaoDichDangSua = null;
                             idNutGhiDe.innerText = "Cập nhật ví"; // Trả lại tên nút gốc ban đầu
@@ -647,7 +648,6 @@
                             // HÀNH ĐỘNG THÊM MỚI: Nếu không sửa gì, dùng lệnh addDoc tạo mới hoàn toàn
                             await addDoc(boChonBoSuuTap, duLieuGiaoDich);
                         }
-
             // 4.6 Dọn dẹp giao diện (Reset Form)
                     idTen.value = '';
                     idSoTien.value = ''; 
