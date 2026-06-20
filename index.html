@@ -802,6 +802,103 @@
         // Thêm doc và deleteDoc vào cuối dòng dưới đây:
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // ĐẶNG NHẬP/ĐĂNG KÝ //
+        // ==========================================================================
+// 1. CẤU HÌNH TRẠNG THÁI BIẾN BAN ĐẦU
+// ==========================================================================
+let cheDoHienTai = "dang-nhap"; // Mặc định là tab đăng nhập
+const txtEmail = document.getElementById('auth-email');
+const txtMatKhau = document.getElementById('auth-mat-khau');
+const nutChinh = document.getElementById('nut-xac-thuc-chinh');
+
+// ==========================================================================
+// 2. CHUYỂN ĐỔI TAB QUA LẠI GIỮA ĐĂNG NHẬP & ĐĂNG KÝ
+// ==========================================================================
+document.getElementById('tab-auth-dang-nhap')?.addEventListener('click', function() {
+    cheDoHienTai = "dang-nhap";
+    this.classList.add('active');
+    document.getElementById('tab-auth-dang-ky')?.classList.remove('active');
+    if (nutChinh) nutChinh.innerText = "Đăng nhập ngay";
+});
+
+document.getElementById('tab-auth-dang-ky')?.addEventListener('click', function() {
+    cheDoHienTai = "dang-ky";
+    this.classList.add('active');
+    document.getElementById('tab-auth-dang-nhap')?.classList.remove('active');
+    if (nutChinh) nutChinh.innerText = "Tạo tài khoản mới";
+});
+
+// ==========================================================================
+// 3. XỬ LÝ SỰ KIỆN CLICK NÚT EMAIL VÀ MẬT KHẨU
+// ==========================================================================
+nutChinh?.addEventListener('click', () => {
+    const email = txtEmail?.value.trim();
+    const matKhau = txtMatKhau?.value;
+
+    if (!email || !matKhau) {
+        alert("Vui lòng điền đầy đủ Email và Mật khẩu!");
+        return;
+    }
+
+    if (cheDoHienTai === "dang-ky") {
+        // Thực hiện đăng ký tài khoản mới lên Firebase Auth
+        firebase.auth().createUserWithEmailAndPassword(email, matKhau)
+            .then(() => alert("Đăng ký tài khoản thành công!"))
+            .catch((err) => alert("Lỗi đăng ký: " + phanTichLoiFirebase(err.code)));
+    } else {
+        // Thực hiện đăng nhập tài khoản có sẵn
+        firebase.auth().signInWithEmailAndPassword(email, matKhau)
+            .then(() => alert("Đăng nhập thành công!"))
+            .catch((err) => alert("Lỗi đăng nhập: " + phanTichLoiFirebase(err.code)));
+    }
+});
+
+// ==========================================================================
+// 4. XỬ LÝ ĐĂNG NHẬP NHANH BẰNG TÀI KHOẢN GOOGLE
+// ==========================================================================
+document.getElementById('nut-auth-google')?.addEventListener('click', () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider)
+        .then((result) => alert("Đăng nhập Google thành công! Chào " + result.user.displayName))
+        .catch((err) => alert("Lỗi đăng nhập Google: " + err.message));
+});
+
+// Hàm hỗ trợ dịch lỗi tiếng Anh Firebase sang Tiếng Việt
+function phanTichLoiFirebase(maLoi) {
+    switch (maLoi) {
+        case 'auth/invalid-email': return 'Định dạng tài khoản Email không hợp lệ.';
+        case 'auth/weak-password': return 'Mật khẩu quá ngắn (Yêu cầu ít nhất 6 ký tự).';
+        case 'auth/email-already-in-use': return 'Email này đã được đăng ký bởi tài khoản khác.';
+        case 'auth/user-not-found': return 'Tài khoản không tồn tại trên hệ thống.';
+        case 'auth/wrong-password': return 'Mật khẩu đã nhập không chính xác.';
+        default: return 'Có lỗi xảy ra, vui lòng thử lại sau.';
+    }
+}
+
+// ==========================================================================
+// 5. THEO DÕI ĐÓNG / MỞ MÀN HÌNH PHỦ CHẶN APP TỰ ĐỘNG
+// ==========================================================================
+firebase.auth().onAuthStateChanged((user) => {
+    const lopPhuAuth = document.getElementById('man-hinh-xac-thuc-overlay');
+    if (lopPhuAuth) {
+        if (user) {
+            // TRƯỜNG HỢP 1: ĐÃ ĐĂNG NHẬP -> Ẩn màn hình phủ đi, mở toàn bộ app bên dưới
+            lopPhuAuth.style.display = 'none';
+            console.log("Đang chạy tài khoản đăng nhập:", user.email);
+            
+            // Nếu bạn có dữ liệu cũ cần kích hoạt thanh hạn mức chi tiêu thì chạy lại ở đây:
+            if (window.duLieuSnapshotQuocTe) {
+                capNhatThanhHanMuc(window.duLieuSnapshotQuocTe);
+            }
+        } else {
+            // TRƯỜNG HỢP 2: CHƯA ĐĂNG NHẬP -> Hiện màn hình phủ lên bắt buộc đăng nhập mới được dùng app
+            lopPhuAuth.style.display = 'flex'; // Dùng 'flex' để giữ định dạng căn giữa dọc và ngang
+            if (txtEmail) txtEmail.value = "";
+            if (txtMatKhau) txtMatKhau.value = "";
+        }
+    }
+});
+        
         // A. DỮ LIỆU
         // --------------------------------------------------------------------------
         // I. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
