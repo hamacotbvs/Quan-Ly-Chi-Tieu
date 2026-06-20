@@ -496,7 +496,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // Thêm doc và deleteDoc vào cuối dòng dưới đây:
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // A. DỮ LIỆU
         // --------------------------------------------------------------------------
@@ -671,6 +672,7 @@
             // 7.3 Vòng lặp tính toán và dựng dòng lịch sử (Phần cốt lõi)
                     snapshot.forEach((doc) => {
                         const giaoDich = doc.data();
+                        const docId = doc.id; // 🔑 Lấy ID duy nhất của tài liệu để xử lý xóa
                         let kyTuDau = '';
                         let lopMauSac = '';
                 // 7.3.1 Bước A: Phân loại tiền và tính toán
@@ -686,7 +688,6 @@
                             lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
                         }
                         // 🟢 BẢNG ÁNH XẠ ICON THEO DANH MỤC GIỐNG BÊN NHẬP LIỆU
-                        // Chú ý: Bạn kiểm tra lại chữ hiển thị trong thẻ <option> của bạn để ghi đúng chính xác từng từ nhé
                         const danhSachIcon = {
                             "Ăn uống": "🍔",
                             "Di chuyển": "🚗",
@@ -719,6 +720,26 @@
                         `;
                         idVungLichSu.appendChild(dongMoi); 
                     });
+                // 7.3.3 THAO TÁC XÓA DỮ LIỆU THỰC TẾ TRÊN FIRESTORE
+                        document.querySelectorAll('.nut-xoa-giao-dich').forEach(nut => {
+                            nut.addEventListener('click', async (e) => {
+                                e.preventDefault(); // Ngăn chặn hành vi mặc định                            
+                                const idCanXoa = nut.getAttribute('data-id');
+                                const tenKhoan = nut.closest('.dong-giao-dich').querySelector('.giao-dich-ten').innerText;
+                                if (confirm(`Bạn có chắc chắn muốn xóa lịch sử "${tenKhoan}" này không?`)) {
+                                    try {
+                                    // ⚠️ Lưu ý: Đảm bảo bạn đã import { doc, deleteDoc } từ Firebase SDK ở đầu file script của mình.
+                                    // Thay "QuanLyChiTieu" bằng đúng tên Collection (bảng) lưu trữ trên Firestore của bạn nếu có khác biệt.
+                                        const taiLieuRef = doc(db, "giao_dich_business", idCanXoa);                                    
+                                        await deleteDoc(taiLieuRef);
+                                    // Vì sử dụng onSnapshot (real-time), giao diện và số dư tổng sẽ tự động cập nhật ngay lập tức sau khi xóa thành công!
+                                    } catch (error) {
+                                        console.error("Lỗi khi thực hiện thao tác xóa dữ liệu: ", error);
+                                        alert("Đã xảy ra lỗi hệ thống, không thể xóa lịch sử này!");
+                                    }
+                                }
+                            });
+                        });
             // 7.4 Đưa số liệu sau khi tính toán lên giao diện trực quan
                     if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
                     if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
