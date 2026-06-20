@@ -67,8 +67,7 @@
             background-color: var(--mau-dang-xuat); color: white;
             border: none; padding: 8px 16px; border-radius: 20px;
             font-weight: bold; font-size: 13px; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); 
-            display: none !important; /* Sửa lại dòng này để ẩn mặc định */
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); display: none;
         }
         /* ==========================================================================
         A.2 ĐỊNH DẠNG KHUNG APP
@@ -1350,46 +1349,18 @@
         kiemTraPhienLamViec();
 
         function kiemTraPhienLamViec() {
-    if (window.userHienTai) {
-        // 1. Ẩn hẳn màn hình đăng nhập và hạ z-index xuống thấp nhất để không chắn menu
-        if (mhAuth) {
-            mhAuth.style.setProperty('display', 'none', 'important');
-            mhAuth.style.zIndex = '-99999';
-        }
-        
-        // 2. Hiện lại toàn bộ khung chứa app cũ của bạn
-        if (khungAppCu) {
-            khungAppCu.style.setProperty('display', 'block', 'important');
-        }
-        
-        // 3. Kích hoạt bộ lắng nghe dữ liệu cho User
-        kichHoatBoLocDuLieuRealtime();
-        
-        // 4. MẸO QUAN TRỌNG: Tự động kích hoạt bấm lại tab HOME để giải phóng lại giao diện
-        setTimeout(() => {
-            const nutHome = document.querySelector('[data-target="home"]') || document.querySelector('.nut-tab');
-            if (nutHome && !window.daKichHoatMacDinh) {
-                window.daKichHoatMacDinh = true; // Chỉ kích hoạt một lần duy nhất khi vừa đăng nhập
-                nutHome.click();
+            if (window.userHienTai) {
+                mhAuth.style.display = 'none';
+                btnLogout.style.display = 'block';
+                if(khungAppCu) khungAppCu.style.display = 'block';
+                kichHoatBoLocDuLieuRealtime();
+            } else {
+                mhAuth.style.display = 'flex';
+                btnLogout.style.display = 'none';
+                if(khungAppCu) khungAppCu.style.display = 'none';
+                if (huyLangNgheRealtime) huyLangNgheRealtime();
             }
-        }, 300);
-
-    } else {
-        // Khi chưa đăng nhập: Hiện khung đăng nhập đè lên trên cùng, ẩn app cũ
-        if (mhAuth) {
-            mhAuth.style.setProperty('display', 'flex', 'important');
-            mhAuth.style.zIndex = '99999';
         }
-        if (khungAppCu) {
-            khungAppCu.style.setProperty('display', 'none', 'important');
-        }
-        if (btnLogout) {
-            btnLogout.style.setProperty('display', 'none', 'important');
-        }
-        if (huyLangNgheRealtime) huyLangNgheRealtime();
-        window.daKichHoatMacDinh = false;
-    }
-}
 
         // --- Sự kiện Xử lý ĐĂNG KÝ ---
         btnRegister.addEventListener('click', async () => {
