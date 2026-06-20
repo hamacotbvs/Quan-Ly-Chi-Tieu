@@ -528,7 +528,7 @@
 
 
     <script type="module">
-        imp ort { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         // Thêm doc và deleteDoc vào cuối dòng dưới đây:
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -627,27 +627,14 @@
                     try {
                     // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
                     const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
-            // 4.5 🚀 Khắc phục lỗi: Gom nhóm dữ liệu chính xác trước khi gửi
-                            const duLieuGiaoDich = {
-                                ten: ten,
-                                soTien: soTien,
-                                loai: loai,
-                                danhMuc: danhMuc,
-                                thoiGian: chuoiThoiGianGop
-                            };
-                    // --- ĐOẠN PHÂN TÁCH GIỮA SỬA VÀ THÊM MỚI Ở ĐÂY ---
-                        if (window.idGiaoDichDangSua) {
-                            // HÀNH ĐỘNG SỬA: Nếu tồn tại ID đang sửa, tiến hành ghi đè dữ liệu cũ
-                            const taiLieuRef = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
-                            await updateDoc(taiLieuRef, duLieuGiaoDich);
-                            
-                            // Reset lại biến toàn cục về trạng thái trống
-                            window.idGiaoDichDangSua = null;
-                            idNutGhiDe.innerText = "Cập nhật ví"; // Trả lại tên nút gốc ban đầu
-                        } else {
-                            // HÀNH ĐỘNG THÊM MỚI: Nếu không sửa gì, dùng lệnh addDoc tạo mới hoàn toàn
-                            await addDoc(boChonBoSuuTap, duLieuGiaoDich);
-                        }
+            // 4.5 Đẩy dữ liệu transaction mới lên Firestore
+                    await addDoc(boChonBoSuuTap, {
+                        ten: ten,
+                        soTien: soTien,
+                        loai: loai,
+                        danhMuc: danhMuc,
+                        thoiGian: chuoiThoiGianGop // Đã đồng bộ với input giao diện
+                    });
             // 4.6 Dọn dẹp giao diện (Reset Form)
                     idTen.value = '';
                     idSoTien.value = ''; 
@@ -804,7 +791,7 @@
                             setTimeout(async () => {
                                 if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
                                     try {
-                                        const taiLieuRef = doc(db, "giao_dich_business", idTaiLieu);
+                                        const taiLieuRef = doc(db, "QuanLyChiTieu", idTaiLieu);
                                         await deleteDoc(taiLieuRef);
                                     } catch (error) {
                                         console.error("Lỗi xóa:", error);
