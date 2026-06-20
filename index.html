@@ -114,1172 +114,566 @@
             II. CẤU HÌNH CHUNG & LAYOUT ỨNG DỤNG
             ========================================================================== */
                 /* 2.1 Cấu hình nền và căn giữa ứng dụng */
-
                 body {
-
                     font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-
                     background-color: #f7f9fa; /* Màu nền xám nhạt toàn màn hình máy tính */
-
                     color: #333;               /* Màu chữ mặc định (đen xám) */
-
                     margin: 0; padding: 0;     /* Xóa bỏ khoảng cách thừa ở rìa màn hình */
-
                     display: flex;
-
                     justify-content: center;   /* Đưa toàn bộ ứng dụng ra chính giữa màn hình */
-
                 }        
-
             /* 2.2 Khung mô phỏng ứng dụng điện thoại tiện lợi */
-
                 .app-container {
-
                     background-color: #f7f9fa;     /* Nền của ứng dụng là màu xám */
-
                     width: 100%;
-
                     max-width: 450px;           /* Chiều rộng tối đa là 450px (chuẩn kích thước điện thoại) */
-
                     min-height: 100vh;          /* Chiều cao tối thiểu bằng 100% màn hình thiết bị */
-
                     box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ đổ xung quanh khung */
-
                     position: relative;
-
                     padding-bottom: 75px;       /* Đẩy nội dung bên trong lên 75px để không bị thanh menu đáy đè lên */
-
                     box-sizing: border-box;
-
                 }
-
             /* 2.3 Quản lý ẩn/hiện các Tab nội dung */
-
                 .tab-content {
-
                     display: none; /* Ẩn mặc định: Tất cả các tab (Home, Nhập số, Báo cáo) đều bị giấu đi */
-
                     padding: 20px; /* Tạo khoảng cách 20px từ rìa ứng dụng vào nội dung bên trong cho dễ nhìn */
-
                 }
-
                 .tab-content.active {
-
                     display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */
-
                 }
 
     /* A.2 ĐỊNH DẠNG TỪNG TRANG */
-
         /* ==========================================================================
-
         I. TAB 1: HOME
-
         ========================================================================== */
-
             /* 1.1 THANH HẠN MỨC CHI TIÊU TRONG THÁNG */
-
                 /* Khung bọc bên ngoài của vùng hạn mức */
-
                     .khung-han-muc-home {
-
                         margin-top: 15px;
-
                         padding: 15px;
-
                         background-color: #ffffff;
-
                         border-radius: 12px;
-
                         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-
                         cursor: pointer;
-
                         user-select: none;
-
                     }
-
                 /* Hàng tiêu đề trên cùng: Đẩy tiêu đề sang trái, cụm tháng sang phải */
-
                     .han-muc-hang-dau {
-
                         display: flex;
-
                         justify-content: space-between;
-
                         align-items: center;
-
                         margin-bottom: 12px;
-
                     }
-
                     .han-muc-tieu-de {
-
                         font-weight: bold;
-
                         font-size: 14px;
-
                         color: #333333;
-
                     }
-
                 /* Kén chứa 2 nút mũi tên thu nhỏ lại để vừa vặn góc phải */
-
                     .bo-dieu-huong-thang {
-
                         display: flex;
-
                         align-items: center;
-
                         background-color: #f1f2f6;
-
                         border-radius: 15px;
-
                         padding: 1px 4px;
-
                     }
-
                     .nut-mui-ten {
-
                         background: none;
-
                         border: none;
-
                         font-size: 11px;
-
                         color: #57606f;
-
                         padding: 4px 8px;
-
                         cursor: pointer;
-
                     }
-
                     .nut-mui-ten:active {
-
                         transform: scale(0.85);
-
                     }
-
                     #hien-thi-thang-nam {
-
                         font-size: 12px;
-
                         font-weight: 600;
-
                         color: #2f3542;
-
                         min-width: 85px;
-
                         text-align: center;
-
                     }
-
                 /* Thanh nền tiến trình */
-
                     .han-muc-thanh-nen {
-
                         width: 100%;
-
                         height: 10px;
-
                         background-color: #e0e0e0;
-
                         border-radius: 5px;
-
                         overflow: hidden;
-
                         margin-bottom: 8px;
-
                     }
-
                     #thanh-phat-trien-han-muc {
-
                         width: 0%;
-
                         height: 100%;
-
                         background-color: #2ecc71;
-
                         transition: width 0.3s ease, background-color: 0.3s ease;
-
                     }
-
                 /* Hàng thông tin dưới đáy thanh tiến trình */
-
                     .han-muc-hang-day {
-
                         display: flex;
-
                         justify-content: space-between;
-
                         align-items: center;
-
                     }
-
                     #goi-y-han-muc {
-
                         font-size: 11px;
-
                         color: #999999;
-
                     }
-
                     #chu-ghi-han-muc {
-
                         font-size: 12px;
-
                         font-weight: 600;
-
                         color: #444444;
-
                     }
-
         /* ==========================================================================
-
         II. TAB 2: LỊCH SỬ
-
         ========================================================================== */        
-
              /* 1.1 KHUNG HIỂN THỊ SỐ DƯ HIỆN TẠI */
-
                 .vi-tong-quan {
-
                     background-color: #0082C8; /* Màu xanh hoàng gia */
-
                     color: white;                            /* Chữ bên trong màu trắng */
-
                     padding: 20px;                           /* Khoảng cách từ chữ đến viền khung là 20px */
-
                     border-radius: 12px;                     /* Bo tròn 4 góc của khung (độ cong 12px) */
-
                     text-align: center;                      /* Căn giữa toàn bộ chữ bên trong */
-
                     margin-top: 10px; margin-bottom: 25px;   /* Tạo khoảng cách trống phía trên và dưới khung */
-
                     box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2); /* Tạo hiệu ứng đổ bóng màu xanh mờ giúp khung trông nổi lên bệ bề mặt */
-
                 }
-
                 .vi-tong-quan .nhan {
-
                     font-size: 14px;      /* Chữ dòng "Số dư hiện tại" nhỏ vừa phải */
-
                     opacity: 0.9;         /* Làm mờ nhẹ chữ đi một chút (90%) để tạo độ phụ */
-
                     margin-bottom: 5px;   /* Cách dòng số tiền bên dưới 5px */
-
                 }
-
                 .vi-tong-quan .so-tien-vi {
-
                     font-size: 28px;      /* Số tiền hiển thị rất to (28px) */
-
                     font-weight: 700;     /* In đậm số tiền để tạo điểm nhấn */
-
                 }
-
             /* 2.1 định dạng khung lịch sử */
-
                 .danh-sach-lich-su {
-
                     margin-top: 20px;                 /* Đẩy khối lịch sử cách xa khung ví phía trên một chút */
-
                     background-color: #ffffff;        /* 👈 Đổ nền màu TRẮNG tinh cho toàn bộ khối */
-
                     border-radius: 14px;              /* Bo tròn 4 góc của khung trắng */
-
                     padding: 16px;                    /* Tạo khoảng trống từ viền trắng dịch vào trong để nội dung dễ thở */
-
                     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); /* Đổ bóng siêu mờ nhẹ để khung nổi lên trên nền xám */
-
                     border: 1px solid #edf2f4;        /* Tạo đường viền mảnh xung quanh khung trắng */
-
                 }
-
             /* 2.2 định dạng phần tiêu đề lịch sử */
-
                 .tieu-de-khoang {
-
                     font-size: 16px;
-
                     color: #7f8c8d;                   /* Màu chữ xám thanh lịch */
-
                     border-bottom: 1px solid #edf2f4; /* Tạo một đường kẻ ngang mờ ngăn cách ở dưới tiêu đề */
-
                     padding-bottom: 10px;             /* Khoảng cách từ chữ tiêu đề xuống đường kẻ */
-
                     margin-bottom: 5px;
-
                     font-weight: 600;                 /* Chữ hơi in đậm một chút */
-
                 }      
-
             /* 2.3 Định dạng từng dòng lịch sử (Cấu trúc Vuốt Chạm Swipe-to-Action) */
-
                     .dong-giao-dich {
-
                         position: relative;
-
                         overflow: hidden;
-
                         background-color: #ffffff;
-
                         border-bottom: 1px solid #f8fafc;
-
                         user-select: none; /* Tránh bôi đen chữ khi vuốt bằng chuột trên PC */
-
                     }
-
                     .dong-giao-dich:last-child {
-
                         border-bottom: none;
-
                     }
-
                 /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
-
                     .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
-
                     .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
-
                 /* Phần nội dung chính nằm đè phía trên */
-
                     .giao-dich-noi-dung {
-
                         display: flex;
-
                         justify-content: space-between;     /* Đẩy phần tên sang sát lề trái, phần số tiền sang sát lề phải */
-
                         align-items: center;                /* Căn cho hai bên thẳng hàng nhau theo chiều dọc */
-
                         padding: 14px 10px;                 /* Tăng nhẹ khoảng cách trên dưới giữa các hàng */
-
                         background-color: #ffffff;        /* Đường kẻ ngang siêu mờ dưới mỗi giao dịch */
-
                         position: relative;
-
                         z-index: 2;
-
                         transition: transform 0.2s ease-out; /* Tạo hiệu ứng trượt mượt mà */
-
                         cursor: grab;
-
                     }
-
                     .giao-dich-noi-dung:active {
-
                         cursor: grabbing;
-
                     }
-
                     .dong-giao-dich:last-child {
-
                     border-bottom: none;                /* Xóa đường kẻ ngang ở dòng giao dịch cuối cùng cho đẹp */
-
                     }
-
                 /* Cụm bên trái: Danh mục & Tên */
-
                     .giao-dich-trai {
-
                         display: flex;
-
                         flex-direction: column;
-
                         text-align: left;
-
                     }
-
                     .giao-dich-muc {
-
                         font-size: 13px;
-
                         color: #718096;
-
                         margin-bottom: 2px;
-
                     }  
-
                     .giao-dich-ten {
-
                         font-size: 15px;
-
                         font-weight: 500;
-
                         color: #2d3748;
-
                     }
-
                 /* Cụm bên phải: Ngày giờ & Số tiền */
-
                     .giao-dich-phai-cum {
-
                         display: flex;
-
                         flex-direction: column;
-
                         align-items: flex-end;
-
                         text-align: right;
-
                     }
-
                     .giao-dich-thoi-gian {
-
                         font-size: 12px;
-
                         color: #a0aec0;
-
                         margin-bottom: 2px;
-
                     }
-
                     .giao-dich-phai {
-
                         font-weight: 600;
-
                         font-size: 15px;
-
                     }      
-
                 /* LỚP NỀN ẨN PHÍA SAU KHI VUỐT */
-
                     .nen-hanh-dong {
-
                         position: absolute;
-
                         top: 0;
-
                         bottom: 0;
-
                         left: 0;
-
                         right: 0;
-
                         z-index: 1;
-
                         display: flex;
-
                         align-items: center;
-
                         justify-content: space-between;
-
                         font-weight: 600;
-
                         font-size: 14px;
-
                         color: white;
-
                     }
-
                     .hanh-dong-sua {
-
                         background-color: #3498db; /* Nền xanh khi vuốt phải để sửa */
-
                         height: 100%;
-
                         width: 50%;
-
                         display: flex;
-
                         align-items: center;
-
                         padding-left: 20px;
-
                         justify-content: flex-start;
-
                     }
-
                     .hanh-dong-xoa {
-
                         background-color: #e74c3c; /* Nền đỏ khi vuốt trái để xóa */
-
                         height: 100%;
-
                         width: 50%;
-
                         display: flex;
-
                         align-items: center;
-
                         padding-right: 20px;
-
                         justify-content: flex-end;
-
                     }
-
         /* ==========================================================================
-
         III. TAB 3: NHẬP LIỆU (+)
-
         ========================================================================== */
-
                 .form-group { margin-bottom: 18px; }
-
                 .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #555; }
-
                 .form-group input, .form-group select {
-
                     width: 100%;
-
                     padding: 12px;
-
                     border: 1px solid #cbd5e1;
-
                     border-radius: 8px;
-
                     box-sizing: border-box;
-
                     font-size: 15px;
-
                     background-color: #fff;
-
                     transition: border 0.2s;
-
                 }
-
                 .form-group input:focus, .form-group select:focus { border-color: #3498db; outline: none; }        
-
             /* Nút Lưu giao dịch */
-
                 .nut-bam-luu {
-
                     width: 100%;
-
                     padding: 14px;
-
                     background-color: #3498db;
-
                     color: white;
-
                     border: none;
-
                     border-radius: 8px;
-
                     font-size: 16px;
-
                     cursor: pointer;
-
                     font-weight: bold;
-
                     margin-top: 10px;
-
                     box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
-
                 }
-
                 .nut-bam-luu:hover { background-color: #2980b9; }
-
         /* ==========================================================================
-
         IV. TAB 4: BÁO CÁO
-
         ========================================================================== */
-
                 .the-bao-cao {
-
                     background: white;
-
                     border-radius: 12px;
-
                     padding: 15px;
-
                     margin-bottom: 15px;
-
                     box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-
                     border: 1px solid #edf2f4;
-
                 }
-
                 .thong-ke-dong { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
-
                 .thong-ke-so { font-weight: bold; }        
-
             /* Thanh đồ họa tiến trình (Progress Bar) so sánh trực quan */
-
                 .thanh-phan-tram-khung { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
-
                 .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
-
                 .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
-
     /* A.3 ĐỊNH DẠNG THANH MENU DƯỚI */    
-
             /* định dạng khung nền menu */
-
                 .menu-day-app {
-
                     position: fixed;
-
                     bottom: 15px;                 /* Đẩy menu bay lơ lửng cách đáy màn hình 15px */
-
                     left: 50%;
-
                     transform: translateX(-50%);  /* Căn giữa menu theo chiều ngang */
-
                     width: calc(100% - 30px);     /* Thu hẹp chiều rộng lại để lộ khoảng trống 2 bên rìa */
-
                     max-width: 420px;             /* Giới hạn lại chiều rộng tối đa cho cân đối */
-
                     height: 65px;
-
                     background-color: #0082C8;    /* Nền màu XANH HOÀNG GIA */
-
                     border-radius: 999px;         /* Bo tròn dạng viên thuốc (Capsule) */
-
                     display: flex;
-
                     justify-content: space-around;
-
                     align-items: center;
-
                     z-index: 100;
-
                     padding: 0 15px;              
-
                     box-sizing: border-box;
-
             /* 👇 THAY ĐỔI: Đổ bóng thông minh tạo vùng nền sáng phía dưới và xung quanh menu */
-
                     box-shadow:
-
                         0 10px 28px rgba(0, 130, 200, 0.25), /* Bóng xanh mờ của menu */
-
                         0 25px 0 20px #ffffff,               /* 👈 Tạo một lớp nền trắng cứng lót hẳn phía dưới */
-
                         0 15px 30px 25px rgba(255, 255, 255, 0.95); /* 👈 Tạo vùng chuyển mờ trắng (Blur) che nội dung khi cuộn */
-
                     }
-
             /* Định dạng chữ, icon */
-
                 .nut-tab {
-
                     display: flex;
-
                     flex-direction: column;
-
                     align-items: center;
-
                     justify-content: center;
-
                     background: none;
-
                     border: none;
-
                     color: rgba(255, 255, 255, 0.65); /* Chữ và icon mặc định màu trắng mờ trên nền xanh */
-
                     cursor: pointer;            
-
             /* 👇 THAY ĐỔI: Sử dụng flex: 1 thay vì width cố định để phân bổ khoảng trống thông minh */
-
                     flex: 1;                      
-
                     height: 100%;
-
                     font-size: 11px;
-
                     font-weight: 500;
-
                     transition: color 0.2s, transform 0.2s;
-
                     -webkit-tap-highlight-color: transparent;
-
                 }        
-
             /* Trạng thái mặc định (Không chọn): Icon chỉ có đường viền mờ, ruột rỗng */
-
                 .nut-tab .icon svg {
-
                     fill: none;
-
                     stroke: currentColor;
-
                     transition: fill 0.2s, transform 0.2s;
-
                 }
-
             /* KHI ĐƯỢC CHỌN (ACTIVE) - ẨN HIỆN GIỮA 2 ICON MENU VIỀN/MÀU */        
-
             /* Định dạng chung cho cả 2 ảnh icon ngôi nhà */
-
                 .nut-tab .img-icon-2d {
-
                     width: 18px !important;
-
                     height: 18px !important;
-
                     object-fit: contain;
-
                     margin-bottom: 5px;
-
                 }
-
             /* 1. Mặc định khi KHÔNG CHỌN (Không có class active) */
-
                 .nut-tab .icon-active {
-
                     display: none; /* Ẩn ảnh viền đi */
-
                 }
-
                 .nut-tab .icon-inactive {
-
                     display: block; /* Hiện ảnh màu (homemau.png) lên */
-
                 }
-
             /* 2. Khi ĐƯỢC CHỌN (Có class active) */
-
                 .nut-tab.active .icon-active {
-
                     display: block; /* Hiện ảnh viền (homevien.png) lên */
-
                 }
-
                 .nut-tab.active .icon-inactive {
-
                 display: none; /* Ẩn ảnh màu đi */
-
                 }      
-
             /* 3. Màu chữ mặc định cho tất cả các menu khi KHÔNG CHỌN */
-
                 .nut-tab .chu-menu {
-
                     font-size: 11px;
-
                     color: #b3dbf2;      /* Màu xanh nhạt hoặc xám mờ tùy bạn chỉnh */
-
                     opacity: 0.7;        /* Làm mờ nhẹ đi để nhấn mạnh nút đang chọn */
-
                     transition: all 0.2s ease;
-
                 }
-
             /* 4. Khi ĐƯỢC CHỌN (có class active) - Chữ sẽ trắng tinh và đậm lên */
-
                 .nut-tab.active .chu-menu {
-
                     color: #ffffff !important;   /* Mã màu trắng tinh mã Hex */
-
                     opacity: 1 !important;       /* Hiện rõ nét 100% */
-
                     font-weight: bold;           /* Chữ đậm lên nhìn cho rõ ràng */
-
                 }
-
             /* NÚT THÊM (+) TRUNG TÂM PHONG CÁCH MỚI - ĐÃ CĂN CHỈNH GIỮA */
-
                 .nut-tab-them-trung-tam .icon {
-
                     font-size: 26px;
-
                     background-color: #ffffff;    /* Quả bóng màu TRẮNG tinh */
-
                     color: #0082C8;               /* Dấu (+) bên trong mang màu xanh hoàng gia */
-
                     width: 46px;                  /* Kích thước quả bóng cân đối */
-
                     height: 46px;
-
                     border-radius: 50%;
-
                     display: flex;
-
                     align-items: center;
-
                     justify-content: center;
-
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-
                     margin-bottom: 0;             /* Giữ nút nằm chính giữa theo chiều dọc */
-
                     transition: transform 0.2s, background-color 0.2s, color 0.2s;
-
                 }
-
             /* Khi người dùng đang nhấn giữ hoặc đang ở tab Nhập số (+) */
-
                 .nut-tab-them-trung-tam.active .icon {
-
                     background-color: #2c3e50;    /* Quả bóng chuyển sang màu xám đen sang trọng */
-
                     color: #ffffff;               /* Dấu (+) chuyển sang màu trắng */
-
                     transform: scale(1.08);      
-
                 }
-
             /* Dòng trạng thái trống */
-
                 .trang-thai-trong {
-
                     text-align: center;
-
                     color: #94a3b8;
-
                     font-style: italic;
-
                     padding: 30px 0;
-
                     font-size: 14px;
-
                 }
-
     </style>
-
 </head>
-
 <body>
-
 <div id="man-hinh-auth">
         <div class="hop-dang-nhap">
             <h2>Quản Lý Chi Tiêu</h2>
-            <p>Đăng nhập tài khoản hoặc đăng ký để sử dụng</p>
-            
+            <p>Đăng nhập tài khoản hoặc đăng ký để sử dụng</p>      
             <input type="text" id="auth-username" class="o-nhap-lieu" placeholder="Tên đăng nhập / Username">
             <input type="password" id="auth-password" class="o-nhap-lieu" placeholder="Mật khẩu / Password">
-            
             <div class="cum-nut-bam">
                 <button id="btn-dang-nhap" class="nut-bam nut-dang-nhap">Đăng Nhập</button>
                 <button id="btn-dang-ky" class="nut-bam nut-dang-ky">Đăng Ký</button>
             </div>
         </div>
     </div>
-
     <button id="nut-dang-xuat-he-thong">🔒 Đăng xuất</button>
-
-
 <div id="khung-app-cu-cua-ban">
          </div>
-
 <div class="app-container">
-
-       
-
     <button id="nut-lam-moi-app" class="nut-reset-treo" title="Tải lại ứng dụng">
-
         <svg viewBox="0 0 24 24">
-
             <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/>
-
         </svg>
-
     </button>
-
- 
-
 <div id="tab-home" class="tab-content active">
-
-
-
     <div class="khung-han-muc-home" id="vung-han-muc">
-
-       
-
         <div class="han-muc-hang-dau">
-
             <span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu</span>
-
-           
-
             <div class="bo-dieu-huong-thang" id="cum-chuyen-thang-ngan-chan">
-
                 <button id="nut-thang-truoc" class="nut-mui-ten">◀</button>
-
                 <span id="hien-thi-thang-nam">Tháng --/----</span>
-
                 <button id="nut-thang-sau" class="nut-mui-ten">▶</button>
-
             </div>
-
         </div>    
-
-       
-
         <div class="han-muc-thanh-nen">
-
             <div id="thanh-phat-trien-han-muc"></div>
-
         </div>    
-
-       
-
         <div class="han-muc-hang-day">
-
             <div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div>
-
             <span id="chu-ghi-han-muc">0 / Chưa cài đặt</span>
-
         </div>
-
-       
-
     </div>
-
-
-
 </div>
-
-
-
     <div id="tab-lich-su" class="tab-content">
-
         <div class="vi-tong-quan">
-
             <div class="nhan">Số dư hiện tại</div>
-
             <div class="so-tien-vi"><span id="so-du">0</span> đ</div>
-
         </div>
-
         <div class="danh-sach-lich-su">
-
             <div class="tieu-de-khoang">Lịch sử dòng tiền chi tiết</div>
-
             <div id="lich-su-giao-dich">
-
                 <div id="danh-sach-lich-su-toan-bo">
-
                     <div class="trang-thai-trong">Đang tải danh sách lịch sử...</div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
-
-
     <div id="tab-add" class="tab-content">
-
         <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
-
-       
-
         <div class="form-group">
-
             <label>Loại dòng tiền:</label>
-
             <select id="loai-giao-dich">
-
                 <option value="chi">💸 Chi tiêu (Khoản ra)</option>
-
                 <option value="thu">💰 Thu nhập (Khoản vào)</option>
-
             </select>
-
         </div>
-
-
-
         <div class="form-group">
-
             <label>Phân loại danh mục:</label>
-
             <select id="danh-muc-giao-dich">
-
                 <option value="Ăn uống">🍔 Ăn uống</option>
-
                 <option value="Di chuyển">🚗 Di chuyển</option>
-
                 <option value="Mua sắm">🛍️ Mua sắm</option>
-
                 <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
-
                 <option value="Giải trí">🎬 Giải trí & Cà phê</option>
-
                 <option value="Khác">✨ Khác</option>
-
             </select>
-
         </div>
-
-
-
         <div class="form-group">
-
             <label>Tên khoản thu/chi:</label>
-
             <input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng...">
-
         </div>
-
-
-
         <div class="form-group">
-
             <label id="label-so-tien">Số tiền (đ):</label>
-
             <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
-
         </div>
-
-
-
         <div class="form-group-row" style="display: flex; gap: 10px;">
-
             <div class="form-group" style="flex: 1;">
-
                 <label>Ngày tháng:</label>
-
                 <input type="date" id="ngay-giao-dich">
-
             </div>
-
             <div class="form-group" style="flex: 1;">
-
                 <label>Thời gian:</label>
-
                 <input type="time" id="gio-giao-dich">
-
             </div>
-
         </div>            
-
-
-
         <button id="nut-ghi-de" class="nut-bam-luu">Cập nhật ví</button>
-
     </div>
-
-
-
     <div id="tab-report" class="tab-content">
-
         <div class="tieu-de-khoang" style="margin-top: 10px;">Tổng quan chu kỳ tài chính</div>
-
-       
-
         <div class="the-bao-cao">
-
             <div class="thong-ke-dong">
-
                 <span>Tổng thu nhập (vào):</span>
-
                 <span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span>
-
             </div>
-
             <div class="thanh-phan-tram-khung">
-
                 <div id="thanh-thu-ti-le" class="thanh-tien-vao"></div>
-
             </div>
-
         </div>
-
-
-
         <div class="the-bao-cao">
-
             <div class="thong-ke-dong">
-
                 <span>Tổng chi tiêu (ra):</span>
-
                 <span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span>
-
             </div>
-
             <div class="thanh-phan-tram-khung">
-
                 <div id="thanh-chi-ti-le" class="thanh-tien-ra"></div>
-
             </div>
-
         </div>
-
     </div>
-
-
-
     <div id="tab-tai-khoan" class="tab-content">
-
         <div class="tieu-de-khoang" style="margin-top: 10px;">Thông tin cá nhân</div>
-
         <div style="padding: 20px; text-align: center; background: white; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-
             <div style="font-size: 45px; margin-bottom: 10px;">👤</div>
-
             <h3 style="margin: 5px 0;">Người dùng App Business</h3>
-
             <p style="color: #777; font-size: 13px; margin: 5px 0;">Hệ thống quản lý chi tiêu đám mây</p>
-
         </div>
-
     </div>
-
-
-
     <nav class="menu-day-app menu dưới">
-
         <button class="nut-tab active" data-target="home">
-
             <img src="homemau.png" class="img-icon-2d icon-active" alt="Tổng quan">
-
             <img src="homevien.png" class="img-icon-2d icon-inactive" alt="Tổng quan">
-
             <span class="chu-menu">HOME</span>
-
         </button>
-
-
-
         <button class="nut-tab" data-target="lich-su">
-
             <img src="lichsumau.png" class="img-icon-2d icon-active" alt="Lịch sử">
-
             <img src="lichsuvien.png" class="img-icon-2d icon-inactive" alt="Lịch sử">
-
             <span class="chu-menu">Lịch sử</span>
-
         </button>
-
-
-
         <button class="nut-tab nut-tab-them-trung-tam" data-target="add">
-
             <span class="icon">＋</span>
-
         </button>
-
-
-
         <button class="nut-tab" data-target="report">
-
             <img src="baocaomau.png" class="img-icon-2d icon-active" alt="Báo cáo">
-
             <img src="baocaovien.png" class="img-icon-2d icon-inactive" alt="Báo cáo">
-
             <span class="chu-menu">Báo cáo</span>
-
         </button>
-
-
-
         <button class="nut-tab" data-target="tai-khoan">
-
             <img src="taikhoanmau.png" class="img-icon-2d icon-active" alt="Tài khoản">
-
             <img src="taikhoanvien.png" class="img-icon-2d icon-inactive" alt="Tài khoản">
-
             <span class="chu-menu">Tài khoản</span>
-
         </button>
-
     </nav>
-
-
-
 </div>
-
-
-
 
 <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
