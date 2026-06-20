@@ -830,6 +830,8 @@
                     let tongSoDu = 0;
                     let tongThuNhap = 0;
                     let tongChiTieu = 0;
+                    // Thêm dòng này ở cuối hàm đó để truyền dữ liệu cho thanh hạn mức tự động tính toán lại
+                    capNhatThanhHanMuc(snapshot.docs);
             // 7.2 Kiểm tra bộ lưu trữ rỗng
                     if (snapshot.empty) {
                         idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
