@@ -747,6 +747,36 @@
                 formDK.style.display = 'none'; formDN.style.display = 'block';
                 titleAuth.innerText = "ĐĂNG NHẬP HỆ THỐNG";
             });
+        // --------------------------------------------------------------------------
+        // III. XỬ LÝ ĐĂNG KÝ TÀI KHOẢN MỚI
+        // --------------------------------------------------------------------------
+            document.getElementById('nut-dang-ky')?.addEventListener('click', async () => {
+                const ten = document.getElementById('dk-ten').value.trim();
+                const email = document.getElementById('dk-email').value.trim();
+                const matKhau = document.getElementById('dk-mat-khau').value;
+                if(!ten || !email || matKhau.length < 6) {
+                    alert("Vui lòng điền đầy đủ và mật khẩu tối thiểu 6 ký tự!"); return;
+                }
+                try {
+                    const ketQua = await createUserWithEmailAndPassword(auth, email, matKhau);
+                    const user = ketQua.user;
+                    // Đồng bộ đẩy thông tin user xuống Firestore để Admin duyệt
+                    await setDoc(doc(db, "danh_sach_users", user.uid), {
+                        uid: user.uid,
+                        email: email,
+                        tenHienThi: ten,
+                        trangThai: "cho_duyet", // Trạng thái mặc định chờ Admin duyệt
+                        vaiTro: "user"         // Mặc định là tài khoản thường
+                    });
+                    alert("Đăng ký thành công! Hãy liên hệ Admin để phê duyệt tài khoản của bạn.");
+                    await signOut(auth); // Đăng xuất ra bắt buộc chờ duyệt xong mới được vào
+                    document.getElementById('link-sang-dang-nhap').click();
+                } catch (error) {
+                    console.error(error);
+                    alert("Lỗi đăng ký: " + error.message);
+                }
+            });
+        
 
         // --------------------------------------------------------------------------
         // II. ĐỊNH DANH TẤT CẢ CÁC BIẾN (BẮT BUỘC ĐỂ TRÊN ĐẦU)
