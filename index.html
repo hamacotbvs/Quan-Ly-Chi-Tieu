@@ -1024,17 +1024,16 @@
 // Dữ liệu trong localStorage sẽ có dạng: {"2026-05": 5000000, "2026-06": 10000000}
 let boSuoTapHanMuc = JSON.parse(localStorage.getItem('bo_suo_tap_han_muc')) || {};
 
-document.getElementById('vung-han-muc')?.addEventListener('click', () => {
-    // 1. Xác định tháng đang cần xử lý (Lấy theo tháng của bộ chọn biểu đồ, nếu không có thì lấy tháng hiện tại)
-    const idChonThang = document.getElementById('chon-thang-bieu-do');
-    let thangDangXem = idChonThang ? idChonThang.value : "";
-    
-    if (!thangDangXem) {
-        const ngayHienTai = new Date();
-        thangDangXem = `${ngayHienTai.getFullYear()}-${String(ngayHienTai.getMonth() + 1).padStart(2, '0')}`;
-    }
+// CHẶN LỖI XUNG ĐỘT CLICK: Bấm nút đổi tháng không bị hiện hộp thoại nhập hạn mức
+document.getElementById('cum-chuyen-thang-ngan-chan')?.addEventListener('click', (e) => {
+    e.stopPropagation(); // Ngăn sự kiện click truyền ra khung lớn bên ngoài
+});
 
-    // 2. Lấy hạn mức riêng của tháng đang xem
+document.getElementById('vung-han-muc')?.addEventListener('click', () => {
+    // Xác định tháng đang xem bằng hàm lấy từ biến toàn cục thoiGianDangXem
+    let thangDangXem = layChuoiThangNam(thoiGianDangXem);
+
+    // Lấy hạn mức riêng của tháng đang xem
     let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
     
     // Tách chuỗi năm-tháng để hiển thị thông báo thân thiện (Ví dụ: "tháng 06/2026")
@@ -1075,14 +1074,8 @@ document.getElementById('vung-han-muc')?.addEventListener('click', () => {
 function capNhatThanhHanMuc(docs) {
     window.duLieuSnapshotQuocTe = docs;
 
-    // 1. Xác định tháng cần tính toán dựa theo bộ chọn tháng của Biểu đồ
-    const idChonThang = document.getElementById('chon-thang-bieu-do');
-    let thangDangXem = idChonThang ? idChonThang.value : "";
-    
-    if (!thangDangXem) {
-        const ngayHienTai = new Date();
-        thangDangXem = `${ngayHienTai.getFullYear()}-${String(ngayHienTai.getMonth() + 1).padStart(2, '0')}`;
-    }
+    // Đổi cách lấy tháng: lấy trực tiếp từ biến thoiGianDangXem của bộ mũi tên
+    let thangDangXem = layChuoiThangNam(thoiGianDangXem);
 
     // 2. Tính tổng chi tiêu của riêng tháng đang được chọn xem
     let tongDaChi = 0;
