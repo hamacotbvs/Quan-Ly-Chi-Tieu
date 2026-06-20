@@ -654,6 +654,15 @@
                     idTen.value = '';
                     idSoTien.value = ''; 
                     if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):';
+                    // --- Thêm đoạn này để reset về ngày giờ hiện tại ---
+                    const bayGio = new Date();
+                    const muiGioVN = new Date(bayGio.getTime() + (7 * 60 * 60 * 1000)); // Định dạng chuẩn UTC+7
+                    if (inputNgay) inputNgay.value = muiGioVN.toISOString().split('T')[0]; 
+                    if (inputGio) {
+                        const gio = String(muiGioVN.getUTCHours()).padStart(2, '0');
+                        const phut = String(muiGioVN.getUTCMinutes()).padStart(2, '0');
+                        inputGio.value = `${gio}:${phut}`;
+                    }
             // 4.7 Tự động chuyển qua tab Tổng quan (HOME)
                     const nutHome = document.querySelector('[data-target="home"]');
                     if (nutHome) {
