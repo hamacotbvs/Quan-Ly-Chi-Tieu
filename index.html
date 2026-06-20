@@ -87,8 +87,19 @@
         /* ==========================================================================
         I. TAB 1: HOME
         ========================================================================== */
-            /* 1.1 KHUNG HIỂN THỊ SỐ DƯ HIỆN TẠI */
-                
+            /* 1.1 THANH HẠN MỨC CHI TIÊU TRONG THÁNG */
+                <div class="khung-han-muc-home" id="vung-han-muc" style="margin-top: 15px; padding: 15px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: bold; font-size: 14px; color: #333;">🎯 Hạn mức chi tiêu tháng này</span>
+                        <span id="chu-ghi-han-muc" style="font-size: 13px; font-weight: 500; color: #666;">0 / Chưa cài đặt</span>
+                    </div>
+    
+                    <div style="width: 100%; height: 12px; background-color: #e0e0e0; border-radius: 6px; overflow: hidden;">
+                        <div id="thanh-phat-trien-han-muc" style="width: 0%; height: 100%; background-color: #2ecc71; transition: width 0.3s ease, background-color: 0.3s ease;"></div>
+                    </div>
+    
+                    <div id="goi-y-han-muc" style="font-size: 11px; color: #999; margin-top: 6px; text-align: right;">💡 Bấm vào đây để cài đặt hạn mức</div>
+                </div> 
         /* ==========================================================================
         II. TAB 2: LỊCH SỬ
         ========================================================================== */        
