@@ -15,25 +15,24 @@
         /* ==========================================================================
         I. NÚT RESET PHONG CÁCH MỚI
         ========================================================================== */
-                .nut-reset-treo {position: absolute; top: 15px; right: 15px; z-index: 1000;
-                    background-color: #ffffff; border: 1px solid #edf2f4; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Đổ bóng mịn màng */transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s; padding: 0; -webkit-tap-highlight-color: transparent;}
-                /* Định cấu hình màu sắc cho icon SVG bên trong */
-                .nut-reset-treo svg {width: 20px; height: 20px; fill: none; stroke: #0082C8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s ease;}
-                .nut-reset-treo:active {transform: scale(0.92); /* Hiệu ứng lún nút khi nhấn */background-color: #f8fafc; /* Nền xám nhẹ khi chạm ngón tay */box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);}
+            .nut-reset-treo {position: absolute; top: 15px; right: 15px; z-index: 1000;
+                background-color: #ffffff; border: 1px solid #edf2f4; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Đổ bóng mịn màng */transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s; padding: 0; -webkit-tap-highlight-color: transparent;}
+            /* Định cấu hình màu sắc cho icon SVG bên trong */
+            .nut-reset-treo svg {width: 20px; height: 20px; fill: none; stroke: #0082C8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s ease;}
+            .nut-reset-treo:active {transform: scale(0.92); /* Hiệu ứng lún nút khi nhấn */background-color: #f8fafc; /* Nền xám nhẹ khi chạm ngón tay */box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);}
         /* ==========================================================================
         II. CẤU HÌNH CHUNG & LAYOUT ỨNG DỤNG
         ========================================================================== */
             /* 2.1 Cấu hình nền và căn giữa ứng dụng */
-                body {font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f7f9fa; /* Màu nền xám nhạt toàn màn hình máy tính */
-                    color: #333; /* Màu chữ mặc định (đen xám) */ margin: 0; padding: 0;/* Xóa bỏ khoảng cách thừa ở rìa màn hình */ display: flex; justify-content: center;/* Đưa toàn bộ ứng dụng ra chính giữa màn hình */}        
+            body {font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f7f9fa; /* Màu nền xám nhạt toàn màn hình máy tính */
+                color: #333; /* Màu chữ mặc định (đen xám) */ margin: 0; padding: 0;/* Xóa bỏ khoảng cách thừa ở rìa màn hình */ display: flex; justify-content: center;/* Đưa toàn bộ ứng dụng ra chính giữa màn hình */}        
             /* 2.2 Khung mô phỏng ứng dụng điện thoại tiện lợi */
-                .KHUNG-CHUA-APP {background-color: #f7f9fa;/* Nền APP là màu xám */width: 100%;max-width: 450px;/* Chiều rộng tối đa 450px (chuẩn điện thoại) */min-height: 100vh;/* Chiều cao tối thiểu 100% màn hình thiết bị */
-                    box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ đổ xung quanh khung */position: relative;padding-bottom: 75px;/* Đẩy nội dung bên trong lên 75px để không bị thanh menu đáy đè lên */
-                    box-sizing: border-box;}
+            .KHUNG-CHUA-APP {background-color: #f7f9fa;/* Nền APP là màu xám */width: 100%;max-width: 450px;/* Chiều rộng tối đa 450px (chuẩn điện thoại) */min-height: 100vh;/* Chiều cao tối thiểu 100% màn hình thiết bị */
+                box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ */position: relative;padding-bottom: 75px;/* Đẩy nội dung lên 75px để không bị thanh menu đáy đè lên */box-sizing: border-box;}
             /* 2.3 Quản lý ẩn/hiện các Tab nội dung */
-                .tab-content {display: none; /* Ẩn mặc định:các tab(Home, Báo cáo...) */padding: 20px; /* Tạo khoảng cách từ rìa ứng dụng vào nội dung cho dễ nhìn */}
-                .tab-content.active {display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */}
+            .tab-content {display: none; /* Ẩn mặc định:các tab(Home, Báo cáo...) */padding: 20px; /* Tạo khoảng cách từ rìa ứng dụng vào nội dung cho dễ nhìn */}
+            .tab-content.active {display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */}
     /* A.2 ĐỊNH DẠNG TỪNG TRANG */
         /* ==========================================================================
         I. TAB 1: HOME
@@ -60,196 +59,35 @@
         II. TAB 2: LỊCH SỬ
         ========================================================================== */        
              /* 1.1 KHUNG HIỂN THỊ SỐ DƯ HIỆN TẠI */
-                .vi-tong-quan {background-color: #0082C8;color: white;padding: 20px;border-radius: 12px;text-align: center;margin-top: 10px; margin-bottom: 25px;box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2);}
-                .vi-tong-quan .nhan {font-size: 14px;opacity: 0.9;margin-bottom: 5px;}
-                .vi-tong-quan .so-tien-vi {font-size: 28px;font-weight: 700;}
+            .vi-tong-quan {background-color: #0082C8;color: white;padding: 20px;border-radius: 12px;text-align: center;margin-top: 10px; margin-bottom: 25px;box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2);}
+            .vi-tong-quan .nhan {font-size: 14px;opacity: 0.9;margin-bottom: 5px;}
+            .vi-tong-quan .so-tien-vi {font-size: 28px;font-weight: 700;}
             /* 2.1 định dạng khung lịch sử */
-                .danh-sach-lich-su {
-                    margin-top: 20px;                 /* Đẩy khối lịch sử cách xa khung ví phía trên một chút */
-                    background-color: #ffffff;        /* 👈 Đổ nền màu TRẮNG tinh cho toàn bộ khối */
-                    border-radius: 14px;              /* Bo tròn 4 góc của khung trắng */
-                    padding: 16px;                    /* Tạo khoảng trống từ viền trắng dịch vào trong để nội dung dễ thở */
-                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); /* Đổ bóng siêu mờ nhẹ để khung nổi lên trên nền xám */
-                    border: 1px solid #edf2f4;        /* Tạo đường viền mảnh xung quanh khung trắng */
-                }
-
+            .danh-sach-lich-su {margin-top: 20px;background-color: #ffffff;border-radius: 14px;padding: 16px;box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);border: 1px solid #edf2f4;}
             /* 2.2 định dạng phần tiêu đề lịch sử */
-
-                .tieu-de-khoang {
-
-                    font-size: 16px;
-
-                    color: #7f8c8d;                   /* Màu chữ xám thanh lịch */
-
-                    border-bottom: 1px solid #edf2f4; /* Tạo một đường kẻ ngang mờ ngăn cách ở dưới tiêu đề */
-
-                    padding-bottom: 10px;             /* Khoảng cách từ chữ tiêu đề xuống đường kẻ */
-
-                    margin-bottom: 5px;
-
-                    font-weight: 600;                 /* Chữ hơi in đậm một chút */
-
-                }      
-
+            .tieu-de-khoang {font-size: 16px;color: #7f8c8d;border-bottom: 1px solid #edf2f4;padding-bottom: 10px;margin-bottom: 5px;font-weight: 600;}      
             /* 2.3 Định dạng từng dòng lịch sử (Cấu trúc Vuốt Chạm Swipe-to-Action) */
-
-                    .dong-giao-dich {
-
-                        position: relative;
-
-                        overflow: hidden;
-
-                        background-color: #ffffff;
-
-                        border-bottom: 1px solid #f8fafc;
-
-                        user-select: none; /* Tránh bôi đen chữ khi vuốt bằng chuột trên PC */
-
-                    }
-
-                    .dong-giao-dich:last-child {
-
-                        border-bottom: none;
-
-                    }
-
+            .dong-giao-dich {position: relative;overflow: hidden;background-color: #ffffff;border-bottom: 1px solid #f8fafc;user-select: none; /* Tránh bôi đen chữ khi vuốt bằng chuột trên PC */}
+            .dong-giao-dich:last-child {border-bottom: none;}
                 /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
-
-                    .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
-
-                    .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
-
+                .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
+                .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
                 /* Phần nội dung chính nằm đè phía trên */
-
-                    .giao-dich-noi-dung {
-
-                        display: flex;
-
-                        justify-content: space-between;     /* Đẩy phần tên sang sát lề trái, phần số tiền sang sát lề phải */
-
-                        align-items: center;                /* Căn cho hai bên thẳng hàng nhau theo chiều dọc */
-
-                        padding: 14px 10px;                 /* Tăng nhẹ khoảng cách trên dưới giữa các hàng */
-
-                        background-color: #ffffff;        /* Đường kẻ ngang siêu mờ dưới mỗi giao dịch */
-
-                        position: relative;
-
-                        z-index: 2;
-
-                        transition: transform 0.2s ease-out; /* Tạo hiệu ứng trượt mượt mà */
-
-                        cursor: grab;
-
-                    }
-
-                    .giao-dich-noi-dung:active {
-
-                        cursor: grabbing;
-
-                    }
-
-                    .dong-giao-dich:last-child {
-
-                    border-bottom: none;                /* Xóa đường kẻ ngang ở dòng giao dịch cuối cùng cho đẹp */
-
-                    }
-
+                .giao-dich-noi-dung {display: flex;justify-content: space-between;/* tên lề trái, số tiền lề phải */align-items: center;padding: 14px 10px;background-color: #ffffff;position: relative;
+                    z-index: 2;transition: transform 0.2s ease-out; /* Tạo hiệu ứng trượt mượt mà */cursor: grab;}
+                .giao-dich-noi-dung:active {cursor: grabbing;}
+                .dong-giao-dich:last-child {border-bottom: none;/* Xóa đường kẻ ngang ở dòng giao dịch cuối cùng cho đẹp */}
                 /* Cụm bên trái: Danh mục & Tên */
-
-                    .giao-dich-trai {
-
-                        display: flex;
-
-                        flex-direction: column;
-
-                        text-align: left;
-
-                    }
-
-                    .giao-dich-muc {
-
-                        font-size: 13px;
-
-                        color: #718096;
-
-                        margin-bottom: 2px;
-
-                    }  
-
-                    .giao-dich-ten {
-
-                        font-size: 15px;
-
-                        font-weight: 500;
-
-                        color: #2d3748;
-
-                    }
-
+                .giao-dich-trai {display: flex;flex-direction: column;text-align: left;}
+                .giao-dich-muc {font-size: 13px;color: #718096;margin-bottom: 2px;}  
+                .giao-dich-ten {font-size: 15px;font-weight: 500;color: #2d3748;}
                 /* Cụm bên phải: Ngày giờ & Số tiền */
-
-                    .giao-dich-phai-cum {
-
-                        display: flex;
-
-                        flex-direction: column;
-
-                        align-items: flex-end;
-
-                        text-align: right;
-
-                    }
-
-                    .giao-dich-thoi-gian {
-
-                        font-size: 12px;
-
-                        color: #a0aec0;
-
-                        margin-bottom: 2px;
-
-                    }
-
-                    .giao-dich-phai {
-
-                        font-weight: 600;
-
-                        font-size: 15px;
-
-                    }      
-
+                .giao-dich-phai-cum {display: flex;flex-direction: column;align-items: flex-end;text-align: right;}
+                .giao-dich-thoi-gian {font-size: 12px;color: #a0aec0;margin-bottom: 2px;}
+                .giao-dich-phai {font-weight: 600;font-size: 15px;}      
                 /* LỚP NỀN ẨN PHÍA SAU KHI VUỐT */
-
-                    .nen-hanh-dong {
-
-                        position: absolute;
-
-                        top: 0;
-
-                        bottom: 0;
-
-                        left: 0;
-
-                        right: 0;
-
-                        z-index: 1;
-
-                        display: flex;
-
-                        align-items: center;
-
-                        justify-content: space-between;
-
-                        font-weight: 600;
-
-                        font-size: 14px;
-
-                        color: white;
-
-                    }
-
-                    .hanh-dong-sua {
+                .nen-hanh-dong {position: absolute;top: 0;bottom: 0;left: 0;right: 0;z-index: 1;display: flex;align-items: center;justify-content: space-between;font-weight: 600;font-size: 14px;color: white;}
+                .hanh-dong-sua {
 
                         background-color: #3498db; /* Nền xanh khi vuốt phải để sửa */
 
