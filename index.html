@@ -181,7 +181,7 @@
                 <option value="Khác">✨ Khác</option>
             </select>
         </div>
-        <div class="form-group"><label>Tên khoản thu/chi:</label><input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng..."></div>
+        <div class="form-group"><label>Tên khoản thu/chi:</label><input type="text" id="ten-khoan-thu-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng..."></div>
         <div class="form-group"><label id="label-so-tien">Số tiền (đ):</label><input type="number" id="so-tien" placeholder="Ví dụ: 50000"></div>
         <div class="form-group-row" style="display: flex; gap: 10px;"><div class="form-group" style="flex: 1;"><label>Ngày tháng:</label><input type="date" id="ngay-giao-dich"></div><div class="form-group" style="flex: 1;"><label>Thời gian:</label><input type="time" id="gio-giao-dich"></div></div>            
         <button id="nut-save" class="nut-bam-luu">Cập nhật ví</button>
@@ -250,27 +250,30 @@
     const db = getFirestore(app);// để ứng dụng bắt đầu có quyền đọc, ghi, sửa, hoặc xóa dữ liệu trên đám mây
     const datathuchi = collection(db, "giao_dich_business");// trỏ trực tiếp vào một bảng dữ liệu cụ thể trong Firestore, khi đưa lên đây mình đặt tên lại datathuchi cho mỗi lần sử dụng dễ khỏi dùng nguyên lệnh dài gọi
 // --------------------------------------------------------------------------
-// II. ĐỊNH DANH TẤT CẢ CÁC BIẾN (BẮT BUỘC ĐỂ TRÊN ĐẦU)
+// II. ĐẶT TÊN TẤT CẢ CÁC BIẾN
 // --------------------------------------------------------------------------
+    // Đặt tên nút làm mới app
+    const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP');
+    // Đặt tên thao tác trên trang +
     const idnutsave = document.getElementById('nut-save');
     const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
-    const idTen = document.getElementById('ten-khoan-chi');
     const idDanhMuc = document.getElementById('danh-muc-giao-dich');
+    const idTen = document.getElementById('ten-khoan-thu-chi');
     const idSoTien = document.getElementById('so-tien');
+    const labelSoTien = document.getElementById('label-so-tien');
+    const inputNgay = document.getElementById('ngay-giao-dich');
+    const inputGio = document.getElementById('gio-giao-dich');
+    // Đặt tên các thao tác tính toán
     const idHienThiSoDu = document.getElementById('so-du');
     const idVungLichSu = document.getElementById('lich-su-giao-dich');
-    // Các biến hiển thị của TAB BÁO CÁO
     const idBcThu = document.getElementById('bao-cao-thu');
     const idBcChi = document.getElementById('bao-cao-chi');
     const idThanhThu = document.getElementById('thanh-thu-ti-le');
     const idThanhChi = document.getElementById('thanh-chi-ti-le');
-    // Các thẻ input ngày, giờ và label số tiền
-    const inputNgay = document.getElementById('ngay-giao-dich');
-    const inputGio = document.getElementById('gio-giao-dich');
-    const labelSoTien = document.getElementById('label-so-tien');
+    // Đặt tên cách hành động tab
     const cacNutTab = document.querySelectorAll('.nut-tab');
     const cacVungNoiDung = document.querySelectorAll('.tab-content');
-    const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP');
+
 // --------------------------------------------------------------------------
 // III. THAY ĐỔI DANH MỤC THU/CHI TƯƠNG ỨNG
 // --------------------------------------------------------------------------
