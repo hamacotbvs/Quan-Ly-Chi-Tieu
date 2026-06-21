@@ -499,7 +499,7 @@
             <div class="danh-sach-lich-su">
                 <div class="tieu-de-khoang">Lịch sử dòng tiền chi tiết</div>
                 <div id="LICH-SU-GIAO-DICH">
-                    <div id="DANH-SACH-LICH-SU-TOAN-BO">
+                    <div id="idVUNGLICHSU">
                         <div class="trang-thai-trong">Đang tải danh sách lịch sử...</div>
                     </div>
                 </div>
@@ -546,7 +546,7 @@
             </div>            
             <button id="nut-ghi-de" class="nut-bam-luu">Cập nhật ví</button>
         </div>
-        
+
     <div id="tab-report" class="tab-content">
         <div class="tieu-de-khoang" style="margin-top: 10px;">Tổng quan chu kỳ tài chính</div>
         <div class="the-bao-cao">
@@ -640,7 +640,7 @@
                 const idDanhMuc = document.getElementById('danh-muc-giao-dich');
                 const idSoTien = document.getElementById('so-tien');
                 const idHienThiSoDu = document.getElementById('SO-DU');
-                const idVungLichSu = document.getElementById('LICH-SU-GIAO-DICH');
+                const idVUNGLICHSU = document.getElementById('LICH-SU-GIAO-DICH');
             // Các biến hiển thị của TAB BÁO CÁO
                 const idBcThu = document.getElementById('bao-cao-thu');
                 const idBcChi = document.getElementById('bao-cao-chi');
@@ -781,8 +781,8 @@
         // --------------------------------------------------------------------------
             // 7.1 Khởi tạo và làm sạch (Mở đầu)
                 onSnapshot(truyVanSapXep, (snapshot) => {
-                    if (!idVungLichSu) return;            
-                    idVungLichSu.innerHTML = ''; 
+                    if (!idVUNGLICHSU) return;            
+                    idVUNGLICHSU.innerHTML = ''; 
                     let tongSoDu = 0;
                     let tongThuNhap = 0;
                     let tongChiTieu = 0;
@@ -790,7 +790,7 @@
                     capNhatThanhHanMuc(snapshot.docs);
             // 7.2 Kiểm tra bộ lưu trữ rỗng
                     if (snapshot.empty) {
-                        idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
+                        idVUNGLICHSU.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
                         if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
                         if (idBcThu) idBcThu.innerText = "0 đ";
                         if (idBcChi) idBcChi.innerText = "0 đ";
@@ -851,7 +851,7 @@
                                 </div>
                             </div>
                             `;
-                        idVungLichSu.appendChild(dongMoi); 
+                        idVUNGLICHSU.appendChild(dongMoi); 
                         });
                 // 7.3.3 BỘ XỬ LÝ SỰ KIỆN VUỐT CHẠM (SWIPE) VÀ KÍCH HOẠT HÀNH ĐỘNG
                     document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
