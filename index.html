@@ -39,15 +39,15 @@
         ========================================================================== */
             /* 1.1 THANH HẠN MỨC CHI TIÊU TRONG THÁNG */
                 /* Khung bọc bên ngoài của vùng hạn mức */
-                .khung-han-muc-home {margin-top: 15px;padding: 15px;background-color: #ffffff;border-radius: 12px;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);cursor: pointer;user-select: none;}
+                .khung-han-muc-chi-tieu {margin-top: 15px;padding: 15px;background-color: #ffffff;border-radius: 12px;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);cursor: pointer;user-select: none;}
                 /* Hàng tiêu đề trên cùng: Đẩy tiêu đề sang trái, cụm tháng sang phải */
                 .han-muc-hang-dau {display: flex;justify-content: space-between;align-items: center;margin-bottom: 12px;}
                 .han-muc-tieu-de {font-weight: bold;font-size: 14px;color: #333333;}
                 /* Kén chứa 2 nút mũi tên thu nhỏ lại để vừa vặn góc phải */
-                .bo-dieu-huong-thang {display: flex;align-items: center;background-color: #f1f2f6;border-radius: 15px;padding: 1px 4px;}
+                .noi-chon-thang {display: flex;align-items: center;background-color: #f1f2f6;border-radius: 15px;padding: 1px 4px;}
                 .nut-mui-ten {background: none;border: none;font-size: 11px;color: #57606f;padding: 4px 8px;cursor: pointer;}
                 .nut-mui-ten:active {transform: scale(0.85);}
-                #hien-thi-thang-nam {font-size: 12px;font-weight: 600;color: #2f3542;min-width: 85px;text-align: center;}
+                #HIEN-THI-THANG-NAM-HAN-MUC {font-size: 12px;font-weight: 600;color: #2f3542;min-width: 85px;text-align: center;}
                 /* Thanh nền tiến trình */
                 .han-muc-thanh-nen {width: 100%;height: 10px;background-color: #e0e0e0;border-radius: 5px;overflow: hidden;margin-bottom: 8px;}
                 #thanh-phat-trien-han-muc {width: 0%;height: 100%;background-color: #2ecc71;transition: width 0.3s ease, background-color: 0.3s ease;}
@@ -145,21 +145,12 @@
 
 <body>
 <div class="KHUNG-CHUA-APP">      
-    <button id="nut-lam-moi-app" class="nut-reset-treo" title="Tải lại ứng dụng">
-        <svg viewBox="0 0 24 24">
-            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/>
-        </svg>
-    </button>
+    <button id="NUT-LAM-MOI-APP" class="nut-reset-treo" title="Tải lại ứng dụng"><svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/></svg></button>
 
-<div id="tab-home" class="tab-content active">
-    <div class="khung-han-muc-home" id="vung-han-muc">
-        <div class="han-muc-hang-dau">
-            <span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu</span>
-            <div class="bo-dieu-huong-thang" id="cum-chuyen-thang-ngan-chan">
-                <button id="nut-thang-truoc" class="nut-mui-ten">◀</button>
-                <span id="hien-thi-thang-nam">Tháng --/----</span>
-                <button id="nut-thang-sau" class="nut-mui-ten">▶</button>
-            </div>
+    <div id="TAB-HOME" class="tab-content active">
+        <div class="khung-han-muc-chi-tieu" id="VUNG-HAN-MUC-CHI-TIEU">
+            <div class="han-muc-hang-dau"><span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu</span>
+            <div class="noi-chon-thang" id="CUM-CHUYEN-THANG"><button id="NUT-THANG-TRUOC" class="nut-mui-ten">◀</button><span id="HIEN-THI-THANG-NAM-HAN-MUC">Tháng --/----</span><button id="NUT-THANG-SAU" class="nut-mui-ten">▶</button></div>
         </div>    
         <div class="han-muc-thanh-nen">
             <div id="thanh-phat-trien-han-muc"></div>
@@ -388,7 +379,7 @@
 
                 const cacVungNoiDung = document.querySelectorAll('.tab-content');
 
-                const idNutLamMoi = document.getElementById('nut-lam-moi-app');
+                const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP');
 
 
 
@@ -1073,7 +1064,7 @@
 
                     function capNhatChuHienThiThang() {
 
-                        const txtThangNam = document.getElementById('hien-thi-thang-nam');
+                        const txtThangNam = document.getElementById('HIEN-THI-THANG-NAM-HAN-MUC');
 
                         if (txtThangNam) {
 
@@ -1089,7 +1080,7 @@
 
             // --- 2. LẮNG NGHE SỰ KIỆN CLICK KHUNG HẠN MỨC ĐỂ ĐẶT TIỀN ---
 
-                    document.getElementById('vung-han-muc')?.addEventListener('click', () => {
+                    document.getElementById('VUNG-HAN-MUC-CHI-TIEU')?.addEventListener('click', () => {
 
                         let thangDangXem = layChuoiThangNam(window.thoiGianDangXem);
 
@@ -1143,7 +1134,7 @@
 
                     // Chặn không cho hộp thoại đặt hạn mức bật lên khi bấm vào vùng chuyển tháng
 
-                    document.getElementById('cum-chuyen-thang-ngan-chan')?.addEventListener('click', (e) => {
+                    document.getElementById('CUM-CHUYEN-THANG')?.addEventListener('click', (e) => {
 
                         e.stopPropagation();
 
@@ -1151,7 +1142,7 @@
 
                     // --- 3. SỰ KIỆN ĐỔI THÁNG KHI BẤM 2 MŨI TÊN ---
 
-                    document.getElementById('nut-thang-truoc')?.addEventListener('click', (e) => {
+                    document.getElementById('NUT-THANG-TRUOC')?.addEventListener('click', (e) => {
 
                         e.stopPropagation();
 
@@ -1161,7 +1152,7 @@
 
                     });
 
-                    document.getElementById('nut-thang-sau')?.addEventListener('click', (e) => {
+                    document.getElementById('NUT-THANG-SAU')?.addEventListener('click', (e) => {
 
                         e.stopPropagation();
 
