@@ -102,204 +102,39 @@
         /* ==========================================================================
         IV. TAB 4: BÁO CÁO
         ========================================================================== */
-
-                .the-bao-cao {
-
-                    background: white;
-
-                    border-radius: 12px;
-
-                    padding: 15px;
-
-                    margin-bottom: 15px;
-
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-
-                    border: 1px solid #edf2f4;
-
-                }
-
-                .thong-ke-dong { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
-
-                .thong-ke-so { font-weight: bold; }        
-
+            .the-bao-cao {background: white;border-radius: 12px;padding: 15px;margin-bottom: 15px;box-shadow: 0 2px 8px rgba(0,0,0,0.02);border: 1px solid #edf2f4;}
+            .thong-ke-dong { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
+            .thong-ke-so { font-weight: bold; }        
             /* Thanh đồ họa tiến trình (Progress Bar) so sánh trực quan */
-
-                .thanh-phan-tram-khung { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
-
-                .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
-
-                .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
-
+            .thanh-phan-tram-khung { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
+            .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
+            .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
     /* A.3 ĐỊNH DẠNG THANH MENU DƯỚI */    
-
             /* định dạng khung nền menu */
-
-                .menu-day-app {
-
-                    position: fixed;
-
-                    bottom: 15px;                 /* Đẩy menu bay lơ lửng cách đáy màn hình 15px */
-
-                    left: 50%;
-
-                    transform: translateX(-50%);  /* Căn giữa menu theo chiều ngang */
-
-                    width: calc(100% - 30px);     /* Thu hẹp chiều rộng lại để lộ khoảng trống 2 bên rìa */
-
-                    max-width: 420px;             /* Giới hạn lại chiều rộng tối đa cho cân đối */
-
-                    height: 65px;
-
-                    background-color: #0082C8;    /* Nền màu XANH HOÀNG GIA */
-
-                    border-radius: 999px;         /* Bo tròn dạng viên thuốc (Capsule) */
-
-                    display: flex;
-
-                    justify-content: space-around;
-
-                    align-items: center;
-
-                    z-index: 100;
-
-                    padding: 0 15px;              
-
-                    box-sizing: border-box;
-
-            /* 👇 THAY ĐỔI: Đổ bóng thông minh tạo vùng nền sáng phía dưới và xung quanh menu */
-
-                    box-shadow:
-
-                        0 10px 28px rgba(0, 130, 200, 0.25), /* Bóng xanh mờ của menu */
-
-                        0 25px 0 20px #ffffff,               /* 👈 Tạo một lớp nền trắng cứng lót hẳn phía dưới */
-
-                        0 15px 30px 25px rgba(255, 255, 255, 0.95); /* 👈 Tạo vùng chuyển mờ trắng (Blur) che nội dung khi cuộn */
-
-                    }
-
+            .menu-day-app {position: fixed;bottom: 15px;left: 50%;transform: translateX(-50%);width: calc(100% - 30px);max-width: 420px;height: 65px;background-color: #0082C8;border-radius: 999px;display: flex;
+                justify-content: space-around;align-items: center;z-index: 100;padding: 0 15px;box-sizing: border-box;
+                /* tạo vùng nền phía dưới và xung quanh menu */
+                box-shadow:0 10px 28px rgba(0, 130, 200, 0.25), /* Bóng xanh mờ của menu */0 25px 0 20px #ffffff,/* Tạo một lớp nền trắng phía dưới */0 15px 30px 25px rgba(255, 255, 255, 0.95); /* Tạo vùng chuyển mờ trắng (Blur) che nội dung khi cuộn */}
             /* Định dạng chữ, icon */
-
-                .nut-tab {
-
-                    display: flex;
-
-                    flex-direction: column;
-
-                    align-items: center;
-
-                    justify-content: center;
-
-                    background: none;
-
-                    border: none;
-
-                    color: rgba(255, 255, 255, 0.65); /* Chữ và icon mặc định màu trắng mờ trên nền xanh */
-
-                    cursor: pointer;            
-
-            /* 👇 THAY ĐỔI: Sử dụng flex: 1 thay vì width cố định để phân bổ khoảng trống thông minh */
-
-                    flex: 1;                      
-
-                    height: 100%;
-
-                    font-size: 11px;
-
-                    font-weight: 500;
-
-                    transition: color 0.2s, transform 0.2s;
-
-                    -webkit-tap-highlight-color: transparent;
-
-                }        
-
+            .nut-tab {display: flex;flex-direction: column;align-items: center;justify-content: center;background: none;border: none;color: rgba(255, 255, 255, 0.65);cursor: pointer;flex: 1;/* phân bổ khoảng trống thông minh */                      
+                height: 100%;font-size: 11px;font-weight: 500;transition: color 0.2s, transform 0.2s;-webkit-tap-highlight-color: transparent;}        
             /* Trạng thái mặc định (Không chọn): Icon chỉ có đường viền mờ, ruột rỗng */
-
-                .nut-tab .icon svg {
-
-                    fill: none;
-
-                    stroke: currentColor;
-
-                    transition: fill 0.2s, transform 0.2s;
-
-                }
-
+            .nut-tab .icon svg {fill: none;stroke: currentColor;transition: fill 0.2s, transform 0.2s;}
             /* KHI ĐƯỢC CHỌN (ACTIVE) - ẨN HIỆN GIỮA 2 ICON MENU VIỀN/MÀU */        
-
             /* Định dạng chung cho cả 2 ảnh icon ngôi nhà */
-
-                .nut-tab .img-icon-2d {
-
-                    width: 18px !important;
-
-                    height: 18px !important;
-
-                    object-fit: contain;
-
-                    margin-bottom: 5px;
-
-                }
-
+            .nut-tab .img-icon-2d {width: 18px !important;height: 18px !important;object-fit: contain;margin-bottom: 5px;}
             /* 1. Mặc định khi KHÔNG CHỌN (Không có class active) */
-
-                .nut-tab .icon-active {
-
-                    display: none; /* Ẩn ảnh viền đi */
-
-                }
-
-                .nut-tab .icon-inactive {
-
-                    display: block; /* Hiện ảnh màu (homemau.png) lên */
-
-                }
-
+            .nut-tab .icon-active {display: none; /* Ẩn ảnh viền đi */}
+            .nut-tab .icon-inactive {display: block; /* Hiện ảnh màu (homemau.png) lên */}
             /* 2. Khi ĐƯỢC CHỌN (Có class active) */
-
-                .nut-tab.active .icon-active {
-
-                    display: block; /* Hiện ảnh viền (homevien.png) lên */
-
-                }
-
-                .nut-tab.active .icon-inactive {
-
-                display: none; /* Ẩn ảnh màu đi */
-
-                }      
-
+            .nut-tab.active .icon-active {display: block; /* Hiện ảnh viền (homevien.png) lên */}
+            .nut-tab.active .icon-inactive {display: none; /* Ẩn ảnh màu đi */}      
             /* 3. Màu chữ mặc định cho tất cả các menu khi KHÔNG CHỌN */
-
-                .nut-tab .chu-menu {
-
-                    font-size: 11px;
-
-                    color: #b3dbf2;      /* Màu xanh nhạt hoặc xám mờ tùy bạn chỉnh */
-
-                    opacity: 0.7;        /* Làm mờ nhẹ đi để nhấn mạnh nút đang chọn */
-
-                    transition: all 0.2s ease;
-
-                }
-
+            .nut-tab .chu-menu {font-size: 11px;color: #b3dbf2;opacity: 0.7;transition: all 0.2s ease;}
             /* 4. Khi ĐƯỢC CHỌN (có class active) - Chữ sẽ trắng tinh và đậm lên */
-
-                .nut-tab.active .chu-menu {
-
-                    color: #ffffff !important;   /* Mã màu trắng tinh mã Hex */
-
-                    opacity: 1 !important;       /* Hiện rõ nét 100% */
-
-                    font-weight: bold;           /* Chữ đậm lên nhìn cho rõ ràng */
-
-                }
-
+            .nut-tab.active .chu-menu {color: #ffffff !important;opacity: 1 !important;font-weight: bold;}
             /* NÚT THÊM (+) TRUNG TÂM PHONG CÁCH MỚI - ĐÃ CĂN CHỈNH GIỮA */
-
-                .nut-tab-them-trung-tam .icon {
+            .nut-tab-them-trung-tam .icon {
 
                     font-size: 26px;
 
