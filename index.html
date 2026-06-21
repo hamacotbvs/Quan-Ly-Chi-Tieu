@@ -59,9 +59,9 @@
         II. TAB 2: LỊCH SỬ
         ========================================================================== */        
              /* 1.1 KHUNG HIỂN THỊ SỐ DƯ HIỆN TẠI */
-            .vi-tong-quan {background-color: #0082C8;color: white;padding: 20px;border-radius: 12px;text-align: center;margin-top: 10px; margin-bottom: 25px;box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2);}
-            .vi-tong-quan .nhan {font-size: 14px;opacity: 0.9;margin-bottom: 5px;}
-            .vi-tong-quan .so-tien-vi {font-size: 28px;font-weight: 700;}
+            .khung-so-du-hien-tai {background-color: #0082C8;color: white;padding: 20px;border-radius: 12px;text-align: center;margin-top: 10px; margin-bottom: 25px;box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2);}
+            .khung-so-du-hien-tai .nhan {font-size: 14px;opacity: 0.9;margin-bottom: 5px;}
+            .khung-so-du-hien-tai .so-tien-du-hien-tai {font-size: 28px;font-weight: 700;}
             /* 2.1 định dạng khung lịch sử */
             .danh-sach-lich-su {margin-top: 20px;background-color: #ffffff;border-radius: 14px;padding: 16px;box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);border: 1px solid #edf2f4;}
             /* 2.2 định dạng phần tiêu đề lịch sử */
@@ -157,12 +157,9 @@
             <div class="han-muc-hang-duoi"><div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div><span id="chi-tieu-tren-han-muc">0 / Chưa cài đặt</span></div>
         </div>
     </div>
-    
+
     <div id="tab-lich-su" class="tab-content">
-        <div class="vi-tong-quan">
-            <div class="nhan">Số dư hiện tại</div>
-            <div class="so-tien-vi"><span id="so-du">0</span> đ</div>
-        </div>
+        <div class="khung-so-du-hien-tai"><div class="nhan">Số dư hiện tại</div><div class="so-tien-du-hien-tai"><span id="so-du">0</span> đ</div></div>
         <div class="danh-sach-lich-su">
             <div class="tieu-de-khoang">Lịch sử dòng tiền chi tiết</div>
             <div id="lich-su-giao-dich">
