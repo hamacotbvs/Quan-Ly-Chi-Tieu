@@ -40,18 +40,14 @@
                 }        
             /* 2.2 Khung mô phỏng ứng dụng điện thoại tiện lợi */
                 .KHUNG-CHUA-APP {
-                    background-color: #f7f9fa;/* Nền của ứng dụng là màu xám */width: 100%;max-width: 450px;/* Chiều rộng tối đa là 450px (chuẩn kích thước điện thoại) */min-height: 100vh;/* Chiều cao tối thiểu bằng 100% màn hình thiết bị */
+                    background-color: #f7f9fa;/* Nền APP là màu xám */width: 100%;max-width: 450px;/* Chiều rộng tối đa 450px (chuẩn điện thoại) */min-height: 100vh;/* Chiều cao tối thiểu 100% màn hình thiết bị */
                     box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ đổ xung quanh khung */position: relative;padding-bottom: 75px;       /* Đẩy nội dung bên trong lên 75px để không bị thanh menu đáy đè lên */
                     box-sizing: border-box;
                 }
             /* 2.3 Quản lý ẩn/hiện các Tab nội dung */
-                .tab-content {
-                    display: none; /* Ẩn mặc định: Tất cả các tab (Home, Nhập số, Báo cáo) đều bị giấu đi */
-                    padding: 20px; /* Tạo khoảng cách 20px từ rìa ứng dụng vào nội dung bên trong cho dễ nhìn */
+                .tab-content {display: none; /* Ẩn mặc định:các tab(Home, Báo cáo...) */padding: 20px; /* Tạo khoảng cách từ rìa ứng dụng vào nội dung cho dễ nhìn */
                 }
-                .tab-content.active {
-                    display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */
-                }
+                .tab-content.active {display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */}
     /* A.2 ĐỊNH DẠNG TỪNG TRANG */
 
         /* ==========================================================================
