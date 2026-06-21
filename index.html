@@ -15,204 +15,48 @@
         /* ==========================================================================
         I. NÚT RESET PHONG CÁCH MỚI
         ========================================================================== */
-                .nut-reset-treo {
-                    position: absolute; top: 15px; right: 15px; z-index: 1000;
+                .nut-reset-treo {position: absolute; top: 15px; right: 15px; z-index: 1000;
                     background-color: #ffffff; border: 1px solid #edf2f4; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Đổ bóng mịn màng */
-                    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s; padding: 0; -webkit-tap-highlight-color: transparent;
-                }
-            /* Định cấu hình màu sắc cho icon SVG bên trong */
-                .nut-reset-treo svg {
-                    width: 20px; height: 20px; fill: none; stroke: #0082C8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s ease;
-                }
-                .nut-reset-treo:active {
-                    transform: scale(0.92); /* Hiệu ứng lún nút khi nhấn */
-                    background-color: #f8fafc; /* Nền xám cực nhẹ khi chạm ngón tay */
-                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-                }
+                    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s; padding: 0; -webkit-tap-highlight-color: transparent;}
+                /* Định cấu hình màu sắc cho icon SVG bên trong */
+                .nut-reset-treo svg {width: 20px; height: 20px; fill: none; stroke: #0082C8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s ease;}
+                .nut-reset-treo:active {transform: scale(0.92); /* Hiệu ứng lún nút khi nhấn */background-color: #f8fafc; /* Nền xám nhẹ khi chạm ngón tay */box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);}
         /* ==========================================================================
         II. CẤU HÌNH CHUNG & LAYOUT ỨNG DỤNG
         ========================================================================== */
             /* 2.1 Cấu hình nền và căn giữa ứng dụng */
-                body {
-                    font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f7f9fa; /* Màu nền xám nhạt toàn màn hình máy tính */
-                    color: #333; /* Màu chữ mặc định (đen xám) */ margin: 0; padding: 0;/* Xóa bỏ khoảng cách thừa ở rìa màn hình */ display: flex; justify-content: center;/* Đưa toàn bộ ứng dụng ra chính giữa màn hình */
-                }        
+                body {font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f7f9fa; /* Màu nền xám nhạt toàn màn hình máy tính */
+                    color: #333; /* Màu chữ mặc định (đen xám) */ margin: 0; padding: 0;/* Xóa bỏ khoảng cách thừa ở rìa màn hình */ display: flex; justify-content: center;/* Đưa toàn bộ ứng dụng ra chính giữa màn hình */}        
             /* 2.2 Khung mô phỏng ứng dụng điện thoại tiện lợi */
-                .KHUNG-CHUA-APP {
-                    background-color: #f7f9fa;/* Nền APP là màu xám */width: 100%;max-width: 450px;/* Chiều rộng tối đa 450px (chuẩn điện thoại) */min-height: 100vh;/* Chiều cao tối thiểu 100% màn hình thiết bị */
+                .KHUNG-CHUA-APP {background-color: #f7f9fa;/* Nền APP là màu xám */width: 100%;max-width: 450px;/* Chiều rộng tối đa 450px (chuẩn điện thoại) */min-height: 100vh;/* Chiều cao tối thiểu 100% màn hình thiết bị */
                     box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ đổ xung quanh khung */position: relative;padding-bottom: 75px;       /* Đẩy nội dung bên trong lên 75px để không bị thanh menu đáy đè lên */
-                    box-sizing: border-box;
-                }
+                    box-sizing: border-box;}
             /* 2.3 Quản lý ẩn/hiện các Tab nội dung */
-                .tab-content {display: none; /* Ẩn mặc định:các tab(Home, Báo cáo...) */padding: 20px; /* Tạo khoảng cách từ rìa ứng dụng vào nội dung cho dễ nhìn */
-                }
+                .tab-content {display: none; /* Ẩn mặc định:các tab(Home, Báo cáo...) */padding: 20px; /* Tạo khoảng cách từ rìa ứng dụng vào nội dung cho dễ nhìn */}
                 .tab-content.active {display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */}
     /* A.2 ĐỊNH DẠNG TỪNG TRANG */
-
         /* ==========================================================================
-
         I. TAB 1: HOME
-
         ========================================================================== */
-
             /* 1.1 THANH HẠN MỨC CHI TIÊU TRONG THÁNG */
-
                 /* Khung bọc bên ngoài của vùng hạn mức */
-
-                    .khung-han-muc-home {
-
-                        margin-top: 15px;
-
-                        padding: 15px;
-
-                        background-color: #ffffff;
-
-                        border-radius: 12px;
-
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-
-                        cursor: pointer;
-
-                        user-select: none;
-
-                    }
-
+                .khung-han-muc-home {margin-top: 15px;padding: 15px;background-color: #ffffff;border-radius: 12px;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);cursor: pointer;user-select: none;}
                 /* Hàng tiêu đề trên cùng: Đẩy tiêu đề sang trái, cụm tháng sang phải */
-
-                    .han-muc-hang-dau {
-
-                        display: flex;
-
-                        justify-content: space-between;
-
-                        align-items: center;
-
-                        margin-bottom: 12px;
-
-                    }
-
-                    .han-muc-tieu-de {
-
-                        font-weight: bold;
-
-                        font-size: 14px;
-
-                        color: #333333;
-
-                    }
-
+                .han-muc-hang-dau {display: flex;justify-content: space-between;align-items: center;margin-bottom: 12px;}
+                .han-muc-tieu-de {font-weight: bold;font-size: 14px;color: #333333;}
                 /* Kén chứa 2 nút mũi tên thu nhỏ lại để vừa vặn góc phải */
-
-                    .bo-dieu-huong-thang {
-
-                        display: flex;
-
-                        align-items: center;
-
-                        background-color: #f1f2f6;
-
-                        border-radius: 15px;
-
-                        padding: 1px 4px;
-
-                    }
-
-                    .nut-mui-ten {
-
-                        background: none;
-
-                        border: none;
-
-                        font-size: 11px;
-
-                        color: #57606f;
-
-                        padding: 4px 8px;
-
-                        cursor: pointer;
-
-                    }
-
-                    .nut-mui-ten:active {
-
-                        transform: scale(0.85);
-
-                    }
-
-                    #hien-thi-thang-nam {
-
-                        font-size: 12px;
-
-                        font-weight: 600;
-
-                        color: #2f3542;
-
-                        min-width: 85px;
-
-                        text-align: center;
-
-                    }
-
+                .bo-dieu-huong-thang {display: flex;align-items: center;background-color: #f1f2f6;border-radius: 15px;padding: 1px 4px;}
+                .nut-mui-ten {background: none;border: none;font-size: 11px;color: #57606f;padding: 4px 8px;cursor: pointer;}
+                .nut-mui-ten:active {transform: scale(0.85);}
+                #hien-thi-thang-nam {font-size: 12px;font-weight: 600;color: #2f3542;min-width: 85px;text-align: center;}
                 /* Thanh nền tiến trình */
-
-                    .han-muc-thanh-nen {
-
-                        width: 100%;
-
-                        height: 10px;
-
-                        background-color: #e0e0e0;
-
-                        border-radius: 5px;
-
-                        overflow: hidden;
-
-                        margin-bottom: 8px;
-
-                    }
-
-                    #thanh-phat-trien-han-muc {
-
-                        width: 0%;
-
-                        height: 100%;
-
-                        background-color: #2ecc71;
-
-                        transition: width 0.3s ease, background-color: 0.3s ease;
-
-                    }
-
+                .han-muc-thanh-nen {width: 100%;height: 10px;background-color: #e0e0e0;border-radius: 5px;overflow: hidden;margin-bottom: 8px;}
+                #thanh-phat-trien-han-muc {width: 0%;height: 100%;background-color: #2ecc71;transition: width 0.3s ease, background-color: 0.3s ease;}
                 /* Hàng thông tin dưới đáy thanh tiến trình */
-
-                    .han-muc-hang-day {
-
-                        display: flex;
-
-                        justify-content: space-between;
-
-                        align-items: center;
-
-                    }
-
-                    #goi-y-han-muc {
-
-                        font-size: 11px;
-
-                        color: #999999;
-
-                    }
-
-                    #chu-ghi-han-muc {
-
-                        font-size: 12px;
-
-                        font-weight: 600;
-
-                        color: #444444;
-
-                    }
+                .han-muc-hang-day {display: flex;justify-content: space-between;align-items: center;}
+                #goi-y-han-muc {font-size: 11px;color: #999999;}
+                #chu-ghi-han-muc {font-size: 12px;font-weight: 600;color: #444444;}
 
         /* ==========================================================================
 
