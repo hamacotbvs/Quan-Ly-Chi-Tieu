@@ -2,173 +2,61 @@
 <html lang="vi">
 
 <head>
-
-
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Ứng dụng Quản lý Chi Tiêu</title>
-
-   
-
     <link rel="icon" type="image/png" href="logo.png">
-
     <link rel="apple-touch-icon" href="logo.png">
-
     <link rel="manifest" href="manifest.json">
-
-
-
     <style>
 
-
-
     /* A. PHẦN CSS - ĐỊNH DẠNG*/
-
     /* A.1 ĐỊNH DẠNG KHUNG APP
-
-       
-
         /* ==========================================================================
-
         I. NÚT RESET PHONG CÁCH MỚI
-
         ========================================================================== */
-
                 .nut-reset-treo {
-
-                    position: absolute;
-
-                    top: 15px;
-
-                    right: 15px;
-
-                    z-index: 1000;
-
-                    background-color: #ffffff; /* 👈 Nền trắng tinh */
-
-                    border: 1px solid #edf2f4;
-
-                    width: 40px;  /* Tăng nhẹ kích thước lên 40px cho dễ bấm */
-
-                    height: 40px;
-
-                    border-radius: 50%;
-
-                    display: flex;
-
-                    align-items: center;
-
-                    justify-content: center;
-
-                    cursor: pointer;
-
+                    position: absolute; top: 15px; right: 15px; z-index: 1000;
+                    background-color: #ffffff; border: 1px solid #edf2f4; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Đổ bóng mịn màng */
-
-                    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
-
-                    padding: 0;
-
-                    -webkit-tap-highlight-color: transparent;
-
+                    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s; padding: 0; -webkit-tap-highlight-color: transparent;
                 }
-
             /* Định cấu hình màu sắc cho icon SVG bên trong */
-
                 .nut-reset-treo svg {
-
-                    width: 20px;
-
-                    height: 20px;
-
-                    fill: none;
-
-                    stroke: #0082C8; /* 👈 Màu xanh hoàng gia cho mũi tên */
-
-                    stroke-width: 2.5; /* Độ dày của nét vẽ */
-
-                    stroke-linecap: round;
-
-                    stroke-linejoin: round;
-
-                    transition: transform 0.3s ease;
-
+                    width: 20px; height: 20px; fill: none; stroke: #0082C8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s ease;
                 }
-
                 .nut-reset-treo:active {
-
                     transform: scale(0.92); /* Hiệu ứng lún nút khi nhấn */
-
                     background-color: #f8fafc; /* Nền xám cực nhẹ khi chạm ngón tay */
-
                     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-
                 }
-
         /* ==========================================================================
-
         II. CẤU HÌNH CHUNG & LAYOUT ỨNG DỤNG
-
         ========================================================================== */
-
             /* 2.1 Cấu hình nền và căn giữa ứng dụng */
-
                 body {
-
-                    font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-
-                    background-color: #f7f9fa; /* Màu nền xám nhạt toàn màn hình máy tính */
-
-                    color: #333;               /* Màu chữ mặc định (đen xám) */
-
-                    margin: 0; padding: 0;     /* Xóa bỏ khoảng cách thừa ở rìa màn hình */
-
-                    display: flex;
-
-                    justify-content: center;   /* Đưa toàn bộ ứng dụng ra chính giữa màn hình */
-
+                    font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f7f9fa; /* Màu nền xám nhạt toàn màn hình máy tính */
+                    color: #333; /* Màu chữ mặc định (đen xám) */ margin: 0; padding: 0;/* Xóa bỏ khoảng cách thừa ở rìa màn hình */ display: flex; justify-content: center;/* Đưa toàn bộ ứng dụng ra chính giữa màn hình */
                 }        
-
             /* 2.2 Khung mô phỏng ứng dụng điện thoại tiện lợi */
-
                 .app-container {
-
                     background-color: #f7f9fa;     /* Nền của ứng dụng là màu xám */
-
                     width: 100%;
-
                     max-width: 450px;           /* Chiều rộng tối đa là 450px (chuẩn kích thước điện thoại) */
-
                     min-height: 100vh;          /* Chiều cao tối thiểu bằng 100% màn hình thiết bị */
-
                     box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ đổ xung quanh khung */
-
                     position: relative;
-
                     padding-bottom: 75px;       /* Đẩy nội dung bên trong lên 75px để không bị thanh menu đáy đè lên */
-
                     box-sizing: border-box;
-
                 }
-
             /* 2.3 Quản lý ẩn/hiện các Tab nội dung */
-
                 .tab-content {
-
                     display: none; /* Ẩn mặc định: Tất cả các tab (Home, Nhập số, Báo cáo) đều bị giấu đi */
-
                     padding: 20px; /* Tạo khoảng cách 20px từ rìa ứng dụng vào nội dung bên trong cho dễ nhìn */
-
                 }
-
                 .tab-content.active {
-
                     display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */
-
                 }
-
     /* A.2 ĐỊNH DẠNG TỪNG TRANG */
 
         /* ==========================================================================
