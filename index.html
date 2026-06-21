@@ -201,6 +201,8 @@
             <p style="color: #777; font-size: 13px; margin: 5px 0;">Hệ thống quản lý chi tiêu đám mây</p>
         </div>
     </div>
+
+
     <nav class="menu-day-app menu dưới">
         <button class="nut-tab active" data-target="home">
             <img src="homemau.png" class="img-icon-2d icon-active" alt="Tổng quan">
@@ -229,372 +231,183 @@
 </div>
 
 <script type="module">
-
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-
-        // Thêm doc và deleteDoc vào cuối dòng dưới đây:
-
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// A. DỮ LIỆU
 
-
-       
-
-       
-
-        // A. DỮ LIỆU
-
-        // --------------------------------------------------------------------------
-
-        // I. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
-
-        // --------------------------------------------------------------------------
-
+// --------------------------------------------------------------------------
+// I. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
+// --------------------------------------------------------------------------
             // 1.1 Chứng minh thư và địa chỉ nhà của App
-
             const firebaseConfig = {
-
                 // Mật khẩu, Chìa khóa bảo mật để app của bạn có quyền kết nối vào hệ thống
-
                 apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
-
                 authDomain: "quanlychitieu-af553.firebaseapp.com",
-
                 // Tên dự án của bạn trên hệ thống Google
-
                 projectId: "quanlychitieu-af553",
-
                 // Giống như số nhà, ngõ ngách, mã bưu điện để định vị chính xác tuyệt đối cơ sở dữ liệu của riêng bạn
-
                 storageBucket: "quanlychitieu-af553.firebasestorage.app",
-
                 messagingSenderId: "800322270032",
-
                 appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
-
                 measurementId: "G-3NQYVR3VFB"
-
             };        
-
             // 1.2 Lệnh này ra lệnh cho ứng dụng nạp các thông số cấu hình ở trên vào hệ thống để bắt đầu mở cổng kết nối lên Cloud
-
                 const app = initializeApp(firebaseConfig);
-
             // 1.3 Lệnh này kích hoạt dịch vụ Firestore
-
                 const db = getFirestore(app);
-
             // 1.4 Chỉ định ngăn tủ chứa dữ liệu
-
                 const boChonBoSuuTap = collection(db, "giao_dich_business");
 
-
-
         // --------------------------------------------------------------------------
-
         // II. ĐỊNH DANH TẤT CẢ CÁC BIẾN (BẮT BUỘC ĐỂ TRÊN ĐẦU)
-
         // --------------------------------------------------------------------------
-
                 const idNutGhiDe = document.getElementById('nut-ghi-de');
-
                 const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
-
                 const idTen = document.getElementById('ten-khoan-chi');
-
                 const idDanhMuc = document.getElementById('danh-muc-giao-dich');
-
                 const idSoTien = document.getElementById('so-tien');
-
                 const idHienThiSoDu = document.getElementById('so-du');
-
                 const idVungLichSu = document.getElementById('lich-su-giao-dich');
-
             // Các biến hiển thị của TAB BÁO CÁO
-
                 const idBcThu = document.getElementById('bao-cao-thu');
-
                 const idBcChi = document.getElementById('bao-cao-chi');
-
                 const idThanhThu = document.getElementById('thanh-thu-ti-le');
-
                 const idThanhChi = document.getElementById('thanh-chi-ti-le');
-
-
-
             // Các thẻ input ngày, giờ và label số tiền
-
                 const inputNgay = document.getElementById('ngay-giao-dich');
-
                 const inputGio = document.getElementById('gio-giao-dich');
-
                 const labelSoTien = document.getElementById('label-so-tien');
-
-
-
                 const cacNutTab = document.querySelectorAll('.nut-tab');
-
                 const cacVungNoiDung = document.querySelectorAll('.tab-content');
-
                 const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP');
 
-
-
         // --------------------------------------------------------------------------
-
         // III. THAY ĐỔI DANH MỤC THU/CHI TƯƠNG ỨNG
-
         // --------------------------------------------------------------------------
-
                 if (idLoaiGiaoDich && idDanhMuc) {
-
                     idLoaiGiaoDich.addEventListener('change', () => {
-
                     idDanhMuc.innerHTML = ''; // Xóa sạch các option cũ
-
-
-
                 if (idLoaiGiaoDich.value === 'chi') {
-
                     idDanhMuc.innerHTML = `
-
                         <option value="Ăn uống">🍔 Ăn uống</option>
-
                         <option value="Di chuyển">🚗 Di chuyển</option>
-
                         <option value="Mua sắm">🛍️ Mua sắm</option>
-
                         <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
-
                         <option value="Giải trí">🎬 Giải trí & Cà phê</option>
-
                         <option value="Khác">✨ Khác</option>
-
                     `;
-
                 } else if (idLoaiGiaoDich.value === 'thu') {
-
                     idDanhMuc.innerHTML = `
-
                         <option value="Thu nhập từ lương">💵 Thu nhập từ lương</option>
-
                         <option value="Thu nhập khác">💰 Thu nhập khác</option>
-
                     `;
-
                 }
-
                 });
-
                 }
-
         // --------------------------------------------------------------------------
-
         // IV. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
-
         // --------------------------------------------------------------------------
-
              // 4.1 kích hoạt toàn bộ các lệnh bên trong nút bấm chạy    
-
                 if (idNutGhiDe) {
-
                     idNutGhiDe.addEventListener('click', async () => {
-
             // 4.2 lấy ra các giá trị hiện tại mà bạn đang gõ trong ô nhập liệu
-
                     const loai = idLoaiGiaoDich.value;
-
                     const ten = idTen.value.trim();
-
                     const danhMuc = idDanhMuc.value;
-
                     const soTien = parseInt(idSoTien.value);                
-
             // 4.3 Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
-
                     const ngayNhap = inputNgay ? inputNgay.value : "";
-
                     const gioNhap = inputGio ? inputGio.value : "";
-
             // 4.4 Kiểm tra dữ liệu đầu vào hợp lệ
-
                     if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
-
                         alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
-
                         return;
-
                     }
-
                     try {
-
                     // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
-
                     const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
-
             // 4.5 Đẩy dữ liệu transaction mới lên Firestore
-
                     if (window.idGiaoDichDangSua) {
-
                     // SỬA: Nếu có ID đang sửa, tiến hành cập nhật dữ liệu thay vì thêm mới
-
                     const taiLieuRef = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
-
                     await updateDoc(taiLieuRef, {
-
                         ten: ten,
-
                         soTien: soTien,
-
                         loai: loai,
-
                         danhMuc: danhMuc,
-
                         thoiGian: chuoiThoiGianGop
-
                     });
-
                     window.idGiaoDichDangSua = null; // Xóa trạng thái sửa
-
                     idNutGhiDe.innerText = "Ghi đè / Thêm mới"; // Trả lại tên nút cũ (hoặc tên nút ban đầu của bạn)
-
                     } else {
-
                     // THÊM MỚI: (Giữ nguyên đoạn addDoc cũ của bạn)
-
                     await addDoc(boChonBoSuuTap, {
-
                         ten: ten,
-
                         soTien: soTien,
-
                         loai: loai,
-
                         danhMuc: danhMuc,
-
                         thoiGian: chuoiThoiGianGop // Đã đồng bộ với input giao diện
-
                     });
-
                     }
-
             // 4.6 Dọn dẹp giao diện (Reset Form)
-
                     idTen.value = '';
-
                     idSoTien.value = '';
-
                     if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):';
-
                     // --- Thêm đoạn này để reset về ngày giờ hiện tại ---
-
                     const bayGio = new Date();
-
                     const muiGioVN = new Date(bayGio.getTime() + (7 * 60 * 60 * 1000)); // Định dạng chuẩn UTC+7
-
                     if (inputNgay) inputNgay.value = muiGioVN.toISOString().split('T')[0];
-
                     if (inputGio) {
-
                         const gio = String(muiGioVN.getUTCHours()).padStart(2, '0');
-
                         const phut = String(muiGioVN.getUTCMinutes()).padStart(2, '0');
-
                         inputGio.value = `${gio}:${phut}`;
-
                     }
-
             // 4.7 Tự động chuyển qua tab Tổng quan (HOME)
-
                     const nutHome = document.querySelector('[data-target="home"]');
-
                     if (nutHome) {
-
                         nutHome.click();
-
                     }                    
-
                 } catch (loi) {
-
                     console.error("Lỗi kết nối Firebase: ", loi);
-
                     alert("Không thể ghi nhận giao dịch lên đám mây!");
-
                 }
-
                 });
-
                 }
-
         // --------------------------------------------------------------------------
-
         // V. TỰ ĐỘNG ĐIỀN NGÀY GIỜ HIỆN TẠI VÀO INPUT LÚC KHỞI ĐỘNG
-
         // --------------------------------------------------------------------------
-
                 const bayGio = new Date();
-
                 if (inputNgay && inputGio) {
-
                 const nam = bayGio.getFullYear();
-
                 const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
-
                 const ngay = String(bayGio.getDate()).padStart(2, '0');
-
                 inputNgay.value = `${nam}-${thang}-${ngay}`;
-
-
-
                 const gio = String(bayGio.getHours()).padStart(2, '0');
-
                 const phut = String(bayGio.getMinutes()).padStart(2, '0');
-
                 inputGio.value = `${gio}:${phut}`;
-
                 }      
-
         // --------------------------------------------------------------------------
-
         // VI. CẬP NHẬT SỐ TIỀN CÓ ĐỊNH DẠNG NGHÌN LÊN TIÊU ĐỀ SỐ TIỀN
-
         // --------------------------------------------------------------------------
-
                 if (idSoTien && labelSoTien) {
-
                     idSoTien.addEventListener('input', function () {
-
                         let value = this.value;          
-
                 if (!value) {
-
                     labelSoTien.innerText = 'Số tiền (đ):';
-
                     return;
-
                 }            
-
                 let soDaPhanCach = Number(value).toLocaleString('vi-VN');
-
                 labelSoTien.innerText = `Số tiền: ${soDaPhanCach}đ`;
-
                 });
-
                 }
-
         // --------------------------------------------------------------------------
-
         // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
-
         // --------------------------------------------------------------------------
-
                     const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
         // --------------------------------------------------------------------------
-
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
-
         // --------------------------------------------------------------------------
-
             // 7.1 Khởi tạo và làm sạch (Mở đầu)
 
                 onSnapshot(truyVanSapXep, (snapshot) => {
