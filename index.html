@@ -61,7 +61,7 @@
                     justify-content: center;   /* Đưa toàn bộ ứng dụng ra chính giữa màn hình */
                 }        
             /* 2.2 Khung mô phỏng ứng dụng điện thoại tiện lợi */
-                .app-container {
+                .KHUNG CHỨA APP {
                     background-color: #f7f9fa;     /* Nền của ứng dụng là màu xám */
                     width: 100%;
                     max-width: 450px;           /* Chiều rộng tối đa là 450px (chuẩn kích thước điện thoại) */
@@ -461,23 +461,24 @@
                 }
     </style>
 </head>
+
 <body>
-<div class="app-container">
-    <button id="nut-lam-moi-app" class="nut-reset-treo" title="Tải lại ứng dụng">
-        <svg viewBox="0 0 24 24">
-            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/>
-        </svg>
-    </button>
-<div id="tab-home" class="tab-content active">
-    <div class="khung-han-muc-home" id="vung-han-muc">
-        <div class="han-muc-hang-dau">
-            <span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu</span>
-            <div class="bo-dieu-huong-thang" id="cum-chuyen-thang-ngan-chan">
-                <button id="nut-thang-truoc" class="nut-mui-ten">◀</button>
-                <span id="hien-thi-thang-nam">Tháng --/----</span>
-                <button id="nut-thang-sau" class="nut-mui-ten">▶</button>
-            </div>
-        </div>    
+    <div class="KHUNG CHỨA APP">
+        <button id="nut-lam-moi-app" class="nut-reset-treo" title="Tải lại ứng dụng">
+            <svg viewBox="0 0 24 24">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/>
+            </svg>
+        </button>
+        <div id="tab-home" class="tab-content active">
+            <div class="khung-han-muc-home" id="vung-han-muc">
+                <div class="han-muc-hang-dau">
+                    <span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu</span>
+                    <div class="bo-dieu-huong-thang" id="cum-chuyen-thang-ngan-chan">
+                        <button id="nut-thang-truoc" class="nut-mui-ten">◀</button>
+                        <span id="hien-thi-thang-nam">Tháng --/----</span>
+                        <button id="nut-thang-sau" class="nut-mui-ten">▶</button>
+                    </div>
+                </div>    
         <div class="han-muc-thanh-nen">
             <div id="thanh-phat-trien-han-muc"></div>
         </div>    
