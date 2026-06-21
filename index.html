@@ -162,18 +162,16 @@
         <div class="khung-so-du-hien-tai"><div class="nhan">Số dư hiện tại</div><div class="so-tien-du-hien-tai"><span id="so-du">0</span> đ</div></div>
         <div class="danh-sach-lich-su"><div class="tieu-de-khoang">Lịch sử dòng tiền chi tiết</div><div id="lich-su-giao-dich"><div id="danh-sach-lich-su-toan-bo"><div class="trang-thai-trong">Đang tải...</div></div></div></div>
     </div>
-    
+
     <div id="tab-add" class="tab-content">
         <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
-        <div class="form-group">
-            <label>Loại dòng tiền:</label>
+        <div class="form-group"><label>Loại dòng tiền:</label>
             <select id="loai-giao-dich">
                 <option value="chi">💸 Chi tiêu (Khoản ra)</option>
                 <option value="thu">💰 Thu nhập (Khoản vào)</option>
             </select>
         </div>
-        <div class="form-group">
-            <label>Phân loại danh mục:</label>
+        <div class="form-group"><label>Phân loại danh mục:</label>
             <select id="danh-muc-giao-dich">
                 <option value="Ăn uống">🍔 Ăn uống</option>
                 <option value="Di chuyển">🚗 Di chuyển</option>
@@ -183,26 +181,12 @@
                 <option value="Khác">✨ Khác</option>
             </select>
         </div>
-        <div class="form-group">
-            <label>Tên khoản thu/chi:</label>
-            <input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng...">
-        </div>
-        <div class="form-group">
-            <label id="label-so-tien">Số tiền (đ):</label>
-            <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
-        </div>
-        <div class="form-group-row" style="display: flex; gap: 10px;">
-            <div class="form-group" style="flex: 1;">
-                <label>Ngày tháng:</label>
-                <input type="date" id="ngay-giao-dich">
-            </div>
-            <div class="form-group" style="flex: 1;">
-                <label>Thời gian:</label>
-                <input type="time" id="gio-giao-dich">
-            </div>
-        </div>            
+        <div class="form-group"><label>Tên khoản thu/chi:</label><input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng..."></div>
+        <div class="form-group"><label id="label-so-tien">Số tiền (đ):</label><input type="number" id="so-tien" placeholder="Ví dụ: 50000"></div>
+        <div class="form-group-row" style="display: flex; gap: 10px;"><div class="form-group" style="flex: 1;"><label>Ngày tháng:</label><input type="date" id="ngay-giao-dich"></div><div class="form-group" style="flex: 1;"><label>Thời gian:</label><input type="time" id="gio-giao-dich"></div></div>            
         <button id="nut-ghi-de" class="nut-bam-luu">Cập nhật ví</button>
     </div>
+    
     <div id="tab-report" class="tab-content">
         <div class="tieu-de-khoang" style="margin-top: 10px;">Tổng quan chu kỳ tài chính</div>
         <div class="the-bao-cao">
