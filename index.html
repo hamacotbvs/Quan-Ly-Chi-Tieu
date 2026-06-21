@@ -404,454 +404,231 @@
         // --------------------------------------------------------------------------
         // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
         // --------------------------------------------------------------------------
-                    const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
+            const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
         // --------------------------------------------------------------------------
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
         // --------------------------------------------------------------------------
             // 7.1 Khởi tạo và làm sạch (Mở đầu)
-
                 onSnapshot(truyVanSapXep, (snapshot) => {
-
                     if (!idVungLichSu) return;            
-
                     idVungLichSu.innerHTML = '';
-
                     let tongSoDu = 0;
-
                     let tongThuNhap = 0;
-
                     let tongChiTieu = 0;
-
                     // Thêm dòng này ở cuối hàm đó để truyền dữ liệu cho thanh hạn mức tự động tính toán lại
-
                     capNhatThanhHanMuc(snapshot.docs);
-
             // 7.2 Kiểm tra bộ lưu trữ rỗng
-
                     if (snapshot.empty) {
-
                         idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
-
                         if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
-
                         if (idBcThu) idBcThu.innerText = "0 đ";
-
                         if (idBcChi) idBcChi.innerText = "0 đ";
-
                         if (idThanhThu) idThanhThu.style.width = "0%";
-
                         if (idThanhChi) idThanhChi.style.width = "0%";
-
                         return;
-
                     }
-
             // 7.3 Vòng lặp tính toán và dựng dòng lịch sử (Phần cốt lõi)
-
                     snapshot.forEach((doc) => {
-
                         const giaoDich = doc.data();
-
                         const docId = doc.id; // 🔑 Lấy ID duy nhất của tài liệu để xử lý xóa
-
                         let kyTuDau = '';
-
                         let lopMauSac = '';
-
                 // 7.3.1 Bước A: Phân loại tiền và tính toán
-
                         if (giaoDich.loai === 'thu') {
-
                             tongSoDu += giaoDich.soTien; // Cộng vào số dư
-
                             tongThuNhap += giaoDich.soTien; // Cộng vào tổng thu
-
                             kyTuDau = '+';
-
                             lopMauSac = 'mau-thu'; // Đặt chữ màu xanh
-
                         } else {
-
                             tongSoDu -= giaoDich.soTien; // Trừ bớt số dư
-
                             tongChiTieu += giaoDich.soTien; // Cộng vào tổng chi
-
                             kyTuDau = '-';
-
                             lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
-
                         }
-
                         // 🟢 BẢNG ÁNH XẠ ICON THEO DANH MỤC GIỐNG BÊN NHẬP LIỆU
-
                         const danhSachIcon = {
-
                             "Ăn uống": "🍔",
-
                             "Di chuyển": "🚗",
-
                             "Mua sắm": "🛍️",
-
                             "Hóa đơn & Tiện ích": "💵",
-
                             "Giải trí & Cà phê": "🎬",
-
                             "Thu nhập từ lương": "💰", // Thêm các danh mục thu nếu có
-
                             "Khác": "✨"
-
                         };
-
                         const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
-
                         // Tìm icon tương ứng, nếu không thấy thì mặc định lấy icon cặp tài liệu 📂 hoặc ✨
-
                         const iconPhùHợp = danhSachIcon[hienThiDanhMuc] || "📂";
-
                         // Lấy chuỗi ngày giờ (Ví dụ: "18/06/2026 14:30" hoặc giữ nguyên chuỗi gốc)
-
                         const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
-
                 // 7.3.2 Bước B: Vẽ giao diện
-
                         const dongMoi = document.createElement('div');
-
                         dongMoi.classList.add('dong-giao-dich');
-
                         dongMoi.innerHTML = `
-
                             <div class="nen-hanh-dong">
-
                                 <div class="hanh-dong-sua">✏️ Sửa</div>
-
                                 <div class="hanh-dong-xoa">🗑️ Xóa</div>
-
                             </div>
-
                             <div class="giao-dich-noi-dung" data-id="${docId}">
-
                                 <div class="giao-dich-trai">
-
                                     <span class="giao-dich-muc">${iconPhùHợp} ${hienThiDanhMuc}</span>
-
                                     <span class="giao-dich-ten">${giaoDich.ten}</span>
-
                                 </div>
-
-       
-
                                 <div class="giao-dich-phai-cum">
-
                                     <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span>
-
                                     <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
-
                                 </div>
-
                             </div>
-
                             `;
-
                         idVungLichSu.appendChild(dongMoi);
-
                         });
-
                 // 7.3.3 BỘ XỬ LÝ SỰ KIỆN VUỐT CHẠM (SWIPE) VÀ KÍCH HOẠT HÀNH ĐỘNG
-
                     document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
-
                         let xBatDau = 0;
-
                         let xDiChuyen = 0;
-
                         let dangVuot = false;
-
                     // --- Hàm bắt đầu chạm / click giữ ---
-
                         const batDauVuot = (e) => {
-
                         dangVuot = true;
-
                         xBatDau = e.touches ? e.touches[0].clientX : e.clientX;
-
                         };
-
                     // --- Hàm đang kéo trượt ---
-
                         const dangKeo = (e) => {
-
                         if (!dangVuot) return;
-
                         const xHienTai = e.touches ? e.touches[0].clientX : e.clientX;
-
                         xDiChuyen = xHienTai - xBatDau;
-
                     // Giới hạn khoảng cách kéo trực quan (tối đa trượt 100px về mỗi bên)
-
                         if (xDiChuyen > 100) xDiChuyen = 100;
-
                         if (xDiChuyen < -100) xDiChuyen = -100;
-
                         noiDung.style.transform = `translateX(${xDiChuyen}px)`;
-
                         noiDung.style.transition = 'none'; // Tắt animation khi đang bám theo tay
-
                         };
-
                     // --- Hàm thả tay / buông chuột ---
-
                         const ketThucVuot = async () => {
-
                             if (!dangVuot) return;
-
                             dangVuot = false;        
-
                             noiDung.style.transition = 'transform 0.2s ease-out';
-
                             const idTaiLieu = noiDung.getAttribute('data-id');
-
                             const tenGiaoDich = noiDung.querySelector('.giao-dich-ten')?.innerText || '';
-
                     // KỊCH BẢN 1: VUỐT TRÁI (Kéo sang trái < -60px) -> Thực hiện XÓA
-
                         if (xDiChuyen < -60) {
-
                             noiDung.style.transform = 'translateX(-50%)'; // Đẩy hẳn ra ngoài màn hình để tạo hiệu ứng biến mất
-
                             setTimeout(async () => {
-
                                 if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
-
                                     try {
-
                                         const taiLieuRef = doc(db, "giao_dich_business", idTaiLieu);
-
                                         await deleteDoc(taiLieuRef);
-
                                     } catch (error) {
-
                                         console.error("Lỗi xóa:", error);
-
                                         alert("Không thể xóa giao dịch!");
-
                                         noiDung.style.transform = 'translateX(0)'; // Trả về nếu lỗi
-
                                     }
-
                                 } else {
-
                                     noiDung.style.transform = 'translateX(0)'; // Trả về vị trí cũ nếu bấm Hủy
-
                                 }
-
                             }, 200);
-
                         }        
-
                     // KỊCH BẢN 2: VUỐT PHẢI (Kéo sang phải > 60px) -> Điền dữ liệu lên form để SỬA
-
                         else if (xDiChuyen > 60) {
-
                             noiDung.style.transform = 'translateX(0)'; // Trả thanh lịch sử về vị trí cũ    
-
                     // Lấy trực tiếp dữ liệu từ chính dòng HTML vừa vuốt (Không cần dò trong snapshot nữa)
-
                         const idTaiLieu = noiDung.getAttribute('data-id');
-
                         const tenGiaoDich = noiDung.querySelector('.giao-dich-ten')?.innerText || '';
-
                         const danhMucGiaoDich = noiDung.querySelector('.giao-dich-muc')?.innerText || '';
-
                         const thoiGianGiaoDich = noiDung.querySelector('.giao-dich-thoi-gian')?.innerText || '';
-
                         const soTienGiaoDich = noiDung.querySelector('.giao-dich-phai')?.innerText || '';
-
                     // 1. Đổ Tên giao dịch
-
                         if (idTen) idTen.value = tenGiaoDich;
-
                     // 2. Xử lý và đổ Số tiền (Bỏ chữ 'đ', dấu chấm phân cách và dấu +/-)
-
                         if (idSoTien) {
-
                             let soTienSạch = soTienGiaoDich.replace(/[^\d]/g, ''); // Chỉ giữ lại số
-
                             idSoTien.value = soTienSạch;
-
                             idSoTien.dispatchEvent(new Event('input'));
-
                         }    
-
                     // 3. Xác định loại giao dịch (Thu hay Chi) dựa trên màu sắc hoặc ký tự gốc
-
                         if (idLoaiGiaoDich) {
-
                         if (soTienGiaoDich.includes('+')) {
-
                             idLoaiGiaoDich.value = 'thu';
-
                         } else {
-
                             idLoaiGiaoDich.value = 'chi';
-
                         }
-
                         idLoaiGiaoDich.dispatchEvent(new Event('change'));
-
                         }    
-
                     // 4. Xử lý đổ Danh mục (Tách bỏ Icon cảm xúc ở đầu chuỗi)
-
                         setTimeout(() => {
-
                             if (idDanhMuc) {
-
                                 // Loại bỏ icon (ví dụ: "🍔 Ăn uống" -> "Ăn uống")
-
                                     let danhMucSạch = danhMucGiaoDich.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, "").trim();
-
                                 idDanhMuc.value = danhMucSạch || 'Khác';
-
                             }
-
                         }, 100);                
-
                     // 5. Tách chuỗi thời gian "🕒 YYYY-MM-DD HH:MM" hoặc "🕒 DD/MM/YYYY HH:MM"
-
                         let thoiGianSạch = thoiGianGiaoDich.replace('🕒', '').trim();
-
                             if (thoiGianSạch && thoiGianSạch.includes(' ')) {
-
                                 const mangPhanTach = thoiGianSạch.split(' ');
-
                             if (inputNgay) inputNgay.value = mangPhanTach[0];
-
                             if (inputGio) inputGio.value = mangPhanTach[1];  
-
                             }
-
                     // 6. Ghi nhận trạng thái đang sửa
-
                         window.idGiaoDichDangSua = idTaiLieu;
-
                         if (idNutGhiDe) idNutGhiDe.innerText = "💾 Cập nhật thay đổi";                
-
                     // 7. Chuyển Tab nhập liệu nhanh
-
                         const tabNhapLieu = document.querySelector('[data-target="add"]') || document.getElementById('tab-nhap-lieu');
-
                         if (tabNhapLieu) {
-
                             tabNhapLieu.click();
-
                         }
-
                         }        
-
                     // KỊCH BẢN 3: Vuốt hờ hờ chưa đủ lực -> Trả về ban đầu
-
                                 else {
-
                                 noiDung.style.transform = 'translateX(0)';
-
                                 }
-
                                 xDiChuyen = 0;
-
                             };
-
                     // Đăng ký sự kiện cho thiết bị di động (Touch)
-
                             noiDung.addEventListener('touchstart', batDauVuot);
-
                             noiDung.addEventListener('touchmove', dangKeo);
-
                             noiDung.addEventListener('touchend', ketThucVuot);
-
                     // Đăng ký sự kiện cho máy tính (Mouse)
-
                             noiDung.addEventListener('mousedown', batDauVuot);
-
                             window.addEventListener('mousemove', dangKeo);
-
                             window.addEventListener('mouseup', ketThucVuot);
-
                             });
-
             // 7.4 Đưa số liệu sau khi tính toán lên giao diện trực quan
-
                     if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
-
                     if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
-
                     if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
-
             // 7.5 Cập nhật thanh đồ họa
-
                     const maxTong = Math.max(tongThuNhap, tongChiTieu);
-
                     if (maxTong > 0) {
-
                         if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
-
                         if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
-
                     } else {
-
                         if (idThanhThu) idThanhThu.style.width = "0%";
-
                         if (idThanhChi) idThanhChi.style.width = "0%";
-
                     }
-
                     });
-
             // --- KHỞI TẠO CÁC BIẾN VÀ LẮNG NGHE SỰ KIỆN HẠN MỨC ---
-
             // --- 1. KHỞI TẠO CÁC BIẾN TOÀN CỤC ---
-
                     let boSuoTapHanMuc = JSON.parse(localStorage.getItem('bo_suo_tap_han_muc')) || {};
-
                     if (typeof thoiGianDangXem === 'undefined') {
-
                         window.thoiGianDangXem = new Date(); // Sử dụng Date() mặc định cho app
-
                     }
-
                     // Hàm hỗ trợ chuyển đổi Object Date thành chuỗi "YYYY-MM" để truy vấn
-
                     function layChuoiThangNam(dateObj) {
-
                         const nam = dateObj.getFullYear();
-
                         const thang = String(dateObj.getMonth() + 1).padStart(2, '0');
-
                         return `${nam}-${thang}`;
-
                     }
-
                     // Hàm cập nhật chữ hiển thị tháng (Ví dụ: "Tháng 06/2026")
-
                     function capNhatChuHienThiThang() {
-
                         const txtThangNam = document.getElementById('hien-thi-thang-nam-han-muc');
-
                         if (txtThangNam) {
-
                             const thang = String(window.thoiGianDangXem.getMonth() + 1).padStart(2, '0');
-
                             const nam = window.thoiGianDangXem.getFullYear();
-
                             txtThangNam.innerText = `Tháng ${thang}/${nam}`;
-
                         }
-
                     }
-
             // --- 2. LẮNG NGHE SỰ KIỆN CLICK KHUNG HẠN MỨC ĐỂ ĐẶT TIỀN ---
-
                     document.getElementById('vung-han-muc-chi-tieu')?.addEventListener('click', () => {
-
                         let thangDangXem = layChuoiThangNam(window.thoiGianDangXem);
 
                         let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;    
