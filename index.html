@@ -13,62 +13,62 @@
         /* ==========================================================================
         A.1 ĐẶNG NHẬP/ĐĂNG KÝ
         ========================================================================== */
-        :root {
-            --mau-nen-chinh: #f4f6f9;
-            --mau-trang: #ffffff;
-            --mau-chu-toi: #2c3e50;
-            --mau-chu-nhat: #7f8c8d;
-            --border-bo-goc: 12px;   
-            /* Màu sắc trạng thái hành động */
-            --mau-dang-nhap: #2ecc71;  /* Xanh lá */
-            --mau-dang-ky: #3498db;    /* Xanh dương */
-            --mau-dang-xuat: #e74c3c;  /* Đỏ */
-            --mau-thu-tien: #2ecc71;
-            --mau-chi-tien: #e74c3c;
-        }
-        /* ==========================================================================
-        II. CSS CHO KHUNG ĐĂNG NHẬP / ĐĂNG KÝ (AUTH WINDOW)
-        ========================================================================== */
-        #man-hinh-auth {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--mau-nen-chinh); z-index: 99999; 
-            display: flex; justify-content: center; align-items: center; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .hop-dang-nhap {
-            background: var(--mau-trang); padding: 35px 25px; 
-            border-radius: var(--border-bo-goc);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
-            width: 90%; max-width: 380px; text-align: center;
-        }
-        .hop-dang-nhap h2 { margin: 0 0 10px 0; color: var(--mau-chu-toi); font-size: 24px; }
-        .hop-dang-nhap p { margin: 0 0 25px 0; color: var(--mau-chu-nhat); font-size: 14px; }        
-        .o-nhap-lieu {
-            width: 100%; padding: 12px 15px; margin-bottom: 15px; 
-            border: 1px solid #e0e0e0; border-radius: 8px; 
-            box-sizing: border-box; font-size: 15px; outline: none;
-            transition: border 0.2s;
-        }
-        .o-nhap-lieu:focus { border-color: var(--mau-dang-ky); }    
-        .cum-nut-bam { display: flex; gap: 12px; margin-top: 10px; }
-        .nut-bam {
-            flex: 1; padding: 13px; border: none; border-radius: 8px;
-            font-size: 15px; font-weight: bold; cursor: pointer; 
-            color: white; transition: opacity 0.2s;
-        }
-        .nut-bam:hover { opacity: 0.9; }
-        .nut-dang-nhap { background-color: var(--mau-dang-nhap); }
-        .nut-dang-ky { background-color: var(--mau-dang-ky); }
-        /* ==========================================================================
-        III. CSS NÚT ĐĂNG XUẤT NỔI (FLOATING LOGOUT BUTTON)
-        ========================================================================== */
-        #nut-dang-xuat-he-thong {
-            position: fixed; top: 15px; right: 15px; z-index: 9998;
-            background-color: var(--mau-dang-xuat); color: white;
-            border: none; padding: 8px 16px; border-radius: 20px;
-            font-weight: bold; font-size: 13px; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); display: none;
-        }
+                :root {
+                    --mau-nen-chinh: #f4f6f9;
+                    --mau-trang: #ffffff;
+                    --mau-chu-toi: #2c3e50;
+                    --mau-chu-nhat: #7f8c8d;
+                    --border-bo-goc: 12px;   
+                    /* Màu sắc trạng thái hành động */
+                    --mau-dang-nhap: #2ecc71;  /* Xanh lá */
+                    --mau-dang-ky: #3498db;    /* Xanh dương */
+                    --mau-dang-xuat: #e74c3c;  /* Đỏ */
+                    --mau-thu-tien: #2ecc71;
+                    --mau-chi-tien: #e74c3c;
+                }
+            /* ==========================================================================
+            II. CSS CHO KHUNG ĐĂNG NHẬP / ĐĂNG KÝ (AUTH WINDOW)
+            ========================================================================== */
+                #man-hinh-auth {
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: var(--mau-nen-chinh); z-index: 99999; 
+                    display: flex; justify-content: center; align-items: center; 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                }
+                .hop-dang-nhap {
+                    background: var(--mau-trang); padding: 35px 25px; 
+                    border-radius: var(--border-bo-goc);
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
+                    width: 90%; max-width: 380px; text-align: center;
+                }
+                .hop-dang-nhap h2 { margin: 0 0 10px 0; color: var(--mau-chu-toi); font-size: 24px; }
+                .hop-dang-nhap p { margin: 0 0 25px 0; color: var(--mau-chu-nhat); font-size: 14px; }        
+                .o-nhap-lieu {
+                    width: 100%; padding: 12px 15px; margin-bottom: 15px; 
+                    border: 1px solid #e0e0e0; border-radius: 8px; 
+                    box-sizing: border-box; font-size: 15px; outline: none;
+                    transition: border 0.2s;
+                }
+                .o-nhap-lieu:focus { border-color: var(--mau-dang-ky); }    
+                .cum-nut-bam { display: flex; gap: 12px; margin-top: 10px; }
+                .nut-bam {
+                    flex: 1; padding: 13px; border: none; border-radius: 8px;
+                    font-size: 15px; font-weight: bold; cursor: pointer; 
+                    color: white; transition: opacity 0.2s;
+                }
+                .nut-bam:hover { opacity: 0.9; }
+                .nut-dang-nhap { background-color: var(--mau-dang-nhap); }
+                .nut-dang-ky { background-color: var(--mau-dang-ky); }
+            /* ==========================================================================
+            III. CSS NÚT ĐĂNG XUẤT NỔI (FLOATING LOGOUT BUTTON)
+            ========================================================================== */
+                #nut-dang-xuat-he-thong {
+                    position: fixed; top: 15px; right: 15px; z-index: 9998;
+                    background-color: var(--mau-dang-xuat); color: white;
+                    border: none; padding: 8px 16px; border-radius: 20px;
+                    font-weight: bold; font-size: 13px; cursor: pointer;
+                    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); display: none;
+                }
         /* ==========================================================================
         A.2 ĐỊNH DẠNG KHUNG APP
         ========================================================================== */
@@ -142,11 +142,11 @@
                     display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */
                 }
 
-    /* A.2 ĐỊNH DẠNG TỪNG TRANG */
-        /* ==========================================================================
-        I. TAB 1: HOME
-        ========================================================================== */
-            /* 1.1 THANH HẠN MỨC CHI TIÊU TRONG THÁNG */
+        /* A.2 ĐỊNH DẠNG TỪNG TRANG */
+            /* ==========================================================================
+            I. TAB 1: HOME
+            ========================================================================== */
+                /* 1.1 THANH HẠN MỨC CHI TIÊU TRONG THÁNG */
                 /* Khung bọc bên ngoài của vùng hạn mức */
                     .khung-han-muc-home {
                         margin-top: 15px;
@@ -225,9 +225,9 @@
                         font-weight: 600;
                         color: #444444;
                     }
-        /* ==========================================================================
-        II. TAB 2: LỊCH SỬ
-        ========================================================================== */        
+            /* ==========================================================================
+            II. TAB 2: LỊCH SỬ
+            ========================================================================== */        
              /* 1.1 KHUNG HIỂN THỊ SỐ DƯ HIỆN TẠI */
                 .vi-tong-quan {
                     background-color: #0082C8; /* Màu xanh hoàng gia */
@@ -393,9 +393,9 @@
                     box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
                 }
                 .nut-bam-luu:hover { background-color: #2980b9; }
-        /* ==========================================================================
-        IV. TAB 4: BÁO CÁO
-        ========================================================================== */
+            /* ==========================================================================
+            IV. TAB 4: BÁO CÁO
+            ========================================================================== */
                 .the-bao-cao {
                     background: white;
                     border-radius: 12px;
@@ -406,7 +406,7 @@
                 }
                 .thong-ke-dong { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
                 .thong-ke-so { font-weight: bold; }        
-            /* Thanh đồ họa tiến trình (Progress Bar) so sánh trực quan */
+                /* Thanh đồ họa tiến trình (Progress Bar) so sánh trực quan */
                 .thanh-phan-tram-khung { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
                 .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
                 .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
@@ -538,8 +538,7 @@
         </div>
     </div>
     <button id="nut-dang-xuat-he-thong">🔒 Đăng xuất</button>
-<div id="khung-app-cu-cua-ban">
-         </div>
+
 <div class="app-container">
     <button id="nut-lam-moi-app" class="nut-reset-treo" title="Tải lại ứng dụng">
         <svg viewBox="0 0 24 24">
@@ -897,199 +896,102 @@
         // IV. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
         // --------------------------------------------------------------------------
              // 4.1 kích hoạt toàn bộ các lệnh bên trong nút bấm chạy    
-
                 if (idNutGhiDe) {
-
                     idNutGhiDe.addEventListener('click', async () => {
-
             // 4.2 lấy ra các giá trị hiện tại mà bạn đang gõ trong ô nhập liệu
-
                     const loai = idLoaiGiaoDich.value;
-
                     const ten = idTen.value.trim();
-
                     const danhMuc = idDanhMuc.value;
-
                     const soTien = parseInt(idSoTien.value);                
-
             // 4.3 Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
-
                     const ngayNhap = inputNgay ? inputNgay.value : "";
-
                     const gioNhap = inputGio ? inputGio.value : "";
-
             // 4.4 Kiểm tra dữ liệu đầu vào hợp lệ
-
                     if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
-
                         alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
-
                         return;
-
                     }
-
                     try {
-
                     // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
-
                     const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
-
             // 4.5 Đẩy dữ liệu transaction mới lên Firestore
-
                     if (window.idGiaoDichDangSua) {
-
                     // SỬA: Nếu có ID đang sửa, tiến hành cập nhật dữ liệu thay vì thêm mới
-
                     const taiLieuRef = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
-
                     await updateDoc(taiLieuRef, {
-
                         ten: ten,
-
                         soTien: soTien,
-
                         loai: loai,
-
                         danhMuc: danhMuc,
-
                         thoiGian: chuoiThoiGianGop
-
                     });
-
                     window.idGiaoDichDangSua = null; // Xóa trạng thái sửa
-
                     idNutGhiDe.innerText = "Ghi đè / Thêm mới"; // Trả lại tên nút cũ (hoặc tên nút ban đầu của bạn)
-
                     } else {
-
                     // THÊM MỚI: (Giữ nguyên đoạn addDoc cũ của bạn)
-
                     await addDoc(boChonBoSuuTap, {
-
                         ten: ten,
-
                         soTien: soTien,
-
                         loai: loai,
-
                         danhMuc: danhMuc,
-
                         thoiGian: chuoiThoiGianGop // Đã đồng bộ với input giao diện
-
                     });
-
                     }
-
             // 4.6 Dọn dẹp giao diện (Reset Form)
-
                     idTen.value = '';
-
                     idSoTien.value = '';
-
                     if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):';
-
                     // --- Thêm đoạn này để reset về ngày giờ hiện tại ---
-
                     const bayGio = new Date();
-
                     const muiGioVN = new Date(bayGio.getTime() + (7 * 60 * 60 * 1000)); // Định dạng chuẩn UTC+7
-
                     if (inputNgay) inputNgay.value = muiGioVN.toISOString().split('T')[0];
-
                     if (inputGio) {
-
                         const gio = String(muiGioVN.getUTCHours()).padStart(2, '0');
-
                         const phut = String(muiGioVN.getUTCMinutes()).padStart(2, '0');
-
                         inputGio.value = `${gio}:${phut}`;
-
                     }
-
             // 4.7 Tự động chuyển qua tab Tổng quan (HOME)
-
                     const nutHome = document.querySelector('[data-target="home"]');
-
                     if (nutHome) {
-
                         nutHome.click();
-
                     }                    
-
                 } catch (loi) {
-
                     console.error("Lỗi kết nối Firebase: ", loi);
-
                     alert("Không thể ghi nhận giao dịch lên đám mây!");
-
                 }
-
                 });
-
                 }
-
         // --------------------------------------------------------------------------
-
         // V. TỰ ĐỘNG ĐIỀN NGÀY GIỜ HIỆN TẠI VÀO INPUT LÚC KHỞI ĐỘNG
-
         // --------------------------------------------------------------------------
-
                 const bayGio = new Date();
-
                 if (inputNgay && inputGio) {
-
                 const nam = bayGio.getFullYear();
-
                 const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
-
                 const ngay = String(bayGio.getDate()).padStart(2, '0');
-
                 inputNgay.value = `${nam}-${thang}-${ngay}`;
-
-
-
                 const gio = String(bayGio.getHours()).padStart(2, '0');
-
                 const phut = String(bayGio.getMinutes()).padStart(2, '0');
-
                 inputGio.value = `${gio}:${phut}`;
-
                 }      
 
         // --------------------------------------------------------------------------
-
         // VI. CẬP NHẬT SỐ TIỀN CÓ ĐỊNH DẠNG NGHÌN LÊN TIÊU ĐỀ SỐ TIỀN
-
         // --------------------------------------------------------------------------
-
                 if (idSoTien && labelSoTien) {
-
                     idSoTien.addEventListener('input', function () {
-
                         let value = this.value;          
-
                 if (!value) {
-
                     labelSoTien.innerText = 'Số tiền (đ):';
-
                     return;
-
                 }            
-
                 let soDaPhanCach = Number(value).toLocaleString('vi-VN');
-
                 labelSoTien.innerText = `Số tiền: ${soDaPhanCach}đ`;
-
                 });
-
                 }
-
         // --------------------------------------------------------------------------
-
         // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
-
         // --------------------------------------------------------------------------
-
                     const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
         // --------------------------------------------------------------------------
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
