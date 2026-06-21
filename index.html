@@ -239,48 +239,40 @@
 // --------------------------------------------------------------------------
 // I. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
 // --------------------------------------------------------------------------
-            // 1.1 Chứng minh thư và địa chỉ nhà của App
-            const firebaseConfig = {
-                // Mật khẩu, Chìa khóa bảo mật để app của bạn có quyền kết nối vào hệ thống
-                apiKey: "AIzaSyAbIbeVQeht5hsIYE6IXFrRJaOq2oyMMKw",
-                authDomain: "quanlychitieu-af553.firebaseapp.com",
-                // Tên dự án của bạn trên hệ thống Google
-                projectId: "quanlychitieu-af553",
-                // Giống như số nhà, ngõ ngách, mã bưu điện để định vị chính xác tuyệt đối cơ sở dữ liệu của riêng bạn
-                storageBucket: "quanlychitieu-af553.firebasestorage.app",
-                messagingSenderId: "800322270032",
-                appId: "1:800322270032:web:87fdc66a1e7ac0c4d37255",
-                measurementId: "G-3NQYVR3VFB"
-            };        
-            // 1.2 Lệnh này ra lệnh cho ứng dụng nạp các thông số cấu hình ở trên vào hệ thống để bắt đầu mở cổng kết nối lên Cloud
-                const app = initializeApp(firebaseConfig);
-            // 1.3 Lệnh này kích hoạt dịch vụ Firestore
-                const db = getFirestore(app);
-            // 1.4 Chỉ định ngăn tủ chứa dữ liệu
-                const boChonBoSuuTap = collection(db, "giao_dich_business");
+        const firebaseConfig = {
+            apiKey: "AIzaSy...", // TÁC DỤNG: Chìa khóa để ứng dụng của bạn mở cửa đi vào hệ thống dịch vụ của Google.
+            authDomain: "quanlychitieu-af553.firebaseapp.com",// TÁC DỤNG: Định danh tên miền an toàn phục vụ riêng cho các tính năng bảo mật hoặc đăng nhập.
+            projectId: "quanlychitieu-af553",// TÁC DỤNG: ID duy nhất của dự án. Nhờ cái này mà Google biết bạn đang muốn kết nối vào đúng dự án "quanlychitieu-af553" chứ không phải dự án của người khác.
+            storageBucket: "quanlychitieu-af553.appspot.com",// TÁC DỤNG: Địa chỉ "kho chứa" trên đám mây, dùng khi app của bạn có tính năng tải ảnh, video hoặc file lên mạng.
+            messagingSenderId: "367355152865",// TÁC DỤNG: Mã định danh tổng đài gửi tin nhắn, dùng để quản lý các tính năng gửi thông báo (Notification) về điện thoại/trình duyệt.
+            appId: "1:367355152865:web:644a86071ef2817d6928e1"// TÁC DỤNG: ID riêng biệt của chính ứng dụng Web (HTML) này bên trong dự án Firebase của bạn.
+        };        
+        const app = initializeApp(firebaseConfig); //Firebase bắt đầu khởi chạy trên trang web của bạn
+        const db = getFirestore(app);// để ứng dụng bắt đầu có quyền đọc, ghi, sửa, hoặc xóa dữ liệu trên đám mây
+        const datathuchi = collection(db, "giao_dich_business");// trỏ trực tiếp vào một bảng dữ liệu cụ thể trong Firestore, khi đưa lên đây mình đặt tên lại datathuchi cho mỗi lần sử dụng dễ khỏi dùng nguyên lệnh dài gọi
 
-        // --------------------------------------------------------------------------
-        // II. ĐỊNH DANH TẤT CẢ CÁC BIẾN (BẮT BUỘC ĐỂ TRÊN ĐẦU)
-        // --------------------------------------------------------------------------
-                const idNutGhiDe = document.getElementById('nut-ghi-de');
-                const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
-                const idTen = document.getElementById('ten-khoan-chi');
-                const idDanhMuc = document.getElementById('danh-muc-giao-dich');
-                const idSoTien = document.getElementById('so-tien');
-                const idHienThiSoDu = document.getElementById('so-du');
-                const idVungLichSu = document.getElementById('lich-su-giao-dich');
-            // Các biến hiển thị của TAB BÁO CÁO
-                const idBcThu = document.getElementById('bao-cao-thu');
-                const idBcChi = document.getElementById('bao-cao-chi');
-                const idThanhThu = document.getElementById('thanh-thu-ti-le');
-                const idThanhChi = document.getElementById('thanh-chi-ti-le');
-            // Các thẻ input ngày, giờ và label số tiền
-                const inputNgay = document.getElementById('ngay-giao-dich');
-                const inputGio = document.getElementById('gio-giao-dich');
-                const labelSoTien = document.getElementById('label-so-tien');
-                const cacNutTab = document.querySelectorAll('.nut-tab');
-                const cacVungNoiDung = document.querySelectorAll('.tab-content');
-                const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP');
+    // --------------------------------------------------------------------------
+    // II. ĐỊNH DANH TẤT CẢ CÁC BIẾN (BẮT BUỘC ĐỂ TRÊN ĐẦU)
+    // --------------------------------------------------------------------------
+        const idNutGhiDe = document.getElementById('nut-ghi-de');
+        const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
+        const idTen = document.getElementById('ten-khoan-chi');
+        const idDanhMuc = document.getElementById('danh-muc-giao-dich');
+        const idSoTien = document.getElementById('so-tien');
+        const idHienThiSoDu = document.getElementById('so-du');
+        const idVungLichSu = document.getElementById('lich-su-giao-dich');
+        // Các biến hiển thị của TAB BÁO CÁO
+        const idBcThu = document.getElementById('bao-cao-thu');
+        const idBcChi = document.getElementById('bao-cao-chi');
+        const idThanhThu = document.getElementById('thanh-thu-ti-le');
+        const idThanhChi = document.getElementById('thanh-chi-ti-le');
+        // Các thẻ input ngày, giờ và label số tiền
+        const inputNgay = document.getElementById('ngay-giao-dich');
+        const inputGio = document.getElementById('gio-giao-dich');
+        const labelSoTien = document.getElementById('label-so-tien');
+        const cacNutTab = document.querySelectorAll('.nut-tab');
+        const cacVungNoiDung = document.querySelectorAll('.tab-content');
+        const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP');
 
         // --------------------------------------------------------------------------
         // III. THAY ĐỔI DANH MỤC THU/CHI TƯƠNG ỨNG
@@ -342,7 +334,7 @@
                     idNutGhiDe.innerText = "Ghi đè / Thêm mới"; // Trả lại tên nút cũ (hoặc tên nút ban đầu của bạn)
                     } else {
                     // THÊM MỚI: (Giữ nguyên đoạn addDoc cũ của bạn)
-                    await addDoc(boChonBoSuuTap, {
+                    await addDoc(datathuchi, {
                         ten: ten,
                         soTien: soTien,
                         loai: loai,
@@ -404,7 +396,7 @@
         // --------------------------------------------------------------------------
         // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
         // --------------------------------------------------------------------------
-            const truyVanSapXep = query(boChonBoSuuTap, orderBy("thoiGian", "desc"));
+            const truyVanSapXep = query(datathuchi, orderBy("thoiGian", "desc"));
         // --------------------------------------------------------------------------
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
         // --------------------------------------------------------------------------
