@@ -499,54 +499,53 @@
             <div class="danh-sach-lich-su">
                 <div class="tieu-de-khoang">Lịch sử dòng tiền chi tiết</div>
                 <div id="LICH-SU-GIAO-DICH">
-                    <div id="idVUNGLICHSU">
+                    <div id="danh-sach-lich-su-toan-bo">
                         <div class="trang-thai-trong">Đang tải danh sách lịch sử...</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="tab-add" class="tab-content">
-            <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
-            <div class="form-group">
-                <label>Loại dòng tiền:</label>
-                <select id="loai-giao-dich">
-                    <option value="chi">💸 Chi tiêu (Khoản ra)</option>
-                    <option value="thu">💰 Thu nhập (Khoản vào)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Phân loại danh mục:</label>
-                <select id="danh-muc-giao-dich">
-                    <option value="Ăn uống">🍔 Ăn uống</option>
-                    <option value="Di chuyển">🚗 Di chuyển</option>
-                    <option value="Mua sắm">🛍️ Mua sắm</option>
-                    <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
-                    <option value="Giải trí">🎬 Giải trí & Cà phê</option>
-                    <option value="Khác">✨ Khác</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Tên khoản thu/chi:</label>
-                <input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng...">
-            </div>
-            <div class="form-group">
-                <label id="label-so-tien">Số tiền (đ):</label>
-                <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
-            </div>
-            <div class="form-group-row" style="display: flex; gap: 10px;">
-                <div class="form-group" style="flex: 1;">
-                    <label>Ngày tháng:</label>
-                    <input type="date" id="ngay-giao-dich">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>Thời gian:</label>
-                    <input type="time" id="gio-giao-dich">
-                </div>
-            </div>            
-            <button id="nut-ghi-de" class="nut-bam-luu">Cập nhật ví</button>
+    <div id="tab-add" class="tab-content">
+        <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
+        <div class="form-group">
+            <label>Loại dòng tiền:</label>
+            <select id="loai-giao-dich">
+                <option value="chi">💸 Chi tiêu (Khoản ra)</option>
+                <option value="thu">💰 Thu nhập (Khoản vào)</option>
+            </select>
         </div>
-
+        <div class="form-group">
+            <label>Phân loại danh mục:</label>
+            <select id="danh-muc-giao-dich">
+                <option value="Ăn uống">🍔 Ăn uống</option>
+                <option value="Di chuyển">🚗 Di chuyển</option>
+                <option value="Mua sắm">🛍️ Mua sắm</option>
+                <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
+                <option value="Giải trí">🎬 Giải trí & Cà phê</option>
+                <option value="Khác">✨ Khác</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Tên khoản thu/chi:</label>
+            <input type="text" id="ten-khoan-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng...">
+        </div>
+        <div class="form-group">
+            <label id="label-so-tien">Số tiền (đ):</label>
+            <input type="number" id="so-tien" placeholder="Ví dụ: 50000">
+        </div>
+        <div class="form-group-row" style="display: flex; gap: 10px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Ngày tháng:</label>
+                <input type="date" id="ngay-giao-dich">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Thời gian:</label>
+                <input type="time" id="gio-giao-dich">
+            </div>
+        </div>            
+        <button id="nut-ghi-de" class="nut-bam-luu">Cập nhật ví</button>
+    </div>
     <div id="tab-report" class="tab-content">
         <div class="tieu-de-khoang" style="margin-top: 10px;">Tổng quan chu kỳ tài chính</div>
         <div class="the-bao-cao">
@@ -640,7 +639,7 @@
                 const idDanhMuc = document.getElementById('danh-muc-giao-dich');
                 const idSoTien = document.getElementById('so-tien');
                 const idHienThiSoDu = document.getElementById('SO-DU');
-                const idVUNGLICHSU = document.getElementById('LICH-SU-GIAO-DICH');
+                const idVungLichSu = document.getElementById('LICH-SU-GIAO-DICH');
             // Các biến hiển thị của TAB BÁO CÁO
                 const idBcThu = document.getElementById('bao-cao-thu');
                 const idBcChi = document.getElementById('bao-cao-chi');
@@ -781,8 +780,8 @@
         // --------------------------------------------------------------------------
             // 7.1 Khởi tạo và làm sạch (Mở đầu)
                 onSnapshot(truyVanSapXep, (snapshot) => {
-                    if (!idVUNGLICHSU) return;            
-                    idVUNGLICHSU.innerHTML = ''; 
+                    if (!idVungLichSu) return;            
+                    idVungLichSu.innerHTML = ''; 
                     let tongSoDu = 0;
                     let tongThuNhap = 0;
                     let tongChiTieu = 0;
@@ -790,7 +789,7 @@
                     capNhatThanhHanMuc(snapshot.docs);
             // 7.2 Kiểm tra bộ lưu trữ rỗng
                     if (snapshot.empty) {
-                        idVUNGLICHSU.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
+                        idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
                         if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
                         if (idBcThu) idBcThu.innerText = "0 đ";
                         if (idBcChi) idBcChi.innerText = "0 đ";
@@ -851,7 +850,7 @@
                                 </div>
                             </div>
                             `;
-                        idVUNGLICHSU.appendChild(dongMoi); 
+                        idVungLichSu.appendChild(dongMoi); 
                         });
                 // 7.3.3 BỘ XỬ LÝ SỰ KIỆN VUỐT CHẠM (SWIPE) VÀ KÍCH HOẠT HÀNH ĐỘNG
                     document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
