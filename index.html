@@ -17,8 +17,7 @@
         ========================================================================== */
                 .nut-reset-treo {position: absolute; top: 15px; right: 15px; z-index: 1000;
                     background-color: #ffffff; border: 1px solid #edf2f4; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Đổ bóng mịn màng */
-                    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s; padding: 0; -webkit-tap-highlight-color: transparent;}
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Đổ bóng mịn màng */transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s; padding: 0; -webkit-tap-highlight-color: transparent;}
                 /* Định cấu hình màu sắc cho icon SVG bên trong */
                 .nut-reset-treo svg {width: 20px; height: 20px; fill: none; stroke: #0082C8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s ease;}
                 .nut-reset-treo:active {transform: scale(0.92); /* Hiệu ứng lún nút khi nhấn */background-color: #f8fafc; /* Nền xám nhẹ khi chạm ngón tay */box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);}
@@ -30,7 +29,7 @@
                     color: #333; /* Màu chữ mặc định (đen xám) */ margin: 0; padding: 0;/* Xóa bỏ khoảng cách thừa ở rìa màn hình */ display: flex; justify-content: center;/* Đưa toàn bộ ứng dụng ra chính giữa màn hình */}        
             /* 2.2 Khung mô phỏng ứng dụng điện thoại tiện lợi */
                 .KHUNG-CHUA-APP {background-color: #f7f9fa;/* Nền APP là màu xám */width: 100%;max-width: 450px;/* Chiều rộng tối đa 450px (chuẩn điện thoại) */min-height: 100vh;/* Chiều cao tối thiểu 100% màn hình thiết bị */
-                    box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ đổ xung quanh khung */position: relative;padding-bottom: 75px;       /* Đẩy nội dung bên trong lên 75px để không bị thanh menu đáy đè lên */
+                    box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ đổ xung quanh khung */position: relative;padding-bottom: 75px;/* Đẩy nội dung bên trong lên 75px để không bị thanh menu đáy đè lên */
                     box-sizing: border-box;}
             /* 2.3 Quản lý ẩn/hiện các Tab nội dung */
                 .tab-content {display: none; /* Ẩn mặc định:các tab(Home, Báo cáo...) */padding: 20px; /* Tạo khoảng cách từ rìa ứng dụng vào nội dung cho dễ nhìn */}
@@ -57,67 +56,21 @@
                 .han-muc-hang-day {display: flex;justify-content: space-between;align-items: center;}
                 #goi-y-han-muc {font-size: 11px;color: #999999;}
                 #chu-ghi-han-muc {font-size: 12px;font-weight: 600;color: #444444;}
-
         /* ==========================================================================
-
         II. TAB 2: LỊCH SỬ
-
         ========================================================================== */        
-
              /* 1.1 KHUNG HIỂN THỊ SỐ DƯ HIỆN TẠI */
-
-                .vi-tong-quan {
-
-                    background-color: #0082C8; /* Màu xanh hoàng gia */
-
-                    color: white;                            /* Chữ bên trong màu trắng */
-
-                    padding: 20px;                           /* Khoảng cách từ chữ đến viền khung là 20px */
-
-                    border-radius: 12px;                     /* Bo tròn 4 góc của khung (độ cong 12px) */
-
-                    text-align: center;                      /* Căn giữa toàn bộ chữ bên trong */
-
-                    margin-top: 10px; margin-bottom: 25px;   /* Tạo khoảng cách trống phía trên và dưới khung */
-
-                    box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2); /* Tạo hiệu ứng đổ bóng màu xanh mờ giúp khung trông nổi lên bệ bề mặt */
-
-                }
-
-                .vi-tong-quan .nhan {
-
-                    font-size: 14px;      /* Chữ dòng "Số dư hiện tại" nhỏ vừa phải */
-
-                    opacity: 0.9;         /* Làm mờ nhẹ chữ đi một chút (90%) để tạo độ phụ */
-
-                    margin-bottom: 5px;   /* Cách dòng số tiền bên dưới 5px */
-
-                }
-
-                .vi-tong-quan .so-tien-vi {
-
-                    font-size: 28px;      /* Số tiền hiển thị rất to (28px) */
-
-                    font-weight: 700;     /* In đậm số tiền để tạo điểm nhấn */
-
-                }
-
+                .vi-tong-quan {background-color: #0082C8;color: white;padding: 20px;border-radius: 12px;text-align: center;margin-top: 10px; margin-bottom: 25px;box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2);}
+                .vi-tong-quan .nhan {font-size: 14px;opacity: 0.9;margin-bottom: 5px;}
+                .vi-tong-quan .so-tien-vi {font-size: 28px;font-weight: 700;}
             /* 2.1 định dạng khung lịch sử */
-
                 .danh-sach-lich-su {
-
                     margin-top: 20px;                 /* Đẩy khối lịch sử cách xa khung ví phía trên một chút */
-
                     background-color: #ffffff;        /* 👈 Đổ nền màu TRẮNG tinh cho toàn bộ khối */
-
                     border-radius: 14px;              /* Bo tròn 4 góc của khung trắng */
-
                     padding: 16px;                    /* Tạo khoảng trống từ viền trắng dịch vào trong để nội dung dễ thở */
-
                     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); /* Đổ bóng siêu mờ nhẹ để khung nổi lên trên nền xám */
-
                     border: 1px solid #edf2f4;        /* Tạo đường viền mảnh xung quanh khung trắng */
-
                 }
 
             /* 2.2 định dạng phần tiêu đề lịch sử */
