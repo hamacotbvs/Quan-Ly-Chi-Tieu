@@ -125,7 +125,7 @@
                     .nut-mui-ten:active {
                         transform: scale(0.85);
                     }
-                    #HIEN-THI-THANG-NAM {
+                    #hien-thi-thang-nam {
                         font-size: 12px;
                         font-weight: 600;
                         color: #2f3542;
@@ -141,7 +141,7 @@
                         overflow: hidden;
                         margin-bottom: 8px;
                     }
-                    #THANH-PHAT-TRIEN-HAN-MUC {
+                    #thanh-phat-trien-han-muc {
                         width: 0%;
                         height: 100%;
                         background-color: #2ecc71;
@@ -157,7 +157,7 @@
                         font-size: 11px;
                         color: #999999;
                     }
-                    #CHU-GHI-HAN-MUC {
+                    #chu-ghi-han-muc {
                         font-size: 12px;
                         font-weight: 600;
                         color: #444444;
@@ -470,42 +470,40 @@
                 <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/>
             </svg>
         </button>
-
+        
         <div id="TAB-HOME" class="tab-content active">
-            <div class="khung-han-muc-home" id="VUNG-HAN-MUC">
+            <div class="khung-han-muc-home" id="vung-han-muc">
                 <div class="han-muc-hang-dau">
                     <span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu</span>
-                    <div class="bo-dieu-huong-thang" id="CUM-CHUYEN-THANG-HAN-MUC">
-                        <button id="NUT-THANG-TRUOC" class="nut-mui-ten">◀</button>
-                        <span id="HIEN-THI-THANG-NAM">Tháng --/----</span>
-                        <button id="NUT-THANG-SAU" class="nut-mui-ten">▶</button>
+                    <div class="bo-dieu-huong-thang" id="cum-chuyen-thang-ngan-chan">
+                        <button id="nut-thang-truoc" class="nut-mui-ten">◀</button>
+                        <span id="hien-thi-thang-nam">Tháng --/----</span>
+                        <button id="nut-thang-sau" class="nut-mui-ten">▶</button>
                     </div>
                 </div>    
-                <div class="han-muc-thanh-nen">
-                    <div id="THANH-PHAT-TRIEN-HAN-MUC"></div>
-                </div>    
-                <div class="han-muc-hang-day">
-                    <div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div>
-                        <span id="CHU-GHI-HAN-MUC">0/Chưa cài đặt</span>
+        <div class="han-muc-thanh-nen">
+            <div id="thanh-phat-trien-han-muc"></div>
+        </div>    
+        <div class="han-muc-hang-day">
+            <div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div>
+            <span id="chu-ghi-han-muc">0 / Chưa cài đặt</span>
+        </div>
+    </div>
+</div>
+    <div id="tab-lich-su" class="tab-content">
+        <div class="vi-tong-quan">
+            <div class="nhan">Số dư hiện tại</div>
+            <div class="so-tien-vi"><span id="so-du">0</span> đ</div>
+        </div>
+        <div class="danh-sach-lich-su">
+            <div class="tieu-de-khoang">Lịch sử dòng tiền chi tiết</div>
+            <div id="lich-su-giao-dich">
+                <div id="danh-sach-lich-su-toan-bo">
+                    <div class="trang-thai-trong">Đang tải danh sách lịch sử...</div>
                 </div>
             </div>
         </div>
-
-        <div id="TAB-LICH-SU" class="tab-content">
-            <div class="vi-tong-quan">
-                <div class="nhan">Số dư hiện tại</div>
-                <div class="so-tien-vi"><span id="SO-DU">0</span> đ</div>
-            </div>
-            <div class="danh-sach-lich-su">
-                <div class="tieu-de-khoang">Lịch sử dòng tiền chi tiết</div>
-                <div id="LICH-SU-GIAO-DICH">
-                    <div id="danh-sach-lich-su-toan-bo">
-                        <div class="trang-thai-trong">Đang tải danh sách lịch sử...</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+    </div>
     <div id="tab-add" class="tab-content">
         <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
         <div class="form-group">
@@ -638,8 +636,8 @@
                 const idTen = document.getElementById('ten-khoan-chi');
                 const idDanhMuc = document.getElementById('danh-muc-giao-dich');
                 const idSoTien = document.getElementById('so-tien');
-                const idHienThiSoDu = document.getElementById('SO-DU');
-                const idVungLichSu = document.getElementById('LICH-SU-GIAO-DICH');
+                const idHienThiSoDu = document.getElementById('so-du');
+                const idVungLichSu = document.getElementById('lich-su-giao-dich');
             // Các biến hiển thị của TAB BÁO CÁO
                 const idBcThu = document.getElementById('bao-cao-thu');
                 const idBcChi = document.getElementById('bao-cao-chi');
@@ -991,7 +989,7 @@
                     }
                     // Hàm cập nhật chữ hiển thị tháng (Ví dụ: "Tháng 06/2026")
                     function capNhatChuHienThiThang() {
-                        const txtThangNam = document.getElementById('HIEN-THI-THANG-NAM');
+                        const txtThangNam = document.getElementById('hien-thi-thang-nam');
                         if (txtThangNam) {
                             const thang = String(window.thoiGianDangXem.getMonth() + 1).padStart(2, '0');
                             const nam = window.thoiGianDangXem.getFullYear();
@@ -999,7 +997,7 @@
                         }
                     }
             // --- 2. LẮNG NGHE SỰ KIỆN CLICK KHUNG HẠN MỨC ĐỂ ĐẶT TIỀN ---
-                    document.getElementById('VUNG-HAN-MUC')?.addEventListener('click', () => {
+                    document.getElementById('vung-han-muc')?.addEventListener('click', () => {
                         let thangDangXem = layChuoiThangNam(window.thoiGianDangXem);
                         let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;    
                         const [nam, thg] = thangDangXem.split('-');
@@ -1026,16 +1024,16 @@
                         }
                     });
                     // Chặn không cho hộp thoại đặt hạn mức bật lên khi bấm vào vùng chuyển tháng
-                    document.getElementById('CUM-CHUYEN-THANG-HAN-MUC')?.addEventListener('click', (e) => {
+                    document.getElementById('cum-chuyen-thang-ngan-chan')?.addEventListener('click', (e) => {
                         e.stopPropagation();
                     });
                     // --- 3. SỰ KIỆN ĐỔI THÁNG KHI BẤM 2 MŨI TÊN ---
-                    document.getElementById('')?.addEventListener('click', (e) => {
+                    document.getElementById('nut-thang-truoc')?.addEventListener('click', (e) => {
                         e.stopPropagation();
                         window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() - 1);
                         chayLaiHeThongGiaoDien();
                     });
-                    document.getElementById('NUT-THANG-SAU')?.addEventListener('click', (e) => {
+                    document.getElementById('nut-thang-sau')?.addEventListener('click', (e) => {
                         e.stopPropagation();
                         window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() + 1);
                         chayLaiHeThongGiaoDien();
@@ -1063,8 +1061,8 @@
                             }
                         });
                         let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
-                        const txtChu = document.getElementById('CHU-GHI-HAN-MUC');
-                        const thanhPhanTram = document.getElementById('THANH-PHAT-TRIEN-HAN-MUC');
+                        const txtChu = document.getElementById('chu-ghi-han-muc');
+                        const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
                         const txtGoiY = document.getElementById('goi-y-han-muc');
                         if (!txtChu || !thanhPhanTram) return;
                         // KỊCH BẢN 1: CHƯA ĐẶT HẠN MỨC
