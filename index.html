@@ -281,17 +281,20 @@
     const idTen = document.getElementById('ten-khoan-thu-chi');
     const idSoTien = document.getElementById('so-tien');
     const labelSoTien = document.getElementById('label-so-tien');
-    const inputNgay = document.getElementById('ngay-giao-dich');
-    const inputGio = document.getElementById('gio-giao-dich');
+    const inputNgay = document.getElementById('ngay-giao-dich'); // đại diện cho ô ngày
+    const inputGio = document.getElementById('gio-giao-dich'); // đại diện cho ô giờ
+    const ngayNhap = inputNgay ? inputNgay.value : ""; // đại diện cho giá trị đang nhập vào ô ngày
+    const gioNhap = inputGio ? inputGio.value : ""; // dại diện cho giá trị đang nhập vào ô giờ
     const loai = idLoaiGiaoDich.value;
     const ten = idTen.value.trim();
     const danhMuc = idDanhMuc.value;
     const soTien = parseInt(idSoTien.value);
     const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
     const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
+
     // 4.3 Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
-        const ngayNhap = inputNgay ? inputNgay.value : "";
-        const gioNhap = inputGio ? inputGio.value : "";
+        
+        
 
         // THAY ĐỔI DANH MỤC THU/CHI TƯƠNG ỨNG
         if (idLoaiGiaoDich && idDanhMuc) 
