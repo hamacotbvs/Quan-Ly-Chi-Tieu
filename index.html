@@ -234,26 +234,26 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// A. DỮ LIỆU
 // --------------------------------------------------------------------------
-// I. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
+// A. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
 // --------------------------------------------------------------------------
     const firebaseConfig = {
-        apiKey: "AIzaSy...", // TÁC DỤNG: Chìa khóa để ứng dụng của bạn mở cửa đi vào hệ thống dịch vụ của Google.
-        authDomain: "quanlychitieu-af553.firebaseapp.com",// TÁC DỤNG: Định danh tên miền an toàn phục vụ riêng cho các tính năng bảo mật hoặc đăng nhập.
-        projectId: "quanlychitieu-af553",// TÁC DỤNG: ID duy nhất của dự án. Nhờ cái này mà Google biết bạn đang muốn kết nối vào đúng dự án "quanlychitieu-af553" chứ không phải dự án của người khác.
-        storageBucket: "quanlychitieu-af553.appspot.com",// TÁC DỤNG: Địa chỉ "kho chứa" trên đám mây, dùng khi app của bạn có tính năng tải ảnh, video hoặc file lên mạng.
-        messagingSenderId: "367355152865",// TÁC DỤNG: Mã định danh tổng đài gửi tin nhắn, dùng để quản lý các tính năng gửi thông báo (Notification) về điện thoại/trình duyệt.
-        appId: "1:367355152865:web:644a86071ef2817d6928e1"// TÁC DỤNG: ID riêng biệt của chính ứng dụng Web (HTML) này bên trong dự án Firebase của bạn.
-    };        
+        apiKey: "AIzaSy...", // Chìa khóa để ứng dụng của bạn mở cửa đi vào hệ thống dịch vụ của Google.
+        authDomain: "quanlychitieu-af553.firebaseapp.com",// Định danh tên miền an toàn phục vụ riêng cho các tính năng bảo mật hoặc đăng nhập.
+        projectId: "quanlychitieu-af553",// ID duy nhất của dự án. Nhờ cái này mà Google biết bạn đang muốn kết nối vào đúng dự án "quanlychitieu-af553" chứ không phải dự án của người khác.
+        storageBucket: "quanlychitieu-af553.appspot.com",// Địa chỉ "kho chứa" trên đám mây, dùng khi app của bạn có tính năng tải ảnh, video hoặc file lên mạng.
+        messagingSenderId: "367355152865",// Mã định danh tổng đài gửi tin nhắn, dùng để quản lý các tính năng gửi thông báo (Notification) về điện thoại/trình duyệt.
+        appId: "1:367355152865:web:644a86071ef2817d6928e1"// ID riêng biệt của chính ứng dụng Web (HTML) này bên trong dự án Firebase của bạn.
+        };        
     const app = initializeApp(firebaseConfig); //Firebase bắt đầu khởi chạy trên trang web của bạn
     const db = getFirestore(app);// để ứng dụng bắt đầu có quyền đọc, ghi, sửa, hoặc xóa dữ liệu trên đám mây
     const datathuchi = collection(db, "giao_dich_business");// trỏ trực tiếp vào một bảng dữ liệu cụ thể trong Firestore, khi đưa lên đây mình đặt tên lại datathuchi cho mỗi lần sử dụng dễ khỏi dùng nguyên lệnh dài gọi
+    const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP'); // Đặt tên nút làm mới app
+
+// B. TAP LỊCH SỬ
 // --------------------------------------------------------------------------
 // II. ĐẶT TÊN TẤT CẢ CÁC BIẾN
 // --------------------------------------------------------------------------
-    // Đặt tên nút làm mới app
-    const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP');
     // Đặt tên thao tác trên trang +
     const idnutsave = document.getElementById('nut-save');
     const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
@@ -270,55 +270,51 @@
     const idBcChi = document.getElementById('bao-cao-chi');
     const idThanhThu = document.getElementById('thanh-thu-ti-le');
     const idThanhChi = document.getElementById('thanh-chi-ti-le');
-    // Đặt tên cách hành động tab
+    // Đặt tên các hành động tab
     const cacNutTab = document.querySelectorAll('.nut-tab');
     const cacVungNoiDung = document.querySelectorAll('.tab-content');
-
 // --------------------------------------------------------------------------
 // III. THAY ĐỔI DANH MỤC THU/CHI TƯƠNG ỨNG
 // --------------------------------------------------------------------------
-                if (idLoaiGiaoDich && idDanhMuc) {
-                    idLoaiGiaoDich.addEventListener('change', () => {
-                    idDanhMuc.innerHTML = ''; // Xóa sạch các option cũ
-                if (idLoaiGiaoDich.value === 'chi') {
-                    idDanhMuc.innerHTML = `
-                        <option value="Ăn uống">🍔 Ăn uống</option>
-                        <option value="Di chuyển">🚗 Di chuyển</option>
-                        <option value="Mua sắm">🛍️ Mua sắm</option>
-                        <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
-                        <option value="Giải trí">🎬 Giải trí & Cà phê</option>
-                        <option value="Khác">✨ Khác</option>
-                    `;
-                } else if (idLoaiGiaoDich.value === 'thu') {
-                    idDanhMuc.innerHTML = `
-                        <option value="Thu nhập từ lương">💵 Thu nhập từ lương</option>
-                        <option value="Thu nhập khác">💰 Thu nhập khác</option>
-                    `;
-                }
-                });
-                }
-        // --------------------------------------------------------------------------
-        // IV. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
-        // --------------------------------------------------------------------------
-             // 4.1 kích hoạt toàn bộ các lệnh bên trong nút bấm chạy    
-                if (idnutsave) {
-                    idnutsave.addEventListener('click', async () => {
-            // 4.2 lấy ra các giá trị hiện tại mà bạn đang gõ trong ô nhập liệu
-                    const loai = idLoaiGiaoDich.value;
-                    const ten = idTen.value.trim();
-                    const danhMuc = idDanhMuc.value;
-                    const soTien = parseInt(idSoTien.value);                
-            // 4.3 Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
-                    const ngayNhap = inputNgay ? inputNgay.value : "";
-                    const gioNhap = inputGio ? inputGio.value : "";
-            // 4.4 Kiểm tra dữ liệu đầu vào hợp lệ
-                    if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
-                        alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
-                        return;
-                    }
-                    try {
-                    // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
-                    const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
+    if (idLoaiGiaoDich && idDanhMuc) 
+        {idLoaiGiaoDich.addEventListener('change', () => {idDanhMuc.innerHTML = '';
+        if (idLoaiGiaoDich.value === 'chi') {
+            idDanhMuc.innerHTML = `
+            <option value="Ăn uống">🍔 Ăn uống</option>
+            <option value="Di chuyển">🚗 Di chuyển</option>
+            <option value="Mua sắm">🛍️ Mua sắm</option>
+            <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
+            <option value="Giải trí">🎬 Giải trí & Cà phê</option>
+            <option value="Khác">✨ Khác</option>
+        `;}
+        else if (idLoaiGiaoDich.value === 'thu') {
+            idDanhMuc.innerHTML = `
+            <option value="Thu nhập từ lương">💵 Thu nhập từ lương</option>
+            <option value="Thu nhập khác">💰 Thu nhập khác</option>
+        `;}
+        });
+    }
+// --------------------------------------------------------------------------
+// IV. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
+// --------------------------------------------------------------------------
+    // 4.1 kích hoạt toàn bộ các lệnh bên trong nút bấm chạy    
+        if (idnutsave) {
+            idnutsave.addEventListener('click', async () => {
+    // 4.2 lấy ra các giá trị hiện tại mà bạn đang gõ trong ô nhập liệu
+        const loai = idLoaiGiaoDich.value;
+        const ten = idTen.value.trim();
+        const danhMuc = idDanhMuc.value;
+        const soTien = parseInt(idSoTien.value);                
+    // 4.3 Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
+        const ngayNhap = inputNgay ? inputNgay.value : "";
+        const gioNhap = inputGio ? inputGio.value : "";
+    // 4.4 Kiểm tra dữ liệu đầu vào hợp lệ
+        if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
+            alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
+                return;
+            }try {
+            // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
+                const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
             // 4.5 Đẩy dữ liệu transaction mới lên Firestore
                     if (window.idGiaoDichDangSua) {
                     // SỬA: Nếu có ID đang sửa, tiến hành cập nhật dữ liệu thay vì thêm mới
