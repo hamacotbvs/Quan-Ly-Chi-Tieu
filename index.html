@@ -246,12 +246,15 @@
     const app = initializeApp(firebaseConfig); //Firebase bắt đầu khởi chạy trên trang web của bạn
     const db = getFirestore(app);// để ứng dụng bắt đầu có quyền đọc, ghi, sửa, hoặc xóa dữ liệu trên đám mây
     const datathuchi = collection(db, "giao_dich_business");// trỏ trực tiếp vào một bảng dữ liệu cụ thể trong Firestore, khi đưa lên đây mình đặt tên lại datathuchi cho mỗi lần sử dụng dễ khỏi dùng nguyên lệnh dài gọi
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------    
 // B. THAO TÁC CHUNG
+
 // I. NÚT LÀM MỚI ỨNG DỤNG
     const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP'); // Đặt tên nút làm mới app
     if (idNutLamMoi) {
         idNutLamMoi.addEventListener('click', () => {const iconSvg = idNutLamMoi.querySelector('svg');
         if (iconSvg) {iconSvg.style.transform = 'rotate(360deg)';iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';}setTimeout(() => {window.location.reload();}, 350);});}
+
 // II. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
     const cacNutTab = document.querySelectorAll('.nut-tab');
     cacNutTab.forEach(nut => {nut.addEventListener('click', () => {const mucTieu = nut.getAttribute('data-target');                
@@ -259,6 +262,7 @@
     const cacVungNoiDung = document.querySelectorAll('.tab-content');                
     cacVungNoiDung.forEach(content => content.classList.remove('active'));const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
     if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');});});
+
 // C. TAB HOME
 
 // D. TAB LỊCH SỬ
@@ -282,7 +286,9 @@
     const loai = idLoaiGiaoDich.value;
     const ten = idTen.value.trim();
     const danhMuc = idDanhMuc.value;
-    const soTien = parseInt(idSoTien.value);                
+    const soTien = parseInt(idSoTien.value);
+    const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
+    const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
     // 4.3 Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
         const ngayNhap = inputNgay ? inputNgay.value : "";
         const gioNhap = inputGio ? inputGio.value : "";
@@ -325,22 +331,9 @@
             idnutsave.addEventListener('click', async () => {
                 // Kiểm tra dữ liệu đầu vào hợp lệ
                 if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');return;}
-                try {
-                    // Gộp ngày giờ lại thành chuỗi đồng bộ: "YYYY-MM-DD HH:MM" để lưu trữ & sắp xếp chuẩn
-                    const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
-                    // Đẩy dữ liệu transaction mới lên Firestore
-                    if (window.idGiaoDichDangSua) {
-                    // SỬA: Nếu có ID đang sửa, tiến hành cập nhật dữ liệu thay vì thêm mới
-                    const taiLieuRef = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
-                    await updateDoc(taiLieuRef, {
-                        ten: ten,
-                        soTien: soTien,
-                        loai: loai,
-                        danhMuc: danhMuc,
-                        thoiGian: chuoiThoiGianGop
-                    });
-                    window.idGiaoDichDangSua = null; // Xóa trạng thái sửa
-                    idnutsave.innerText = "Ghi đè / Thêm mới"; // Trả lại tên nút cũ (hoặc tên nút ban đầu của bạn)
+                // Đẩy dữ liệu transaction mới lên Firestore
+                try {if (window.idGiaoDichDangSua) {await updateDoc(GiaoDichThuChiDangSua, {ten: ten,soTien: soTien,loai: loai,danhMuc: danhMuc,thoiGian: chuoiThoiGianGop});
+                        window.idGiaoDichDangSua = null;idnutsave.innerText = "Ghi đè / Thêm mới"; // Trả lại tên nút cũ (hoặc tên nút ban đầu của bạn)
                     } else {
                     // THÊM MỚI: (Giữ nguyên đoạn addDoc cũ của bạn)
                     await addDoc(datathuchi, {
@@ -499,8 +492,8 @@
                             setTimeout(async () => {
                                 if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
                                     try {
-                                        const taiLieuRef = doc(db, "giao_dich_business", idTaiLieu);
-                                        await deleteDoc(taiLieuRef);
+                                        const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", idTaiLieu);
+                                        await deleteDoc(GiaoDichThuChiDangSua);
                                     } catch (error) {
                                         console.error("Lỗi xóa:", error);
                                         alert("Không thể xóa giao dịch!");
