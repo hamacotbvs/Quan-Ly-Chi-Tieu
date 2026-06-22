@@ -259,11 +259,14 @@
     const cacVungNoiDung = document.querySelectorAll('.tab-content');                
     cacVungNoiDung.forEach(content => content.classList.remove('active'));const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
     if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');});});
-// C. TAP THÊM GIAO DỊCH MỚI
-// --------------------------------------------------------------------------
-// II. ĐẶT TÊN TẤT CẢ CÁC BIẾN
-// --------------------------------------------------------------------------
-    // Đặt tên thao tác trên trang +
+// C. TAB HOME
+
+// D. TAB LỊCH SỬ
+    const idHienThiSoDu = document.getElementById('so-du');
+    const idVungLichSu = document.getElementById('lich-su-giao-dich');
+
+    const truyVanThuChiSapXep = query(datathuchi, orderBy("thoiGian", "desc")); // sắp xếp giao dịch thu chi theo thời gian
+// C. TAB THÊM GIAO DỊCH MỚI
     const idnutsave = document.getElementById('nut-save');
     const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
     const idDanhMuc = document.getElementById('danh-muc-giao-dich');
@@ -272,16 +275,16 @@
     const labelSoTien = document.getElementById('label-so-tien');
     const inputNgay = document.getElementById('ngay-giao-dich');
     const inputGio = document.getElementById('gio-giao-dich');
-    // Đặt tên các thao tác tính toán
-    const idHienThiSoDu = document.getElementById('so-du');
-    const idVungLichSu = document.getElementById('lich-su-giao-dich');
+// D. TAB BÁO CÁO
     const idBcThu = document.getElementById('bao-cao-thu');
     const idBcChi = document.getElementById('bao-cao-chi');
     const idThanhThu = document.getElementById('thanh-thu-ti-le');
     const idThanhChi = document.getElementById('thanh-chi-ti-le');
-// --------------------------------------------------------------------------
+
+
+
+
 // III. THAY ĐỔI DANH MỤC THU/CHI TƯƠNG ỨNG
-// --------------------------------------------------------------------------
     if (idLoaiGiaoDich && idDanhMuc) 
         {idLoaiGiaoDich.addEventListener('change', () => {idDanhMuc.innerHTML = '';
         if (idLoaiGiaoDich.value === 'chi') {
@@ -397,14 +400,12 @@
                 }
 // C. TAP LỊCH SỬ
         // --------------------------------------------------------------------------
-        // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
-        // --------------------------------------------------------------------------
-            const truyVanSapXep = query(datathuchi, orderBy("thoiGian", "desc"));
+
         // --------------------------------------------------------------------------
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
         // --------------------------------------------------------------------------
             // 7.1 Khởi tạo và làm sạch (Mở đầu)
-                onSnapshot(truyVanSapXep, (snapshot) => {
+                onSnapshot(truyVanThuChiSapXep, (snapshot) => {
                     if (!idVungLichSu) return;            
                     idVungLichSu.innerHTML = '';
                     let tongSoDu = 0;
