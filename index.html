@@ -234,9 +234,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// --------------------------------------------------------------------------
 // A. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
-// --------------------------------------------------------------------------
     const firebaseConfig = {
         apiKey: "AIzaSy...", // Chìa khóa để ứng dụng của bạn mở cửa đi vào hệ thống dịch vụ của Google.
         authDomain: "quanlychitieu-af553.firebaseapp.com",// Định danh tên miền an toàn phục vụ riêng cho các tính năng bảo mật hoặc đăng nhập.
@@ -248,9 +246,14 @@
     const app = initializeApp(firebaseConfig); //Firebase bắt đầu khởi chạy trên trang web của bạn
     const db = getFirestore(app);// để ứng dụng bắt đầu có quyền đọc, ghi, sửa, hoặc xóa dữ liệu trên đám mây
     const datathuchi = collection(db, "giao_dich_business");// trỏ trực tiếp vào một bảng dữ liệu cụ thể trong Firestore, khi đưa lên đây mình đặt tên lại datathuchi cho mỗi lần sử dụng dễ khỏi dùng nguyên lệnh dài gọi
+// B. THAO TÁC CHUNG
+// I. NÚT LÀM MỚI ỨNG DỤNG
     const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP'); // Đặt tên nút làm mới app
+    if (idNutLamMoi) {
+        idNutLamMoi.addEventListener('click', () => {const iconSvg = idNutLamMoi.querySelector('svg');
+        if (iconSvg) {iconSvg.style.transform = 'rotate(360deg)';iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';}setTimeout(() => {window.location.reload();}, 350);});}
 
-// B. TAP LỊCH SỬ
+// B. TAP THÊM GIAO DỊCH MỚI
 // --------------------------------------------------------------------------
 // II. ĐẶT TÊN TẤT CẢ CÁC BIẾN
 // --------------------------------------------------------------------------
@@ -389,6 +392,7 @@
                 labelSoTien.innerText = `Số tiền: ${soDaPhanCach}đ`;
                 });
                 }
+// C. TAP LỊCH SỬ
         // --------------------------------------------------------------------------
         // VII. SẮP XẾP DỮ LIỆU THEO THỜI GIAN MỚI NHẤT LÊN ĐẦU
         // --------------------------------------------------------------------------
@@ -739,21 +743,7 @@
                     if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');
                 });
                 });  
-        // --------------------------------------------------------------------------
-        // X. LOGIC BẤM NÚT XOAY VÀ RELOAD TRANG
-        // --------------------------------------------------------------------------
-                    if (idNutLamMoi) {
-                        idNutLamMoi.addEventListener('click', () => {
-                            const iconSvg = idNutLamMoi.querySelector('svg');
-                            if (iconSvg) {
-                                iconSvg.style.transform = 'rotate(360deg)';
-                                iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-                            }
-                            setTimeout(() => {
-                            window.location.reload();
-                    }, 350);
-                    });
-                    }
+
 </script>
 
 </div>
