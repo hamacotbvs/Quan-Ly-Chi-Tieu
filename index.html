@@ -266,6 +266,10 @@
     const idVungLichSu = document.getElementById('lich-su-giao-dich');
 
     const truyVanThuChiSapXep = query(datathuchi, orderBy("thoiGian", "desc")); // sắp xếp giao dịch thu chi theo thời gian
+    // Cập nhật danh sách thu khi dữ liệu thay đổi
+    onSnapshot(truyVanThuChiSapXep, (snapshot) => {if (!idVungLichSu) return;idVungLichSu.innerHTML = '';
+        let tongSoDu = 0;let tongThuNhap = 0;let tongChiTieu = 0;
+        capNhatThanhHanMuc(snapshot.docs);// tính toán lại thanh hạn mức
 // C. TAB THÊM GIAO DỊCH MỚI
     const idnutsave = document.getElementById('nut-save');
     const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
@@ -404,15 +408,8 @@
         // --------------------------------------------------------------------------
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
         // --------------------------------------------------------------------------
-            // 7.1 Khởi tạo và làm sạch (Mở đầu)
-                onSnapshot(truyVanThuChiSapXep, (snapshot) => {
-                    if (!idVungLichSu) return;            
-                    idVungLichSu.innerHTML = '';
-                    let tongSoDu = 0;
-                    let tongThuNhap = 0;
-                    let tongChiTieu = 0;
-                    // Thêm dòng này ở cuối hàm đó để truyền dữ liệu cho thanh hạn mức tự động tính toán lại
-                    capNhatThanhHanMuc(snapshot.docs);
+
+
             // 7.2 Kiểm tra bộ lưu trữ rỗng
                     if (snapshot.empty) {
                         idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
