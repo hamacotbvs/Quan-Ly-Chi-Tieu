@@ -262,9 +262,13 @@
     const cacVungNoiDung = document.querySelectorAll('.tab-content');                
     cacVungNoiDung.forEach(content => content.classList.remove('active'));const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
     if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');});});
-
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // C. TAB HOME
 
+
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // D. TAB LỊCH SỬ
     const idHienThiSoDu = document.getElementById('so-du');
     const idVungLichSu = document.getElementById('lich-su-giao-dich');
@@ -274,6 +278,7 @@
     // hiển thị khi thu chi rỗng
         if (snapshot.empty) {idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chưa có giao dịch nào!</div>';
         if (idHienThiSoDu) idHienThiSoDu.innerText = "0";if (idBcThu) idBcThu.innerText = "0 đ";if (idBcChi) idBcChi.innerText = "0 đ";if (idThanhThu) idThanhThu.style.width = "0%";if (idThanhChi) idThanhChi.style.width = "0%";return;}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // C. TAB THÊM GIAO DỊCH MỚI
     const idnutsave = document.getElementById('nut-save');
     const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
@@ -290,7 +295,7 @@
     const danhMuc = idDanhMuc.value;
     const soTien = parseInt(idSoTien.value);
     const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
-    const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
+    const taiLieuRef = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
 
     // 4.3 Lấy mốc ngày giờ do người dùng chọn (hoặc mặc định tự điền trên form)
         
@@ -315,6 +320,7 @@
         `;}
         });
     }
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // D. TAB BÁO CÁO
     const idBcThu = document.getElementById('bao-cao-thu');
     const idBcChi = document.getElementById('bao-cao-chi');
@@ -335,7 +341,7 @@
                 // Kiểm tra dữ liệu đầu vào hợp lệ
                 if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');return;}
                 // Đẩy dữ liệu transaction mới lên Firestore
-                try {if (window.idGiaoDichDangSua) {await updateDoc(GiaoDichThuChiDangSua, {ten: ten,soTien: soTien,loai: loai,danhMuc: danhMuc,thoiGian: chuoiThoiGianGop});
+                try {if (window.idGiaoDichDangSua) {await updateDoc(taiLieuRef, {ten: ten,soTien: soTien,loai: loai,danhMuc: danhMuc,thoiGian: chuoiThoiGianGop});
                         window.idGiaoDichDangSua = null;idnutsave.innerText = "Ghi đè / Thêm mới"; // Trả lại tên nút cũ (hoặc tên nút ban đầu của bạn)
                     } else {
                     // THÊM MỚI: (Giữ nguyên đoạn addDoc cũ của bạn)
@@ -495,8 +501,8 @@
                             setTimeout(async () => {
                                 if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
                                     try {
-                                        const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", idTaiLieu);
-                                        await deleteDoc(GiaoDichThuChiDangSua);
+                                        const taiLieuRef = doc(db, "giao_dich_business", idTaiLieu);
+                                        await deleteDoc(taiLieuRef);
                                     } catch (error) {
                                         console.error("Lỗi xóa:", error);
                                         alert("Không thể xóa giao dịch!");
