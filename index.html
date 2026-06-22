@@ -269,15 +269,9 @@
     onSnapshot(truyVanThuChiSapXep, (snapshot) => {if (!idVungLichSu) return;idVungLichSu.innerHTML = '';
         let tongSoDu = 0;let tongThuNhap = 0;let tongChiTieu = 0;
         capNhatThanhHanMuc(snapshot.docs);// tính toán lại thanh hạn mức
-    // 7.2 Kiểm tra bộ lưu trữ rỗng
-        if (snapshot.empty) {idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào! Hãy nhập số tiền ở tab (+).</div>';
-                        if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
-                        if (idBcThu) idBcThu.innerText = "0 đ";
-                        if (idBcChi) idBcChi.innerText = "0 đ";
-                        if (idThanhThu) idThanhThu.style.width = "0%";
-                        if (idThanhChi) idThanhChi.style.width = "0%";
-                        return;
-                    }
+    // hiển thị khi thu chi rỗng
+        if (snapshot.empty) {idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào!</div>';
+        if (idHienThiSoDu) idHienThiSoDu.innerText = "0";if (idBcThu) idBcThu.innerText = "0 đ";if (idBcChi) idBcChi.innerText = "0 đ";if (idThanhThu) idThanhThu.style.width = "0%";if (idThanhChi) idThanhChi.style.width = "0%";return;}
 // C. TAB THÊM GIAO DỊCH MỚI
     const idnutsave = document.getElementById('nut-save');
     const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
