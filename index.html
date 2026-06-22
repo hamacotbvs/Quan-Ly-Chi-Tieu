@@ -324,8 +324,24 @@
     const soTienGiaoDich = noiDung.querySelector('.giao-dich-phai')?.innerText || '';
     const batDauVuot = (e) => {dangVuot = true; xBatDau = e.touches ? e.touches[0].clientX : e.clientX;}; // chạm, click giữ
     const dangKeo = (e) => {if (!dangVuot) return; const xHienTai = e.touches ? e.touches[0].clientX : e.clientX; xDiChuyen = xHienTai - xBatDau; if (xDiChuyen > 100) xDiChuyen = 100;
-                            if (xDiChuyen < -100) xDiChuyen = -100; noiDung.style.transform = `translateX(${xDiChuyen}px)`; noiDung.style.transition = 'none';}; // đang kéo trượt
-    const ketThucVuot = async () => {if (!dangVuot) return; dangVuot = false; noiDung.style.transition = 'transform 0.2s ease-out'; //Hàm thả tay, buông chuột
+                            if (xDiChuyen < -100) xDiChuyen = -100; noiDung.style.transform = `translateX(${xDiChuyen}px)`; noiDung.style.transition = 'none';};
+    const ketThucVuot = async () => {if (!dangVuot) return; dangVuot = false; noiDung.style.transition = 'transform 0.2s ease-out';
+                            if (xDiChuyen < -60) {
+                                noiDung.style.transform = 'translateX(-50%)'; setTimeout(async () => {if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) 
+                                    {try {const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", idTaiLieu); await deleteDoc(GiaoDichThuChiDangSua);} catch (error) {console.error("Lỗi xóa:", error); alert("Không thể xóa giao dịch!"); noiDung.style.transform = 'translateX(0)';}
+                                    } else {noiDung.style.transform = 'translateX(0)';}}, 200);} // Kéo sang trái < -60px -> Thực hiện XÓA
+                                // Kéo sang phải > 60px -> Điền dữ liệu lên form để SỬA
+                            else if (xDiChuyen > 60) {noiDung.style.transform = 'translateX(0)';
+                                if (idTen) idTen.value = tenGiaoDich; // 1. Đổ Tên giao dịch
+                                if (idSoTien) {let soTienSạch = soTienGiaoDich.replace(/[^\d]/g, ''); idSoTien.value = soTienSạch; idSoTien.dispatchEvent(new Event('input'));} // 2. Xử lý và đổ Số tiền (Bỏ chữ 'đ', dấu chấm phân cách và dấu +/-)
+                                if (idLoaiGiaoDich) {if (soTienGiaoDich.includes('+')) {idLoaiGiaoDich.value = 'thu';} else {idLoaiGiaoDich.value = 'chi';}idLoaiGiaoDich.dispatchEvent(new Event('change'));} // 3. Xác định loại giao dịch (Thu hay Chi) dựa trên màu sắc hoặc ký tự gốc
+                                setTimeout(() => {if (idDanhMuc) {let danhMucSạch = danhMucGiaoDich.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, "").trim(); idDanhMuc.value = danhMucSạch || 'Khác';} // 4. Xử lý đổ Danh mục (Tách bỏ Icon cảm xúc ở đầu chuỗi)
+                                }, 100);                
+                                let thoiGianSạch = thoiGianGiaoDich.replace('🕒', '').trim(); if (thoiGianSạch && thoiGianSạch.includes(' ')) {const mangPhanTach = thoiGianSạch.split(' '); if (inputNgay) inputNgay.value = mangPhanTach[0]; if (inputGio) inputGio.value = mangPhanTach[1];} // 5. Tách chuỗi thời gian "🕒 YYYY-MM-DD HH:MM" hoặc "🕒 DD/MM/YYYY HH:MM"
+                                window.idGiaoDichDangSua = idTaiLieu; if (idnutsave) idnutsave.innerText = "💾 Cập nhật thay đổi"; // 6. Ghi nhận trạng thái đang sửa
+                                if (tabNhapLieu) {tabNhapLieu.click();}} // 7. Chuyển Tab nhập liệu nhanh
+                        else {noiDung.style.transform = 'translateX(0)';}
+                        xDiChuyen = 0;}; // KỊCH BẢN 3: Vuốt hờ hờ chưa đủ lực -> Trả về ban đầu
     const tabNhapLieu = document.querySelector('[data-target="add"]') || document.getElementById('tab-nhap-lieu');
     const maxTong = Math.max(tongThuNhap, tongChiTieu);
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -377,22 +393,6 @@
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // bộ xử lý vuốt chạm
     document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {let xBatDau = 0; let xDiChuyen = 0; let dangVuot = false;
-        if (xDiChuyen < -60) {
-            noiDung.style.transform = 'translateX(-50%)'; setTimeout(async () => {if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) 
-                {try {const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", idTaiLieu); await deleteDoc(GiaoDichThuChiDangSua);} catch (error) {console.error("Lỗi xóa:", error); alert("Không thể xóa giao dịch!"); noiDung.style.transform = 'translateX(0)';}
-                } else {noiDung.style.transform = 'translateX(0)';}}, 200);} // Kéo sang trái < -60px -> Thực hiện XÓA
-            // Kéo sang phải > 60px -> Điền dữ liệu lên form để SỬA
-        else if (xDiChuyen > 60) {noiDung.style.transform = 'translateX(0)';
-            if (idTen) idTen.value = tenGiaoDich; // 1. Đổ Tên giao dịch
-            if (idSoTien) {let soTienSạch = soTienGiaoDich.replace(/[^\d]/g, ''); idSoTien.value = soTienSạch; idSoTien.dispatchEvent(new Event('input'));} // 2. Xử lý và đổ Số tiền (Bỏ chữ 'đ', dấu chấm phân cách và dấu +/-)
-            if (idLoaiGiaoDich) {if (soTienGiaoDich.includes('+')) {idLoaiGiaoDich.value = 'thu';} else {idLoaiGiaoDich.value = 'chi';}idLoaiGiaoDich.dispatchEvent(new Event('change'));} // 3. Xác định loại giao dịch (Thu hay Chi) dựa trên màu sắc hoặc ký tự gốc
-            setTimeout(() => {if (idDanhMuc) {let danhMucSạch = danhMucGiaoDich.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, "").trim(); idDanhMuc.value = danhMucSạch || 'Khác';} // 4. Xử lý đổ Danh mục (Tách bỏ Icon cảm xúc ở đầu chuỗi)
-            }, 100);                
-            let thoiGianSạch = thoiGianGiaoDich.replace('🕒', '').trim(); if (thoiGianSạch && thoiGianSạch.includes(' ')) {const mangPhanTach = thoiGianSạch.split(' '); if (inputNgay) inputNgay.value = mangPhanTach[0]; if (inputGio) inputGio.value = mangPhanTach[1];} // 5. Tách chuỗi thời gian "🕒 YYYY-MM-DD HH:MM" hoặc "🕒 DD/MM/YYYY HH:MM"
-            window.idGiaoDichDangSua = idTaiLieu; if (idnutsave) idnutsave.innerText = "💾 Cập nhật thay đổi"; // 6. Ghi nhận trạng thái đang sửa
-            if (tabNhapLieu) {tabNhapLieu.click();}} // 7. Chuyển Tab nhập liệu nhanh
-    else {noiDung.style.transform = 'translateX(0)';}
-    xDiChuyen = 0;}; // KỊCH BẢN 3: Vuốt hờ hờ chưa đủ lực -> Trả về ban đầu
     noiDung.addEventListener('touchstart', batDauVuot); noiDung.addEventListener('touchmove', dangKeo); noiDung.addEventListener('touchend', ketThucVuot); // Đăng ký sự kiện cho thiết bị di động (Touch)
     noiDung.addEventListener('mousedown', batDauVuot); window.addEventListener('mousemove', dangKeo); window.addEventListener('mouseup', ketThucVuot); // Đăng ký sự kiện cho máy tính (Mouse)
     });
@@ -412,11 +412,6 @@
 
 
 
-        // --------------------------------------------------------------------------
-        // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
-        // --------------------------------------------------------------------------
-        
-    
 
             // --- KHỞI TẠO CÁC BIẾN VÀ LẮNG NGHE SỰ KIỆN HẠN MỨC ---
             // --- 1. KHỞI TẠO CÁC BIẾN TOÀN CỤC ---
