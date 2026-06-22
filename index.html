@@ -327,7 +327,7 @@
                             if (xDiChuyen < -100) xDiChuyen = -100; noiDung.style.transform = `translateX(${xDiChuyen}px)`; noiDung.style.transition = 'none';}; // đang kéo trượt
     const ketThucVuot = async () => {if (!dangVuot) return; dangVuot = false; noiDung.style.transition = 'transform 0.2s ease-out'; //Hàm thả tay, buông chuột
     const tabNhapLieu = document.querySelector('[data-target="add"]') || document.getElementById('tab-nhap-lieu');
-
+    const maxTong = Math.max(tongThuNhap, tongChiTieu);
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // thay đổi theo nhập liệu thu/chi
     if (idLoaiGiaoDich && idDanhMuc) 
@@ -391,6 +391,16 @@
             let thoiGianSạch = thoiGianGiaoDich.replace('🕒', '').trim(); if (thoiGianSạch && thoiGianSạch.includes(' ')) {const mangPhanTach = thoiGianSạch.split(' '); if (inputNgay) inputNgay.value = mangPhanTach[0]; if (inputGio) inputGio.value = mangPhanTach[1];} // 5. Tách chuỗi thời gian "🕒 YYYY-MM-DD HH:MM" hoặc "🕒 DD/MM/YYYY HH:MM"
             window.idGiaoDichDangSua = idTaiLieu; if (idnutsave) idnutsave.innerText = "💾 Cập nhật thay đổi"; // 6. Ghi nhận trạng thái đang sửa
             if (tabNhapLieu) {tabNhapLieu.click();}} // 7. Chuyển Tab nhập liệu nhanh
+    else {noiDung.style.transform = 'translateX(0)';}
+    xDiChuyen = 0;}; // KỊCH BẢN 3: Vuốt hờ hờ chưa đủ lực -> Trả về ban đầu
+    noiDung.addEventListener('touchstart', batDauVuot); noiDung.addEventListener('touchmove', dangKeo); noiDung.addEventListener('touchend', ketThucVuot); // Đăng ký sự kiện cho thiết bị di động (Touch)
+    noiDung.addEventListener('mousedown', batDauVuot); window.addEventListener('mousemove', dangKeo); window.addEventListener('mouseup', ketThucVuot); // Đăng ký sự kiện cho máy tính (Mouse)
+    });
+    // đưa số liệu sau khi tính toán lên giao diện
+    if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN'); if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ"; if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
+    // cập nhật thanh đồ họa
+    if (maxTong > 0) {if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`; if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;} else {if (idThanhThu) idThanhThu.style.width = "0%";if (idThanhChi) idThanhChi.style.width = "0%";}
+    });
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // D. TAB BÁO CÁO
     // đặt tên
@@ -405,40 +415,9 @@
         // --------------------------------------------------------------------------
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
         // --------------------------------------------------------------------------
-
-
-            
-
         
-                    // KỊCH BẢN 3: Vuốt hờ hờ chưa đủ lực -> Trả về ban đầu
-                                else {
-                                noiDung.style.transform = 'translateX(0)';
-                                }
-                                xDiChuyen = 0;
-                            };
-                    // Đăng ký sự kiện cho thiết bị di động (Touch)
-                            noiDung.addEventListener('touchstart', batDauVuot);
-                            noiDung.addEventListener('touchmove', dangKeo);
-                            noiDung.addEventListener('touchend', ketThucVuot);
-                    // Đăng ký sự kiện cho máy tính (Mouse)
-                            noiDung.addEventListener('mousedown', batDauVuot);
-                            window.addEventListener('mousemove', dangKeo);
-                            window.addEventListener('mouseup', ketThucVuot);
-                            });
-            // 7.4 Đưa số liệu sau khi tính toán lên giao diện trực quan
-                    if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN');
-                    if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ";
-                    if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
-            // 7.5 Cập nhật thanh đồ họa
-                    const maxTong = Math.max(tongThuNhap, tongChiTieu);
-                    if (maxTong > 0) {
-                        if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`;
-                        if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
-                    } else {
-                        if (idThanhThu) idThanhThu.style.width = "0%";
-                        if (idThanhChi) idThanhChi.style.width = "0%";
-                    }
-                    });
+    
+
             // --- KHỞI TẠO CÁC BIẾN VÀ LẮNG NGHE SỰ KIỆN HẠN MỨC ---
             // --- 1. KHỞI TẠO CÁC BIẾN TOÀN CỤC ---
                     let boSuoTapHanMuc = JSON.parse(localStorage.getItem('bo_suo_tap_han_muc')) || {};
