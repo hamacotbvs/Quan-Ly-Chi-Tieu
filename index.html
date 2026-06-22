@@ -252,19 +252,13 @@
     if (idNutLamMoi) {
         idNutLamMoi.addEventListener('click', () => {const iconSvg = idNutLamMoi.querySelector('svg');
         if (iconSvg) {iconSvg.style.transform = 'rotate(360deg)';iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';}setTimeout(() => {window.location.reload();}, 350);});}
-// II. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB MENU
+// II. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
     const cacNutTab = document.querySelectorAll('.nut-tab');
-    cacNutTab.forEach(nut => {
-        nut.addEventListener('click', () => {
-            const mucTieu = nut.getAttribute('data-target'); // đặt tên tab đang được bấm là mục tiêu               
-            cacNutTab.forEach(b => b.classList.remove('active')); nut.classList.add('active'); // xóa hiệu ứng nổi bật các menu khác, thêm hiệu ứng nổi bật menu bấm
-            // Ẩn toàn bộ các tab và chỉ hiển thị tab tương ứng được click
-    const cacVungNoiDung = document.querySelectorAll('.tab-content');
-                cacVungNoiDung.forEach(content => content.classList.remove('active'));
-                    const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
-                    if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');
-                });
-                });
+    cacNutTab.forEach(nut => {nut.addEventListener('click', () => {const mucTieu = nut.getAttribute('data-target');                
+    cacNutTab.forEach(b => b.classList.remove('active'));nut.classList.add('active');
+    const cacVungNoiDung = document.querySelectorAll('.tab-content');                
+    cacVungNoiDung.forEach(content => content.classList.remove('active'));const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
+    if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');});});
 // C. TAP THÊM GIAO DỊCH MỚI
 // --------------------------------------------------------------------------
 // II. ĐẶT TÊN TẤT CẢ CÁC BIẾN
@@ -735,7 +729,8 @@
                         }
                     }
                     // --- 5. ĐỒNG BỘ ĐỂ CHẠY NGAY KHI TẢI TRANG LẦN ĐẦU ---
-                    capNhatChuHienThiThang();  
+                    capNhatChuHienThiThang();
+ 
 
 </script>
 
