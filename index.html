@@ -251,59 +251,108 @@
 // B. THAO TÁC CHUNG
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // I. NÚT LÀM MỚI ỨNG DỤNG
-    const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP'); // Đặt tên nút làm mới app
-    if (idNutLamMoi) {
-        idNutLamMoi.addEventListener('click', () => {const iconSvg = idNutLamMoi.querySelector('svg');
-        if (iconSvg) {iconSvg.style.transform = 'rotate(360deg)';iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';}setTimeout(() => {window.location.reload();}, 350);});}
+    const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP');
+    if (idNutLamMoi) {idNutLamMoi.addEventListener('click', () => {const iconSvg = idNutLamMoi.querySelector('svg'); if (iconSvg) {iconSvg.style.transform = 'rotate(360deg)';iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';}setTimeout(() => {window.location.reload();}, 350);});}
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // II. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
     const cacNutTab = document.querySelectorAll('.nut-tab');
-    cacNutTab.forEach(nut => {nut.addEventListener('click', () => {const mucTieu = nut.getAttribute('data-target');                
-    cacNutTab.forEach(b => b.classList.remove('active'));nut.classList.add('active');
-    const cacVungNoiDung = document.querySelectorAll('.tab-content');                
-    cacVungNoiDung.forEach(content => content.classList.remove('active'));const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`);
-    if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');});});
+    cacNutTab.forEach(nut => {nut.addEventListener('click', () => {const mucTieu = nut.getAttribute('data-target'); cacNutTab.forEach(b => b.classList.remove('active'));nut.classList.add('active'); const cacVungNoiDung = document.querySelectorAll('.tab-content');                
+        cacVungNoiDung.forEach(content => content.classList.remove('active'));const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`); if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active'); }); });
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // C. TAB HOME
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // đặt tên
-    const txtChu = document.getElementById('chi-tieu-tren-han-muc');
+const txtChu = document.getElementById('chi-tieu-tren-han-muc');
     const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
     const txtGoiY = document.getElementById('goi-y-han-muc');
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // các biến hạn mức chi tiêu
+    
     let boSuoTapHanMuc = JSON.parse(localStorage.getItem('bo_suo_tap_han_muc')) || {};
-    if (typeof thoiGianDangXem === 'undefined') {window.thoiGianDangXem = new Date(); function layChuoiThangNam(dateObj) {const nam = dateObj.getFullYear(); const thang = String(dateObj.getMonth() + 1).padStart(2, '0'); return `${nam}-${thang}`;}
-    function capNhatChuHienThiThang() {const txtThangNam = document.getElementById('hien-thi-thang-nam-han-muc'); if (txtThangNam) {const thang = String(window.thoiGianDangXem.getMonth() + 1).padStart(2, '0'); const nam = window.thoiGianDangXem.getFullYear(); txtThangNam.innerText = `Tháng ${thang}/${nam}`;}}
-    document.getElementById('vung-han-muc-chi-tieu')?.addEventListener('click', () => {let thangDangXem = layChuoiThangNam(window.thoiGianDangXem); let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0; const [nam, thg] = thangDangXem.split('-'); let thongBaoThang = `tháng ${thg}/${nam}`; 
+    if (typeof thoiGianDangXem === 'undefined') {
+        window.thoiGianDangXem = new Date();
+        window.layChuoiThangNam = function(dateObj) {
+            const nam = dateObj.getFullYear(); 
+            const thang = String(dateObj.getMonth() + 1).padStart(2, '0'); 
+            return `${nam}-${thang}`;
+        }
+        window.capNhatChuHienThiThang = function() {
+            const txtThangNam = document.getElementById('hien-thi-thang-nam-han-muc'); 
+            if (txtThangNam) {
+                const thang = String(window.thoiGianDangXem.getMonth() + 1).padStart(2, '0'); 
+                const nam = window.thoiGianDangXem.getFullYear(); 
+                txtThangNam.innerText = `Tháng ${thang}/${nam}`;
+            }
+        }
+    }
+
+    document.getElementById('vung-han-muc-chi-tieu')?.addEventListener('click', () => {
+        let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
+        let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0; 
+        const [nam, thg] = thangDangXem.split('-'); 
+        let thongBaoThang = `tháng ${thg}/${nam}`; 
         let loiNhac = hanMucThangDangXem > 0
             ? `Hạn mức ${thongBaoThang} hiện tại là ${hanMucThangDangXem.toLocaleString('vi-VN')} đ.\nNhập hạn mức mới (đ):`
             : `Nhập hạn mức chi tiêu bạn muốn đặt cho ${thongBaoThang} (đ):`;        
         let nhapVao = prompt(loiNhac, hanMucThangDangXem > 0 ? hanMucThangDangXem : "");    
-        if (nhapVao !== null) {let soTienMoi = parseFloat(nhapVao.toString().replace(/[^0-9]/g, '')); if (!isNaN(soTienMoi) && soTienMoi > 0) {boSuoTapHanMuc[thangDangXem] = soTienMoi;} else if (nhapVao === "0" || nhapVao === "") {delete boSuoTapHanMuc[thangDangXem];} 
-            else {alert("Số tiền nhập vào không hợp lệ!");return;}
+        if (nhapVao !== null) {
+            let soTienMoi = parseFloat(nhapVao.toString().replace(/[^0-9]/g, '')); 
+            if (!isNaN(soTienMoi) && soTienMoi > 0) {
+                boSuoTapHanMuc[thangDangXem] = soTienMoi;
+            } else if (nhapVao === "0" || nhapVao === "") {
+                delete boSuoTapHanMuc[thangDangXem];
+            } else {
+                alert("Số tiền nhập vào không hợp lệ!");
+                return;
+            }
             localStorage.setItem('bo_suo_tap_han_muc', JSON.stringify(boSuoTapHanMuc));
-            if (window.duLieuSnapshotQuocTe) {capNhatThanhHanMuc(window.duLieuSnapshotQuocTe);}
-                        }
+            if (window.duLieuSnapshotQuocTe) { capNhatThanhHanMuc(window.duLieuSnapshotQuocTe); }
+        }
     });
-    document.getElementById('cum-chuyen-thang')?.addEventListener('click', (e) => {e.stopPropagation();}); // Chặn không cho hộp thoại đặt hạn mức bật lên khi bấm vào vùng chuyển tháng
-    document.getElementById('nut-thang-truoc')?.addEventListener('click', (e) => {e.stopPropagation(); window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() - 1); chayLaiHeThongGiaoDien();});
-    document.getElementById('nut-thang-sau')?.addEventListener('click', (e) => {e.stopPropagation();window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() + 1);chayLaiHeThongGiaoDien();}); // đổi tháng
-    function chayLaiHeThongGiaoDien() {capNhatChuHienThiThang(); if (window.duLieuSnapshotQuocTe) {capNhatThanhHanMuc(window.duLieuSnapshotQuocTe); if (typeof veBieuDoThuChiTrongThang === 'function') veBieuDoThuChiTrongThang(window.duLieuSnapshotQuocTe);}} // làm mới biểu đồ và thanh hạn mức
-    // --- 4. HÀM TÍNH TOÁN VÀ ĐỔ DỮ LIỆU LÊN THANH PROGRESS BAR ---
-    function capNhatThanhHanMuc(docs) {window.duLieuSnapshotQuocTe = docs; let thangDangXem = layChuoiThangNam(window.thoiGianDangXem); let tongDaChi = 0; docs.forEach(doc => {const data = doc.data(); 
-        if (data.thoiGian && data.thoiGian.startsWith(thangDangXem) && data.loai === 'chi') {tongDaChi += parseFloat(data.soTien) || 0;}}); let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
+
+    document.getElementById('cum-chuyen-thang')?.addEventListener('click', (e) => { e.stopPropagation(); });
+    document.getElementById('nut-thang-truoc')?.addEventListener('click', (e) => { e.stopPropagation(); window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() - 1); chayLaiHeThongGiaoDien(); });
+    document.getElementById('nut-thang-sau')?.addEventListener('click', (e) => { e.stopPropagation(); window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() + 1); chayLaiHeThongGiaoDien(); }); 
+
+    function chayLaiHeThongGiaoDien() {
+        window.capNhatChuHienThiThang(); 
+        if (window.duLieuSnapshotQuocTe) {
+            capNhatThanhHanMuc(window.duLieuSnapshotQuocTe); 
+        }
+    } 
+
+    function capNhatThanhHanMuc(docs) {
+        window.duLieuSnapshotQuocTe = docs; 
+        let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
+        let tongDaChi = 0; 
+        docs.forEach(doc => {
+            const data = doc.data(); 
+            if (data.thoiGian && data.thoiGian.startsWith(thangDangXem) && data.loai === 'chi') {
+                tongDaChi += parseFloat(data.soTien) || 0;
+            }
+        }); 
+        let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
         if (!txtChu || !thanhPhanTram) return;
-        if (hanMucThangDangXem === 0) {txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')} đ / Chưa đặt`; thanhPhanTram.style.width = '0%'; thanhPhanTram.style.backgroundColor = '#e0e0e0'; 
-            if (txtGoiY) {txtGoiY.innerText = "💡 Bấm vào đây để cài đặt hạn mức"; txtGoiY.style.color = '#999999';}return;}
-        let phanTram = (tongDaChi / hanMucThangDangXem) * 100; let phanTramHienThi = phanTram > 100 ? 100 : phanTram; txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')}/${hanMucThangDangXem.toLocaleString('vi-VN')}đ`; thanhPhanTram.style.width = `${phanTramHienThi}%`;
-        if (phanTram >= 100) {thanhPhanTram.style.backgroundColor = '#e74c3c'; // Đỏ: Vượt ngưỡng
-            if (txtGoiY) {txtGoiY.innerText = `⚠️ Bạn đã tiêu vượt quá hạn mức ${(phanTram - 100).toFixed(0)}%!`; txtGoiY.style.color = '#e74c3c';}
-        } else if (phanTram >= 75) {thanhPhanTram.style.backgroundColor = '#f1c40f'; // Vàng: Cảnh báo sắp hết
-            if (txtGoiY) {txtGoiY.innerText = `🔔 Cẩn thận, đã tiêu hết ${phanTram.toFixed(0)}% hạn mức!`; txtGoiY.style.color = '#f1c40f';}
-        } else {thanhPhanTram.style.backgroundColor = '#2ecc71'; // Xanh: An toàn
-            if (txtGoiY) {txtGoiY.innerText = `✅ Còn ${(hanMucThangDangXem - tongDaChi).toLocaleString('vi-VN')}đ chi tiêu`;txtGoiY.style.color = '#999999';}}}
-    capNhatChuHienThiThang(); // đồng bộ ngay khi tải trang
+        if (hanMucThangDangXem === 0) {
+            txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')} đ / Chưa đặt`; 
+            thanhPhanTram.style.width = '0%'; 
+            thanhPhanTram.style.backgroundColor = '#e0e0e0'; 
+            if (txtGoiY) { txtGoiY.innerText = "💡 Bấm vào đây để cài đặt hạn mức"; txtGoiY.style.color = '#999999'; }
+            return;
+        }
+        let phanTram = (tongDaChi / hanMucThangDangXem) * 100; 
+        let phanTramHienThi = phanTram > 100 ? 100 : phanTram; 
+        txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')}/${hanMucThangDangXem.toLocaleString('vi-VN')}đ`; 
+        thanhPhanTram.style.width = `${phanTramHienThi}%`;
+        if (phanTram >= 100) {
+            thanhPhanTram.style.backgroundColor = '#e74c3c'; 
+            if (txtGoiY) { txtGoiY.innerText = `⚠️ Bạn đã tiêu vượt quá hạn mức ${(phanTram - 100).toFixed(0)}%!`; txtGoiY.style.color = '#e74c3c'; }
+        } else if (phanTram >= 75) {
+            thanhPhanTram.style.backgroundColor = '#f1c40f'; 
+            if (txtGoiY) { txtGoiY.innerText = `🔔 Cẩn thận, đã tiêu hết ${phanTram.toFixed(0)}% hạn mức!`; txtGoiY.style.color = '#f1c40f'; }
+        } else {
+            thanhPhanTram.style.backgroundColor = '#2ecc71'; 
+            if (txtGoiY) { txtGoiY.innerText = `✅ Còn ${(hanMucThangDangXem - tongDaChi).toLocaleString('vi-VN')}đ chi tiêu`; txtGoiY.style.color = '#999999'; }
+        }
+    }
+    window.capNhatChuHienThiThang();
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // D. TAB LỊCH SỬ
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
