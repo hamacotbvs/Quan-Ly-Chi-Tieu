@@ -261,18 +261,6 @@
     if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active');});});
 // C. TAB HOME
 
-// D. TAB LỊCH SỬ
-    const idHienThiSoDu = document.getElementById('so-du');
-    const idVungLichSu = document.getElementById('lich-su-giao-dich');
-    const truyVanThuChiSapXep = query(datathuchi, orderBy("thoiGian", "desc")); // sắp xếp giao dịch thu chi theo thời gian
-    // Hiện thị khi dữ liệu thu chi rỗng
-    if (snapshot.empty) {idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào!</div>';
-        if (idHienThiSoDu) idHienThiSoDu.innerText = "0";if (idBcThu) idBcThu.innerText = "0 đ";if (idBcChi) idBcChi.innerText = "0 đ";if (idThanhThu) idThanhThu.style.width = "0%";if (idThanhChi) idThanhChi.style.width = "0%";return;}
-    // Cập nhật danh sách thu khi dữ liệu thay đổi
-    onSnapshot(truyVanThuChiSapXep, (snapshot) => {if (!idVungLichSu) return;idVungLichSu.innerHTML = '';
-        let tongSoDu = 0;let tongThuNhap = 0;let tongChiTieu = 0;
-        capNhatThanhHanMuc(snapshot.docs);// tính toán lại thanh hạn mức
-
 // C. TAB THÊM GIAO DỊCH MỚI
     const idnutsave = document.getElementById('nut-save');
     const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
@@ -282,6 +270,20 @@
     const labelSoTien = document.getElementById('label-so-tien');
     const inputNgay = document.getElementById('ngay-giao-dich');
     const inputGio = document.getElementById('gio-giao-dich');
+
+// D. TAB LỊCH SỬ
+    const idHienThiSoDu = document.getElementById('so-du');
+    const idVungLichSu = document.getElementById('lich-su-giao-dich');
+    const truyVanThuChiSapXep = query(datathuchi, orderBy("thoiGian", "desc")); // sắp xếp giao dịch thu chi theo thời gian
+    // Hiện thị khi dữ liệu thu chi rỗng
+    if (snapshot.empty) {idVungLichSu.innerHTML = '<div class="trang-thai-trong">Bạn chưa thực hiện giao dịch nào!</div>';
+        if (idHienThiSoDu) idHienThiSoDu.innerText = "0";if (idBcThu) idBcThu.innerText = "0 đ";if (idBcChi) idBcChi.innerText = "0 đ";if (idThanhThu) idThanhThu.style.width = "0%";if (idThanhChi) idThanhChi.style.width = "0%";return;}
+    // Cập nhật danh sách thu chi khi dữ liệu thay đổi
+    onSnapshot(truyVanThuChiSapXep, (snapshot) => {if (!idVungLichSu) return;idVungLichSu.innerHTML = '';
+        let tongSoDu = 0;let tongThuNhap = 0;let tongChiTieu = 0;
+        capNhatThanhHanMuc(snapshot.docs);// tính toán lại thanh hạn mức
+
+
 // D. TAB BÁO CÁO
     const idBcThu = document.getElementById('bao-cao-thu');
     const idBcChi = document.getElementById('bao-cao-chi');
