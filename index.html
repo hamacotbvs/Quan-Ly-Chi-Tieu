@@ -303,17 +303,26 @@
     const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
     const nutHome = document.querySelector('[data-target="home"]');
     const bayGio = new Date(); const muiGioVN = new Date(bayGio.getTime() + (7 * 60 * 60 * 1000)); // Định dạng chuẩn UTC+7
+    const nam = bayGio.getFullYear();
+    const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
+    const ngay = String(bayGio.getDate()).padStart(2, '0');
+    const gio = String(bayGio.getHours()).padStart(2, '0');
+    const phut = String(bayGio.getMinutes()).padStart(2, '0');
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // thay đổi theo nhập liệu thu/chi
+    if (idLoaiGiaoDich && idDanhMuc) 
+        {idLoaiGiaoDich.addEventListener('change', () => {idDanhMuc.innerHTML = '';
+            if (idLoaiGiaoDich.value === 'chi') 
+                {idDanhMuc.innerHTML = `<option value="Ăn uống">🍔 Ăn uống</option> <option value="Di chuyển">🚗 Di chuyển</option> <option value="Mua sắm">🛍️ Mua sắm</option> <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option> <option value="Giải trí">🎬 Giải trí & Cà phê</option> <option value="Khác">✨ Khác</option> `;}
+                else if (idLoaiGiaoDich.value === 'thu')
+                {idDanhMuc.innerHTML = `<option value="Thu nhập từ lương">💵 Thu nhập từ lương</option> <option value="Thu nhập khác">💰 Thu nhập khác</option>`;}});
+    }
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // điền ngày giờ vào form giao dịch mới
-    if (inputNgay && inputGio) {
-        const nam = bayGio.getFullYear();
-        const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
-        const ngay = String(bayGio.getDate()).padStart(2, '0');
-        inputNgay.value = `${nam}-${thang}-${ngay}`;
-        const gio = String(bayGio.getHours()).padStart(2, '0');
-        const phut = String(bayGio.getMinutes()).padStart(2, '0');
-        inputGio.value = `${gio}:${phut}`;
-    }  
+    if (inputNgay && inputGio) {inputNgay.value = `${nam}-${thang}-${ngay}`; inputGio.value = `${gio}:${phut}`;}
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // điền số tiền định dạng nghìn lên tiêu đề số tiền
+    if (idSoTien && labelSoTien) {idSoTien.addEventListener('input', function () {let value = this.value; if (!value) {labelSoTien.innerText = 'Số tiền (đ):';return;} let soDaPhanCach = Number(value).toLocaleString('vi-VN'); labelSoTien.innerText = `Số tiền: ${soDaPhanCach}đ`;});}
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // kích hoạt lệnh bên trong nút save    
     if (idnutsave) {idnutsave.addEventListener('click', 
@@ -328,15 +337,6 @@
             } catch (loi) {console.error("Lỗi kết nối Firebase: ", loi); alert("Không thể ghi nhận giao dịch lên đám mây!");}
         });
     }
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // thay đổi theo nhập liệu thu/chi
-    if (idLoaiGiaoDich && idDanhMuc) 
-        {idLoaiGiaoDich.addEventListener('change', () => {idDanhMuc.innerHTML = '';
-            if (idLoaiGiaoDich.value === 'chi') 
-                {idDanhMuc.innerHTML = `<option value="Ăn uống">🍔 Ăn uống</option> <option value="Di chuyển">🚗 Di chuyển</option> <option value="Mua sắm">🛍️ Mua sắm</option> <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option> <option value="Giải trí">🎬 Giải trí & Cà phê</option> <option value="Khác">✨ Khác</option> `;}
-                else if (idLoaiGiaoDich.value === 'thu')
-                {idDanhMuc.innerHTML = `<option value="Thu nhập từ lương">💵 Thu nhập từ lương</option> <option value="Thu nhập khác">💰 Thu nhập khác</option>`;}});
-    }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // D. TAB BÁO CÁO
     // đặt tên
@@ -347,26 +347,6 @@
     const idThanhChi = document.getElementById('thanh-chi-ti-le');
 
 
-
-
-        // --------------------------------------------------------------------------
-    
-        // --------------------------------------------------------------------------
-        // VI. CẬP NHẬT SỐ TIỀN CÓ ĐỊNH DẠNG NGHÌN LÊN TIÊU ĐỀ SỐ TIỀN
-        // --------------------------------------------------------------------------
-                if (idSoTien && labelSoTien) {
-                    idSoTien.addEventListener('input', function () {
-                        let value = this.value;          
-                if (!value) {
-                    labelSoTien.innerText = 'Số tiền (đ):';
-                    return;
-                }            
-                let soDaPhanCach = Number(value).toLocaleString('vi-VN');
-                labelSoTien.innerText = `Số tiền: ${soDaPhanCach}đ`;
-                });
-                }
-// C. TAP LỊCH SỬ
-        // --------------------------------------------------------------------------
 
         // --------------------------------------------------------------------------
         // VII. LOGIC LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
