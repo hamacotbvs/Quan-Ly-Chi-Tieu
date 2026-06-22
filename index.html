@@ -276,11 +276,14 @@
     const idHienThiSoDu = document.getElementById('so-du');
     const idVungLichSu = document.getElementById('lich-su-giao-dich');
     const truyVanThuChiSapXep = query(datathuchi, orderBy("thoiGian", "desc")); // sắp xếp giao dịch thu chi theo thời gian
-    // Cập nhật danh sách thu chi khi dữ liệu thay đổi
-    onSnapshot(truyVanThuChiSapXep, (snapshot) => {if (!idVungLichSu) return;idVungLichSu.innerHTML = '';let tongSoDu = 0;let tongThuNhap = 0;let tongChiTieu = 0;capNhatThanhHanMuc(snapshot.docs);// tính toán lại thanh hạn mức
-    // hiển thị khi thu chi rỗng
-        if (snapshot.empty) {idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chưa có giao dịch nào!</div>';
-        if (idHienThiSoDu) idHienThiSoDu.innerText = "0";if (idBcThu) idBcThu.innerText = "0 đ";if (idBcChi) idBcChi.innerText = "0 đ";if (idThanhThu) idThanhThu.style.width = "0%";if (idThanhChi) idThanhChi.style.width = "0%";return;}
+    const giaoDich = doc.data();
+    const docId = doc.id; // 🔑 Lấy ID duy nhất của tài liệu để xử lý xóa
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    onSnapshot(truyVanThuChiSapXep, 
+        (snapshot) => 
+            {if (!idVungLichSu) return;idVungLichSu.innerHTML = '';let tongSoDu = 0;let tongThuNhap = 0;let tongChiTieu = 0; // Cập nhật danh sách thu chi khi dữ liệu thay đổi
+            capNhatThanhHanMuc(snapshot.docs);// tính toán lại thanh hạn mức
+            if (snapshot.empty) {idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chưa có giao dịch nào!</div>'; if (idHienThiSoDu) idHienThiSoDu.innerText = "0";if (idBcThu) idBcThu.innerText = "0 đ";if (idBcChi) idBcChi.innerText = "0 đ";if (idThanhThu) idThanhThu.style.width = "0%";if (idThanhChi) idThanhChi.style.width = "0%";return;} // hiển thị khi thu chi rỗng
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // C. TAB THÊM GIAO DỊCH MỚI
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -308,6 +311,11 @@
     const ngay = String(bayGio.getDate()).padStart(2, '0');
     const gio = String(bayGio.getHours()).padStart(2, '0');
     const phut = String(bayGio.getMinutes()).padStart(2, '0');
+    const danhSachIcon = {"Ăn uống": "🍔","Di chuyển": "🚗","Mua sắm": "🛍️","Hóa đơn & Tiện ích": "💵","Giải trí & Cà phê": "🎬","Thu nhập từ lương": "💰", "Khác": "✨"};
+    const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+    const iconPhùHợp = danhSachIcon[hienThiDanhMuc] || "📂";
+    const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
+    const dongMoi = document.createElement('div');
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // thay đổi theo nhập liệu thu/chi
     if (idLoaiGiaoDich && idDanhMuc) 
@@ -337,6 +345,23 @@
             } catch (loi) {console.error("Lỗi kết nối Firebase: ", loi); alert("Không thể ghi nhận giao dịch lên đám mây!");}
         });
     }
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // tính toán, vẽ giao diện lịch sử (Phần cốt lõi)
+    snapshot.forEach(
+        (doc) => {let kyTuDau = ''; let lopMauSac = '';
+            if (giaoDich.loai === 'thu') {tongSoDu += giaoDich.soTien; tongThuNhap += giaoDich.soTien; kyTuDau = '+'; lopMauSac = 'mau-thu';} else {tongSoDu -= giaoDich.soTien; tongChiTieu += giaoDich.soTien; kyTuDau = '-'; lopMauSac = 'mau-chi';}
+            dongMoi.classList.add('dong-giao-dich');dongMoi.innerHTML = `
+                <div class="nen-hanh-dong">
+                    <div class="hanh-dong-sua">✏️ Sửa</div>
+                    <div class="hanh-dong-xoa">🗑️ Xóa</div>
+                </div>
+                <div class="giao-dich-noi-dung" data-id="${docId}">
+                    <div class="giao-dich-trai"> <span class="giao-dich-muc">${iconPhùHợp} ${hienThiDanhMuc}</span> <span class="giao-dich-ten">${giaoDich.ten}</span> </div>
+                    <div class="giao-dich-phai-cum"> <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span> <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span> </div>
+                </div>
+            `;
+            idVungLichSu.appendChild(dongMoi);
+    });
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // D. TAB BÁO CÁO
     // đặt tên
@@ -354,61 +379,8 @@
 
 
             
-            // 7.3 Vòng lặp tính toán và dựng dòng lịch sử (Phần cốt lõi)
-                    snapshot.forEach((doc) => {
-                        const giaoDich = doc.data();
-                        const docId = doc.id; // 🔑 Lấy ID duy nhất của tài liệu để xử lý xóa
-                        let kyTuDau = '';
-                        let lopMauSac = '';
-                // 7.3.1 Bước A: Phân loại tiền và tính toán
-                        if (giaoDich.loai === 'thu') {
-                            tongSoDu += giaoDich.soTien; // Cộng vào số dư
-                            tongThuNhap += giaoDich.soTien; // Cộng vào tổng thu
-                            kyTuDau = '+';
-                            lopMauSac = 'mau-thu'; // Đặt chữ màu xanh
-                        } else {
-                            tongSoDu -= giaoDich.soTien; // Trừ bớt số dư
-                            tongChiTieu += giaoDich.soTien; // Cộng vào tổng chi
-                            kyTuDau = '-';
-                            lopMauSac = 'mau-chi'; // Đặt chữ màu đỏ
-                        }
-                        // 🟢 BẢNG ÁNH XẠ ICON THEO DANH MỤC GIỐNG BÊN NHẬP LIỆU
-                        const danhSachIcon = {
-                            "Ăn uống": "🍔",
-                            "Di chuyển": "🚗",
-                            "Mua sắm": "🛍️",
-                            "Hóa đơn & Tiện ích": "💵",
-                            "Giải trí & Cà phê": "🎬",
-                            "Thu nhập từ lương": "💰", // Thêm các danh mục thu nếu có
-                            "Khác": "✨"
-                        };
-                        const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
-                        // Tìm icon tương ứng, nếu không thấy thì mặc định lấy icon cặp tài liệu 📂 hoặc ✨
-                        const iconPhùHợp = danhSachIcon[hienThiDanhMuc] || "📂";
-                        // Lấy chuỗi ngày giờ (Ví dụ: "18/06/2026 14:30" hoặc giữ nguyên chuỗi gốc)
-                        const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
-                // 7.3.2 Bước B: Vẽ giao diện
-                        const dongMoi = document.createElement('div');
-                        dongMoi.classList.add('dong-giao-dich');
-                        dongMoi.innerHTML = `
-                            <div class="nen-hanh-dong">
-                                <div class="hanh-dong-sua">✏️ Sửa</div>
-                                <div class="hanh-dong-xoa">🗑️ Xóa</div>
-                            </div>
-                            <div class="giao-dich-noi-dung" data-id="${docId}">
-                                <div class="giao-dich-trai">
-                                    <span class="giao-dich-muc">${iconPhùHợp} ${hienThiDanhMuc}</span>
-                                    <span class="giao-dich-ten">${giaoDich.ten}</span>
-                                </div>
-                                <div class="giao-dich-phai-cum">
-                                    <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span>
-                                    <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${giaoDich.soTien.toLocaleString('vi-VN')} đ</span>
-                                </div>
-                            </div>
-                            `;
-                        idVungLichSu.appendChild(dongMoi);
-                        });
-                // 7.3.3 BỘ XỬ LÝ SỰ KIỆN VUỐT CHẠM (SWIPE) VÀ KÍCH HOẠT HÀNH ĐỘNG
+
+            // 7.3.3 BỘ XỬ LÝ SỰ KIỆN VUỐT CHẠM (SWIPE) VÀ KÍCH HOẠT HÀNH ĐỘNG
                     document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
                         let xBatDau = 0;
                         let xDiChuyen = 0;
