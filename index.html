@@ -302,6 +302,18 @@
     const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
     const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
     const nutHome = document.querySelector('[data-target="home"]');
+    const bayGio = new Date(); const muiGioVN = new Date(bayGio.getTime() + (7 * 60 * 60 * 1000)); // Định dạng chuẩn UTC+7
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // điền ngày giờ vào form giao dịch mới
+    if (inputNgay && inputGio) {
+        const nam = bayGio.getFullYear();
+        const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
+        const ngay = String(bayGio.getDate()).padStart(2, '0');
+        inputNgay.value = `${nam}-${thang}-${ngay}`;
+        const gio = String(bayGio.getHours()).padStart(2, '0');
+        const phut = String(bayGio.getMinutes()).padStart(2, '0');
+        inputGio.value = `${gio}:${phut}`;
+    }  
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // kích hoạt lệnh bên trong nút save    
     if (idnutsave) {idnutsave.addEventListener('click', 
@@ -310,7 +322,6 @@
                 {await updateDoc(GiaoDichThuChiDangSua, {ten: ten,soTien: soTien,loai: loai,danhMuc: danhMuc,thoiGian: chuoiThoiGianGop}); window.idGiaoDichDangSua = null; idnutsave.innerText = "Ghi đè / Thêm mới";}
                 else {await addDoc(datathuchi, {ten: ten,soTien: soTien,loai: loai,danhMuc: danhMuc,thoiGian: chuoiThoiGianGop});}
                 idTen.value = ''; idSoTien.value = ''; if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):'; // reset form
-                const bayGio = new Date(); const muiGioVN = new Date(bayGio.getTime() + (7 * 60 * 60 * 1000)); // Định dạng chuẩn UTC+7
                 if (inputNgay) inputNgay.value = muiGioVN.toISOString().split('T')[0];
                 if (inputGio) {const gio = String(muiGioVN.getUTCHours()).padStart(2, '0'); const phut = String(muiGioVN.getUTCMinutes()).padStart(2, '0'); inputGio.value = `${gio}:${phut}`;}
                 if (nutHome) {nutHome.click();} // chuyển qua tab HOME khi save xong
@@ -338,25 +349,8 @@
 
 
 
-
-
-// --------------------------------------------------------------------------
-// IV. THÊM GIAO DỊCH MỚI LÊN FIREBASE (XEM - KIỂM TRA - ĐƯA LÊN FIRE - XÓA DỮ LIỆU ĐÃ NHẬP)
-// --------------------------------------------------------------------------
-
         // --------------------------------------------------------------------------
-        // V. TỰ ĐỘNG ĐIỀN NGÀY GIỜ HIỆN TẠI VÀO INPUT LÚC KHỞI ĐỘNG
-        // --------------------------------------------------------------------------
-                const bayGio = new Date();
-                if (inputNgay && inputGio) {
-                const nam = bayGio.getFullYear();
-                const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
-                const ngay = String(bayGio.getDate()).padStart(2, '0');
-                inputNgay.value = `${nam}-${thang}-${ngay}`;
-                const gio = String(bayGio.getHours()).padStart(2, '0');
-                const phut = String(bayGio.getMinutes()).padStart(2, '0');
-                inputGio.value = `${gio}:${phut}`;
-                }      
+    
         // --------------------------------------------------------------------------
         // VI. CẬP NHẬT SỐ TIỀN CÓ ĐỊNH DẠNG NGHÌN LÊN TIÊU ĐỀ SỐ TIỀN
         // --------------------------------------------------------------------------
