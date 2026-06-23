@@ -222,30 +222,52 @@
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.2);
 }
 
-/* Khu vực link nhấn chuyển đổi */
-.vung-link-tien-ich {
+/* Khung chứa Quên mật khẩu - Căn phải */
+.vung-link-quen-mk {
     display: flex;
-    justify-content: space-between;
-    margin: 15px 0 25px 0;
-    font-size: 13px;
+    justify-content: flex-end;
+    margin: 10px 0 20px 0;
 }
 
-.vung-link-tien-ich a {
-    color: #3498db;
+/* Định dạng riêng chữ Quên mật khẩu (Màu xanh dương nhạt như hình) */
+#link-quen-mk {
+    color: #5ac4f7;
     text-decoration: none;
-    transition: color 0.2s;
+    font-size: 14px;
+    font-family: sans-serif;
 }
 
-.vung-link-tien-ich a:hover {
-    color: #2980b9;
-    text-decoration: underline;
+/* Khung chứa dòng Đăng ký - Căn giữa */
+.vung-link-chuyen-trang {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0 10px 0;
+}
+
+/* Chữ "Chưa có tài khoản?" mặc định màu xám mờ nhẹ */
+#link-chuyen-trang {
+    color: #7f8c8d;
+    text-decoration: none;
+    font-size: 14px;
+    font-family: sans-serif;
+}
+
+/* Chữ "Đăng ký" điểm nhấn màu xanh dương nhạt */
+#link-chuyen-trang .chu-dang-ky {
+    color: #5ac4f7;
+    margin-left: 4px;
+}
+
+/* Hiệu ứng mờ nhẹ khi rê chuột vào các link cho tự nhiên */
+#link-quen-mk:hover, #link-chuyen-trang:hover .chu-dang-ky {
+    opacity: 0.8;
 }
 
 /* Nút bấm Đăng nhập / Đăng ký chính */
 .nut-bam-auth {
     width: 100%;
     padding: 12px;
-    background-color: #2ecc71;
+    background-color: #0082C8;
     color: white;
     border: none;
     border-radius: 8px;
@@ -296,7 +318,7 @@
     <div class="the-auth-giao-dien">
         <div class="auth-bieu-tuong">🪙</div>
         <h2 id="auth-tieu-de">Đăng nhập tài khoản</h2>
-        <p id="auth-ghi-chu">Vui lòng đăng nhập để quản lý dòng tiền đám mây</p>
+        <p id="auth-ghi-chu">Sử dụng Gmail để đăng ký</p>
 
         <div class="nhom-nhap-lieu">
             <input type="email" id="auth-username" placeholder="vi-du: tenban@gmail.com" required>
@@ -310,14 +332,14 @@
             <input type="password" id="auth-re-password" placeholder="Xác nhận lại mật khẩu">
         </div>
 
-        <div class="vung-link-tien-ich" style="display: flex; justify-content: flex-end; margin: 10px 0 20px 0; font-size: 14px;">
-            <a href="#" id="link-quen-mk" style="text-decoration: none; color: #43bbf6;">Quên mật khẩu</a>
+        <div class="vung-link-quen-mk">
+            <a href="#" id="link-quen-mk">Quên mật khẩu</a>
         </div>
 
         <button id="nut-hanh-dong-auth" class="nut-bam-auth">Đăng Nhập</button>
 
-        <div class="vung-link-tien-ich" style="display: flex; justify-content: center; margin: 15px 0 25px 0; font-size: 14px;">
-            <a href="#" id="link-chuyen-trang" style="text-decoration: none; color: #7f8c8d;">Chưa có tài khoản? <span style="color: #43bbf6;">Đăng ký</span></a>
+        <div class="vung-link-chuyen-trang">
+            <a href="#" id="link-chuyen-trang">Chưa có tài khoản? <span class="chu-dang-ky">Đăng ký</span></a>
         </div>
 
     </div>
@@ -480,8 +502,8 @@
             e.preventDefault();
             isLoginMode = !isLoginMode;
             if (isLoginMode) {
-                authTieuDe.innerText = "Đăng Nhập Hệ Thống";
-                authGhiChu.innerText = "Vui lòng đăng nhập để quản lý dòng tiền đám mây";
+                authTieuDe.innerText = "Đăng nhập tài khoản";
+                authGhiChu.innerText = "Sử dụng Gmail để đăng ký";
                 vungNhapLaiMatKhau.style.display = "none";
                 nutHanhDongAuth.innerText = "Đăng Nhập";
                 linkQuenMk.style.display = "inline";
