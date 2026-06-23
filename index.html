@@ -272,21 +272,29 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    // 1. IMPORT THÊM THƯ VIỆN AUTH
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 // A. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     const firebaseConfig = {
-        apiKey: "AIzaSy...", // Chìa khóa để ứng dụng của bạn mở cửa đi vào hệ thống dịch vụ của Google.
-        authDomain: "quanlychitieu-af553.firebaseapp.com",// Định danh tên miền an toàn phục vụ riêng cho các tính năng bảo mật hoặc đăng nhập.
-        projectId: "quanlychitieu-af553",// ID duy nhất của dự án. Nhờ cái này mà Google biết bạn đang muốn kết nối vào đúng dự án "quanlychitieu-af553" chứ không phải dự án của người khác.
-        storageBucket: "quanlychitieu-af553.appspot.com",// Địa chỉ "kho chứa" trên đám mây, dùng khi app của bạn có tính năng tải ảnh, video hoặc file lên mạng.
-        messagingSenderId: "367355152865",// Mã định danh tổng đài gửi tin nhắn, dùng để quản lý các tính năng gửi thông báo (Notification) về điện thoại/trình duyệt.
-        appId: "1:367355152865:web:644a86071ef2817d6928e1"// ID riêng biệt của chính ứng dụng Web (HTML) này bên trong dự án Firebase của bạn.
-        };        
-    const app = initializeApp(firebaseConfig); //Firebase bắt đầu khởi chạy trên trang web của bạn
-    const db = getFirestore(app);// để ứng dụng bắt đầu có quyền đọc, ghi, sửa, hoặc xóa dữ liệu trên đám mây
-    const datathuchi = collection(db, "giao_dich_business");// trỏ trực tiếp vào một bảng dữ liệu cụ thể trong Firestore, khi đưa lên đây mình đặt tên lại datathuchi cho mỗi lần sử dụng dễ khỏi dùng nguyên lệnh dài gọi
+        apiKey: "AIzaSy...", 
+        authDomain: "quanlychitieu-af553.firebaseapp.com",
+        projectId: "quanlychitieu-af553",
+        storageBucket: "quanlychitieu-af553.appspot.com",
+        messagingSenderId: "367355152865",
+        appId: "1:367355152865:web:644a86071ef2817d6928e1"
+    };        
+    const app = initializeApp(firebaseConfig); 
+    const db = getFirestore(app);
+    const auth = getAuth(app); // Khởi tạo Auth
+    const datathuchi = collection(db, "giao_dich_business");
+
+    // Biến toàn cục lưu thông tin user đang đăng nhập và bộ hủy lắng nghe dữ liệu cũ
+    let currentUser = null;
+    let unsubscribeSnapshot = null;
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------    
 // B. THAO TÁC CHUNG
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -324,8 +332,12 @@
     }
 
     document.getElementById('vung-han-muc-chi-tieu')?.addEventListener('click', () => {
+        if (!currentUser) return alert("Vui lòng đăng nhập để đặt hạn mức!");
         let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
-        let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0; 
+        
+        // Thay đổi khóa LocalStorage để lưu hạn mức theo từng USER riêng biệt
+        let keyHanMucUser = `${currentUser.uid}_${thangDangXem}`;
+        let hanMucThangDangXem = boSuoTapHanMuc[keyHanMucUser] || 0; 
         const [nam, thg] = thangDangXem.split('-'); 
         let thongBaoThang = `tháng ${thg}/${nam}`; 
         let loiNhac = hanMucThangDangXem > 0
@@ -335,9 +347,9 @@
         if (nhapVao !== null) {
             let soTienMoi = parseFloat(nhapVao.toString().replace(/[^0-9]/g, '')); 
             if (!isNaN(soTienMoi) && soTienMoi > 0) {
-                boSuoTapHanMuc[thangDangXem] = soTienMoi;
+                boSuoTapHanMuc[keyHanMucUser] = soTienMoi;
             } else if (nhapVao === "0" || nhapVao === "") {
-                delete boSuoTapHanMuc[thangDangXem];
+                delete boSuoTapHanMuc[keyHanMucUser];
             } else {
                 alert("Số tiền nhập vào không hợp lệ!");
                 return;
@@ -368,7 +380,10 @@
                 tongDaChi += parseFloat(data.soTien) || 0;
             }
         }); 
-        let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
+        
+        // Đọc hạn mức theo User Key
+        let keyHanMucUser = currentUser ? `${currentUser.uid}_${thangDangXem}` : thangDangXem;
+        let hanMucThangDangXem = boSuoTapHanMuc[keyHanMucUser] || 0;
         if (!txtChu || !thanhPhanTram) return;
         if (hanMucThangDangXem === 0) {
             txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')} đ / Chưa đặt`; 
@@ -397,7 +412,6 @@
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // C.2 TAB LỊCH SỬ & ĐỔ DỮ LIỆU REALTIME
 //====================================================================================================================================================================================================================================================================
-    // 1. Định danh các vùng hiển thị báo cáo số liệu ở trang Lịch sử & Báo cáo
     const idHienThiSoDu = document.getElementById('so-du');
     const idVungLichSu = document.getElementById('lich-su-giao-dich');
     const idBcThu = document.getElementById('bao-cao-thu');
@@ -405,83 +419,89 @@
     const idThanhThu = document.getElementById('thanh-thu-ti-le');
     const idThanhChi = document.getElementById('thanh-chi-ti-le');
 
-    // 2. Cấu hình danh sách Icon hiển thị theo tên danh mục
     const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Mua sắm": "🛍️", "Hóa đơn": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Khác": "✨"};
     
-    // 3. Tạo câu lệnh truy vấn dữ liệu, sắp xếp theo thời gian mới nhất lên đầu
-    const truyVanThuChiSapXep = query(datathuchi, orderBy("thoiGian", "desc")); 
+    // 2. HÀM KÍCH HOẠT LẮNG NGHE REALTIME THEO USER ID
+    function batDauLangNgheDuLieuUser(userId) {
+        // Nếu trước đó đang có một bộ lắng nghe chạy ngầm, hãy tắt nó đi để tránh lặp dữ liệu
+        if (unsubscribeSnapshot) unsubscribeSnapshot();
 
-    // 4. BỘ LẮNG NGHE DỮ LIỆU REALTIME TỪ FIREBASE
-    onSnapshot(truyVanThuChiSapXep, (snapshot) => {
-        if (!idVungLichSu) return;
-        idVungLichSu.innerHTML = ''; // Xóa sạch danh sách cũ trước khi vẽ danh sách mới
-        let tongSoDu = 0; let tongThuNhap = 0; let tongChiTieu = 0; 
-        
-        // Cập nhật lại thanh hạn mức chi tiêu ở Tab Home
-        capNhatThanhHanMuc(snapshot.docs);
+        // Thêm điều kiện lọc where("userId", "==", userId) để chia tách dữ liệu
+        const truyVanThuChiSapXep = query(
+            datathuchi, 
+            where("userId", "==", userId), 
+            orderBy("thoiGian", "desc")
+        ); 
 
-        // Trường hợp không có dữ liệu nào trong DB
-        if (snapshot.empty) {
-            idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chưa có giao dịch nào!</div>'; 
-            if (idHienThiSoDu) idHienThiSoDu.innerText = "0 đ";
-            if (idBcThu) idBcThu.innerText = "0 đ";
-            if (idBcChi) idBcChi.innerText = "0 đ";
-            if (idThanhThu) idThanhThu.style.width = "0%";
-            if (idThanhChi) idThanhChi.style.width = "0%";
-            return;
-        } 
+        unsubscribeSnapshot = onSnapshot(truyVanThuChiSapXep, (snapshot) => {
+            if (!idVungLichSu) return;
+            idVungLichSu.innerHTML = ''; 
+            let tongSoDu = 0; let tongThuNhap = 0; let tongChiTieu = 0; 
+            
+            capNhatThanhHanMuc(snapshot.docs);
 
-        // Duyệt qua từng tài liệu thu chi bốc từ Firebase về để in ra màn hình
-        snapshot.forEach((docItem) => {
-            const giaoDich = docItem.data();
-            const docId = docItem.id;
-            const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
-            const iconPhùHợp = danhSachIcon[hienThiDanhMuc] || "📂";
-            const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
+            if (snapshot.empty) {
+                idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chưa có giao dịch nào!</div>'; 
+                if (idHienThiSoDu) idHienThiSoDu.innerText = "0 đ";
+                if (idBcThu) idBcThu.innerText = "0 đ";
+                if (idBcChi) idBcChi.innerText = "0 đ";
+                if (idThanhThu) idThanhThu.style.width = "0%";
+                if (idThanhChi) idThanhChi.style.width = "0%";
+                return;
+            } 
 
-            let kyTuDau = ''; let lopMauSac = '';
-            if (giaoDich.loai === 'thu') {
-                tongSoDu += parseFloat(giaoDich.soTien); 
-                tongThuNhap += parseFloat(giaoDich.soTien); 
-                kyTuDau = '+'; lopMauSac = 'mau-thu';
+            snapshot.forEach((docItem) => {
+                const giaoDich = docItem.data();
+                const docId = docItem.id;
+                const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+                const iconPhùHợp = danhSachIcon[hienThiDanhMuc] || "📂";
+                const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
+
+                let kyTuDau = ''; let lopMauSac = '';
+                if (giaoDich.loai === 'thu') {
+                    tongSoDu += parseFloat(giaoDich.soTien); 
+                    tongThuNhap += parseFloat(giaoDich.soTien); 
+                    kyTuDau = '+'; lopMauSac = 'mau-thu';
+                } else {
+                    tongSoDu -= parseFloat(giaoDich.soTien); 
+                    tongChiTieu += parseFloat(giaoDich.soTien); 
+                    kyTuDau = '-'; lopMauSac = 'mau-chi';
+                }
+
+                const dongMoi = document.createElement('div');
+                dongMoi.classList.add('dong-giao-dich');
+                dongMoi.innerHTML = `
+                    <div class="nen-hanh-dong">
+                        <div class="hanh-dong-sua">✏️ Sửa</div>
+                        <div class="hanh-dong-xoa">🗑️ Xóa</div>
+                    </div>
+                    <div class="giao-dich-noi-dung" data-id="${docId}">
+                        <div class="giao-dich-trai"> <span class="giao-dich-muc">${iconPhùHợp} ${hienThiDanhMuc}</span> <span class="giao-dich-ten">${giaoDich.ten}</span> </div>
+                        <div class="giao-dich-phai-cum"> <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span> <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${parseFloat(giaoDich.soTien).toLocaleString('vi-VN')} đ</span> </div>
+                    </div>
+                `;
+                idVungLichSu.appendChild(dongMoi);
+            });
+
+            if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN') + " đ"; 
+            if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ"; 
+            if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
+            
+            const maxTong = Math.max(tongThuNhap, tongChiTieu);
+            if (maxTong > 0) {
+                if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`; 
+                if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
             } else {
-                tongSoDu -= parseFloat(giaoDich.soTien); 
-                tongChiTieu += parseFloat(giaoDich.soTien); 
-                kyTuDau = '-'; lopMauSac = 'mau-chi';
+                if (idThanhThu) idThanhThu.style.width = "0%";
+                if (idThanhChi) idThanhChi.style.width = "0%";
             }
 
-        // Khởi tạo cấu trúc thẻ HTML cho từng dòng giao dịch
-        const dongMoi = document.createElement('div');
-        dongMoi.classList.add('dong-giao-dich');
-        dongMoi.innerHTML = `
-            <div class="nen-hanh-dong">
-                <div class="hanh-dong-sua">✏️ Sửa</div>
-                <div class="hanh-dong-xoa">🗑️ Xóa</div>
-            </div>
-            <div class="giao-dich-noi-dung" data-id="${docId}">
-                <div class="giao-dich-trai"> <span class="giao-dich-muc">${iconPhùHợp} ${hienThiDanhMuc}</span> <span class="giao-dich-ten">${giaoDich.ten}</span> </div>
-                <div class="giao-dich-phai-cum"> <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span> <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${parseFloat(giaoDich.soTien).toLocaleString('vi-VN')} đ</span> </div>
-            </div>
-        `;
-        idVungLichSu.appendChild(dongMoi);
+            // 3. KÍCH HOẠT VUỐT CHẠM (Giữ nguyên cấu trúc của bạn)
+            CaiDatVuotChamGiaoDich();
         });
+    }
 
-        // Đổ tổng số liệu tiền tệ sau tính toán lên giao diện ứng dụng
-        if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN') + " đ"; 
-        if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ"; 
-        if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
-        
-        // Tính toán tỉ lệ phần trăm để co giãn thanh đồ thị báo cáo (Tab Báo Cáo)
-        const maxTong = Math.max(tongThuNhap, tongChiTieu);
-        if (maxTong > 0) {
-            if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`; 
-            if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
-        } else {
-            if (idThanhThu) idThanhThu.style.width = "0%";
-            if (idThanhChi) idThanhChi.style.width = "0%";
-        }
-
-        // 5. CÀI ĐẶT BỘ XỬ LÝ SỰ KIỆN VUỐT CHẠM (SWIPE) CHO CÁC DÒNG VỪA VẼ
+    function CaiDatVuotChamGiaoDich() {
         document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
             let xBatDau = 0; let xDiChuyen = 0; let dangVuot = false;
             
@@ -506,7 +526,6 @@
                 const thoiGianGiaoDich = noiDung.querySelector('.giao-dich-thoi-gian')?.innerText || '';
                 const soTienGiaoDich = noiDung.querySelector('.giao-dich-phai')?.innerText || '';
 
-                // Kịch bản A: Vuốt mạnh sang TRÁI (Xóa giao dịch khỏi Firebase)
                 if (xDiChuyen < -60) {
                     noiDung.style.transform = 'translateX(-50%)'; 
                     setTimeout(async () => {
@@ -522,7 +541,6 @@
                         } else { noiDung.style.transform = 'translateX(0)'; }
                     }, 200);
                 } 
-                // Kịch bản B: Vuốt mạnh sang PHẢI (Sửa dữ liệu - Đổ dữ liệu ngược lên Form ở Tab C)
                 else if (xDiChuyen > 60) {
                     noiDung.style.transform = 'translateX(0)';
                     if (idTen) idTen.value = tenGiaoDich; 
@@ -549,22 +567,20 @@
                     } 
                     window.idGiaoDichDangSua = idTaiLieu; 
                     if (idnutsave) idnutsave.innerText = "💾 Cập nhật thay đổi"; 
+                    const tabNhapLieu = document.querySelector('[data-target="nhap-lieu"]'); // Đảm bảo định danh đúng nút tab nhập liệu của bạn
                     if (tabNhapLieu) { tabNhapLieu.click(); }
                 } 
-                // Kịch bản C: Vuốt hờ hững chưa đủ lực lực -> Trả dòng về vị trí cũ ban đầu
                 else { noiDung.style.transform = 'translateX(0)'; }
                 xDiChuyen = 0;
             };
 
-            // Kích hoạt lắng nghe cử chỉ chuột (PC) và cử chỉ ngón tay (Mobile)
             noiDung.addEventListener('touchstart', batDauVuot); noiDung.addEventListener('touchmove', dangKeo); noiDung.addEventListener('touchend', ketThucVuot); 
             noiDung.addEventListener('mousedown', batDauVuot); window.addEventListener('mousemove', dangKeo); window.addEventListener('mouseup', ketThucVuot); 
         });
-    });
+    }
 
 // C.3 TAB THÊM GIAO DỊCH MỚI
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // 1. Khai báo định danh các phần tử trên Form (Chỉ khai báo DUY NHẤT tại đây)
     const idnutsave = document.getElementById('nut-save');
     const idLoaiGiaoDich = document.getElementById('loai-dong-tien');
     const idDanhMuc = document.getElementById('phan-nhom-thu-chi');
@@ -575,20 +591,12 @@
     const inputGio = document.getElementById('gio-giao-dich'); 
     const nutHome = document.querySelector('[data-target="home"]');
 
-    // 2. Khởi tạo cấu hình thời gian mặc định ban đầu cho Form
     const bayGio = new Date(); 
-    const nam = bayGio.getFullYear();
-    const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
-    const ngay = String(bayGio.getDate()).padStart(2, '0');
-    const gio = String(bayGio.getHours()).padStart(2, '0');
-    const phut = String(bayGio.getMinutes()).padStart(2, '0');
-
     if (inputNgay && inputGio) {
-        inputNgay.value = `${nam}-${thang}-${ngay}`; 
-        inputGio.value = `${gio}:${phut}`;
+        inputNgay.value = `${bayGio.getFullYear()}-${String(bayGio.getMonth() + 1).padStart(2, '0')}-${String(bayGio.getDate()).padStart(2, '0')}`; 
+        inputGio.value = `${String(bayGio.getHours()).padStart(2, '0')}:${String(bayGio.getMinutes()).padStart(2, '0')}`;
     }
 
-    // 3. Bộ lắng nghe thay đổi Danh mục dựa theo loại Thu hay Chi
     if (idLoaiGiaoDich && idDanhMuc) {
         idLoaiGiaoDich.addEventListener('change', () => {
             idDanhMuc.innerHTML = '';
@@ -600,7 +608,6 @@
         });
     }
 
-    // 4. Định dạng hiển thị tiền tệ (Thêm dấu chấm hàng nghìn) khi người dùng gõ
     if (idSoTien && labelSoTien) {
         idSoTien.addEventListener('input', function () {
             let value = this.value.replace(/\D/g, ''); 
@@ -611,10 +618,14 @@
         });
     }
 
-    // 5. KÍCH HOẠT LỆNH LƯU / SỬA GIAO DỊCHl
     if (idnutsave) {
         idnutsave.addEventListener('click', async () => {
-            // Đọc trực tiếp dữ liệu ngay tại thời điểm click chuột
+            // Kiểm tra trạng thái đăng nhập trước khi cho lưu dữ liệu
+            if (!currentUser) {
+                alert("Vui lòng đăng nhập tài khoản trước khi thực hiện!");
+                return;
+            }
+
             const ngayNhap = inputNgay ? inputNgay.value : ""; 
             const gioNhap = inputGio ? inputGio.value : ""; 
             const loai = idLoaiGiaoDich ? idLoaiGiaoDich.value : "chi";
@@ -623,7 +634,6 @@
             const soTien = idSoTien ? parseInt(idSoTien.value) : 0;
             const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
 
-            // Kiểm tra rào cản dữ liệu trống/sai
             if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
                 alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
                 return;
@@ -631,7 +641,6 @@
 
             try {
                 if (window.idGiaoDichDangSua) {
-                    // Chế độ SỬA dữ liệu cũ
                     const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
                     await updateDoc(GiaoDichThuChiDangSua, {
                         ten: ten,
@@ -639,12 +648,14 @@
                         loai: loai,
                         danhMuc: danhMuc,
                         thoiGian: chuoiThoiGianGop
+                        // Không cần update lại userId vì khi tạo đã gán cố định rồi
                     }); 
                     window.idGiaoDichDangSua = null; 
                     idnutsave.innerText = "Ghi đè / Thêm mới";
                 } else {
-                    // Chế độ THÊM MỚI hoàn toàn
+                    // Chế độ THÊM MỚI -> Bắt buộc nhồi thêm trường userId: currentUser.uid
                     await addDoc(datathuchi, {
+                        userId: currentUser.uid, 
                         ten: ten,
                         soTien: soTien,
                         loai: loai,
@@ -653,7 +664,6 @@
                     });
                 }
                 
-                // Dọn dẹp lại giao diện sau khi hoàn thành thao tác dữ liệu
                 if (idTen) idTen.value = ''; 
                 if (idSoTien) idSoTien.value = ''; 
                 if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):'; 
@@ -673,7 +683,81 @@
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------    
 // D. GIAO DIỆN HỆ THỐNG AUTH (ĐĂNG NHẬP / ĐĂNG KÝ)
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    
+    // Định danh các thành phần HTML thuộc khung đăng nhập (bạn cần thiết lập ID tương ứng ngoài file HTML)
+    const formAuth = document.getElementById('khung-dang-nhap'); // Thẻ div bao ngoài form đăng nhập
+    const appGiaoDienChinh = document.getElementById('giao-dien-chinh-app'); // Toàn bộ phần app thu chi
 
+    const txtEmail = document.getElementById('auth-email');
+    const txtMatKhau = document.getElementById('auth-matkhau');
+    const nutDangNhap = document.getElementById('btn-dang-nhap');
+    const nutDangKy = document.getElementById('btn-dang-ky');
+    const nutDangXuat = document.getElementById('btn-dang-xuat');
+
+    // 1. KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP CỦA USER (TỰ ĐỘNG CHẠY KHI TẢI TRANG)
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Có user đăng nhập thành công
+            currentUser = user;
+            if (formAuth) formAuth.style.display = 'none';
+            if (appGiaoDienChinh) appGiaoDienChinh.style.display = 'block';
+            
+            // Bắt đầu lắng nghe dữ liệu độc quyền của user này
+            batDauLangNgheDuLieuUser(user.uid);
+        } else {
+            // Chưa đăng nhập hoặc vừa bấm đăng xuất
+            currentUser = null;
+            if (unsubscribeSnapshot) unsubscribeSnapshot(); // Hủy lắng nghe
+            if (formAuth) formAuth.style.display = 'block';
+            if (appGiaoDienChinh) appGiaoDienChinh.style.display = 'none';
+            if (idVungLichSu) idVungLichSu.innerHTML = '';
+        }
+    });
+
+    // 2. SỰ KIỆN NÚT ĐĂNG NHẬP
+    if (nutDangNhap) {
+        nutDangNhap.addEventListener('click', async () => {
+            const email = txtEmail.value.trim();
+            const password = txtMatKhau.value.trim();
+            if(!email || !password) return alert("Vui lòng điền đủ Email và Mật khẩu!");
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                console.error(error);
+                alert("Đăng nhập thất bại: " + error.message);
+            }
+        });
+    }
+
+    // 3. SỰ KIỆN NÚT ĐĂNG KÝ TÀI KHOẢN MỚI
+    if (nutDangKy) {
+        nutDangKy.addEventListener('click', async () => {
+            const email = txtEmail.value.trim();
+            const password = txtMatKhau.value.trim();
+            if(!email || !password) return alert("Vui lòng điền đủ Email và Mật khẩu mới!");
+            if(password.length < 6) return alert("Mật khẩu bảo mật phải từ 6 ký tự trở lên!");
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                alert("Tạo tài khoản thành công!");
+            } catch (error) {
+                console.error(error);
+                alert("Đăng ký thất bại: " + error.message);
+            }
+        });
+    }
+
+    // 4. SỰ KIỆN NÚT ĐĂNG XUẤT
+    if (nutDangXuat) {
+        nutDangXuat.addEventListener('click', async () => {
+            if(confirm("Bạn có chắc chắn muốn đăng xuất tài khoản?")) {
+                try {
+                    await signOut(auth);
+                } catch (error) {
+                    alert("Lỗi khi đăng xuất!");
+                }
+            }
+        });
+    }
 
 </script>
 
