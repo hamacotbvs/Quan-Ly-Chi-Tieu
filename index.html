@@ -31,8 +31,8 @@
             .KHUNG-CHUA-APP {background-color: #f7f9fa;/* Nền APP là màu xám */width: 100%;max-width: 450px;/* Chiều rộng tối đa 450px (chuẩn điện thoại) */min-height: 100vh;/* Chiều cao tối thiểu 100% màn hình thiết bị */
                 box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ */position: relative;padding-bottom: 75px;/* Đẩy nội dung lên 75px để không bị thanh menu đáy đè lên */box-sizing: border-box;}
             /* 2.3 Quản lý ẩn/hiện các Tab nội dung */
-            .tab-content {display: none; /* Ẩn mặc định:các tab(Home, Báo cáo...) */padding: 20px; /* Tạo khoảng cách từ rìa ứng dụng vào nội dung cho dễ nhìn */}
-            .tab-content.active {display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */}
+            .tab-menu-duoi {display: none; /* Ẩn mặc định:các tab(Home, Báo cáo...) */padding: 20px; /* Tạo khoảng cách từ rìa ứng dụng vào nội dung cho dễ nhìn */}
+            .tab-menu-duoi.active {display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */}
     /* A.2 ĐỊNH DẠNG TỪNG TRANG */
         /* ==========================================================================
         I. TAB 1: HOME
@@ -148,7 +148,7 @@
     
     <button id="NUT-LAM-MOI-APP" class="nut-reset-treo" title="Tải lại ứng dụng"><svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/></svg></button>
 
-    <div id="tab-home" class="tab-content active">
+    <div id="tab-home" class="tab-menu-duoi active">
         <div class="khung-han-muc-chi-tieu" id="vung-han-muc-chi-tieu">
             <div class="han-muc-hang-dau"><span class="han-muc-tieu-de">🎯 Hạn mức chi tiêu</span>
                 <div class="noi-chon-thang" id="cum-chuyen-thang"><button id="nut-thang-truoc" class="nut-mui-ten">◀</button><span id="hien-thi-thang-nam-han-muc">Tháng --/----</span><button id="nut-thang-sau" class="nut-mui-ten">▶</button></div>
@@ -158,12 +158,12 @@
         </div>
     </div>
 
-    <div id="tab-lich-su" class="tab-content">
+    <div id="tab-lich-su" class="tab-menu-duoi">
         <div class="khung-so-du-hien-tai"><div class="nhan">Số dư hiện tại</div><div class="so-tien-du-hien-tai"><span id="so-du">0</span></div></div>
         <div class="danh-sach-lich-su"><div class="tieu-de-khoang">Lịch sử dòng tiền chi tiết</div><div id="lich-su-giao-dich"><div id="danh-sach-lich-su-toan-bo"><div class="trang-thai-trong">Đang tải...</div></div></div></div>
     </div>
 
-    <div id="tab-add" class="tab-content">
+    <div id="tab-add" class="tab-menu-duoi">
         <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
         <div class="form-group"><label>Loại dòng tiền:</label>
             <select id="loai-giao-dich">
@@ -187,13 +187,13 @@
         <button id="nut-save" class="nut-bam-luu">Cập nhật ví</button>
     </div>
 
-    <div id="tab-report" class="tab-content">
+    <div id="tab-report" class="tab-menu-duoi">
         <div class="tieu-de-khoang" style="margin-top: 10px;">Tổng quan chu kỳ tài chính</div>
         <div class="the-bao-cao"><div class="thong-ke-dong"><span>Tổng thu nhập (vào):</span><span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span></div><div class="thanh-phan-tram-khung"><div id="thanh-thu-ti-le" class="thanh-tien-vao"></div></div></div>
         <div class="the-bao-cao"><div class="thong-ke-dong"><span>Tổng chi tiêu (ra):</span><span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span></div><div class="thanh-phan-tram-khung"><div id="thanh-chi-ti-le" class="thanh-tien-ra"></div></div></div>
     </div>
 
-    <div id="tab-tai-khoan" class="tab-content">
+    <div id="tab-tai-khoan" class="tab-menu-duoi">
         <div class="tieu-de-khoang" style="margin-top: 10px;">Thông tin cá nhân</div>
         <div style="padding: 20px; text-align: center; background: white; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <div style="font-size: 45px; margin-bottom: 10px;">👤</div>
@@ -256,7 +256,7 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // II. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
     const cacNutTab = document.querySelectorAll('.nut-tab');
-    cacNutTab.forEach(nut => {nut.addEventListener('click', () => {const mucTieu = nut.getAttribute('data-target'); cacNutTab.forEach(b => b.classList.remove('active'));nut.classList.add('active'); const cacVungNoiDung = document.querySelectorAll('.tab-content');                
+    cacNutTab.forEach(nut => {nut.addEventListener('click', () => {const mucTieu = nut.getAttribute('data-target'); cacNutTab.forEach(b => b.classList.remove('active'));nut.classList.add('active'); const cacVungNoiDung = document.querySelectorAll('.tab-menu-duoi');                
         cacVungNoiDung.forEach(content => content.classList.remove('active'));const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`); if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active'); });});
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // C. TAB HOME (HẠN MỨC)
