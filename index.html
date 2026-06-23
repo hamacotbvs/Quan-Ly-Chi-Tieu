@@ -263,7 +263,7 @@
     const txtChu = document.getElementById('chi-tieu-tren-han-muc');
     const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
     const txtGoiY = document.getElementById('goi-y-han-muc');
-    
+
     let boSuoTapHanMuc = JSON.parse(localStorage.getItem('bo_suo_tap_han_muc')) || {};
     if (typeof thoiGianDangXem === 'undefined') {
         window.thoiGianDangXem = new Date();
@@ -353,38 +353,36 @@
     }
     window.capNhatChuHienThiThang();
 
-    // D. TAB LỊCH SỬ & ĐỔ DỮ LIỆU REALTIME
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// D. TAB LỊCH SỬ & ĐỔ DỮ LIỆU REALTIME
+//====================================================================================================================================================================================================================================================================
+    // 1. Định danh các vùng hiển thị báo cáo số liệu ở trang Lịch sử & Báo cáo
     const idHienThiSoDu = document.getElementById('so-du');
     const idVungLichSu = document.getElementById('lich-su-giao-dich');
-    
-    // Định nghĩa các phần tử của Form Nhập Liệu phục vụ cho hàm Vuốt để Sửa/Xóa
-    const idnutsave = document.getElementById('nut-save');
-    const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
-    const idDanhMuc = document.getElementById('danh-muc-giao-dich');
-    const idTen = document.getElementById('ten-khoan-thu-chi');
-    const idSoTien = document.getElementById('so-tien');
-    const labelSoTien = document.getElementById('label-so-tien');
-    const inputNgay = document.getElementById('ngay-giao-dich'); 
-    const inputGio = document.getElementById('gio-giao-dich'); 
-    const tabNhapLieu = document.querySelector('[data-target="add"]') || document.getElementById('tab-nhap-lieu');
     const idBcThu = document.getElementById('bao-cao-thu');
     const idBcChi = document.getElementById('bao-cao-chi');
     const idThanhThu = document.getElementById('thanh-thu-ti-le');
     const idThanhChi = document.getElementById('thanh-chi-ti-le');
 
-    const danhSachIcon = {"Ăn uống": "🍔","Di chuyển": "🚗","Mua sắm": "🛍️","Hóa đơn": "💵","Giải trí": "🎬","Thu nhập từ lương": "💰", "Khác": "✨"};
+    // 2. Cấu hình danh sách Icon hiển thị theo tên danh mục
+    const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Mua sắm": "🛍️", "Hóa đơn": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Khác": "✨"};
+    
+    // 3. Tạo câu lệnh truy vấn dữ liệu, sắp xếp theo thời gian mới nhất lên đầu
     const truyVanThuChiSapXep = query(datathuchi, orderBy("thoiGian", "desc")); 
 
+    // 4. BỘ LẮNG NGHE DỮ LIỆU REALTIME TỪ FIREBASE
     onSnapshot(truyVanThuChiSapXep, (snapshot) => {
         if (!idVungLichSu) return;
-        idVungLichSu.innerHTML = '';
+        idVungLichSu.innerHTML = ''; // Xóa sạch danh sách cũ trước khi vẽ danh sách mới
         let tongSoDu = 0; let tongThuNhap = 0; let tongChiTieu = 0; 
         
+        // Cập nhật lại thanh hạn mức chi tiêu ở Tab Home
         capNhatThanhHanMuc(snapshot.docs);
 
+        // Trường hợp không có dữ liệu nào trong DB
         if (snapshot.empty) {
             idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chưa có giao dịch nào!</div>'; 
-            if (idHienThiSoDu) idHienThiSoDu.innerText = "0";
+            if (idHienThiSoDu) idHienThiSoDu.innerText = "0 đ";
             if (idBcThu) idBcThu.innerText = "0 đ";
             if (idBcChi) idBcChi.innerText = "0 đ";
             if (idThanhThu) idThanhThu.style.width = "0%";
@@ -392,7 +390,7 @@
             return;
         } 
 
-        // DUYỆT QUA TỪNG GIAO DỊCH ĐỂ IN RA MÀN HÌNH
+        // Duyệt qua từng tài liệu thu chi bốc từ Firebase về để in ra màn hình
         snapshot.forEach((docItem) => {
             const giaoDich = docItem.data();
             const docId = docItem.id;
@@ -411,7 +409,7 @@
                 kyTuDau = '-'; lopMauSac = 'mau-chi';
             }
 
-            // ĐƯA LỆNH TẠO DÒNG MỚI VÀO TRONG VÒNG LẶP
+            // Khởi tạo cấu trúc thẻ HTML cho từng dòng giao dịch
             const dongMoi = document.createElement('div');
             dongMoi.classList.add('dong-giao-dich');
             dongMoi.innerHTML = `
@@ -427,11 +425,12 @@
             idVungLichSu.appendChild(dongMoi);
         });
 
-        // ĐƯA SỐ LIỆU TỔNG LÊN GIAO DIỆN
+        // Đổ tổng số liệu tiền tệ sau tính toán lên giao diện ứng dụng
         if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN') + " đ"; 
         if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ"; 
         if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
         
+        // Tính toán tỉ lệ phần trăm để co giãn thanh đồ thị báo cáo (Tab Báo Cáo)
         const maxTong = Math.max(tongThuNhap, tongChiTieu);
         if (maxTong > 0) {
             if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`; 
@@ -441,7 +440,7 @@
             if (idThanhChi) idThanhChi.style.width = "0%";
         }
 
-        // CÀI ĐẶT BỘ XỬ LÝ VUỐT CHẠM CHO CÁC DÒNG VỪA VẼ XONG
+        // 5. CÀI ĐẶT BỘ XỬ LÝ SỰ KIỆN VUỐT CHẠM (SWIPE) CHO CÁC DÒNG VỪA VẼ
         document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
             let xBatDau = 0; let xDiChuyen = 0; let dangVuot = false;
             
@@ -466,6 +465,7 @@
                 const thoiGianGiaoDich = noiDung.querySelector('.giao-dich-thoi-gian')?.innerText || '';
                 const soTienGiaoDich = noiDung.querySelector('.giao-dich-phai')?.innerText || '';
 
+                // Kịch bản A: Vuốt mạnh sang TRÁI (Xóa giao dịch khỏi Firebase)
                 if (xDiChuyen < -60) {
                     noiDung.style.transform = 'translateX(-50%)'; 
                     setTimeout(async () => {
@@ -481,6 +481,7 @@
                         } else { noiDung.style.transform = 'translateX(0)'; }
                     }, 200);
                 } 
+                // Kịch bản B: Vuốt mạnh sang PHẢI (Sửa dữ liệu - Đổ dữ liệu ngược lên Form ở Tab C)
                 else if (xDiChuyen > 60) {
                     noiDung.style.transform = 'translateX(0)';
                     if (idTen) idTen.value = tenGiaoDich; 
@@ -508,17 +509,32 @@
                     window.idGiaoDichDangSua = idTaiLieu; 
                     if (idnutsave) idnutsave.innerText = "💾 Cập nhật thay đổi"; 
                     if (tabNhapLieu) { tabNhapLieu.click(); }
-                } else { noiDung.style.transform = 'translateX(0)'; }
+                } 
+                // Kịch bản C: Vuốt hờ hững chưa đủ lực lực -> Trả dòng về vị trí cũ ban đầu
+                else { noiDung.style.transform = 'translateX(0)'; }
                 xDiChuyen = 0;
             };
 
+            // Kích hoạt lắng nghe cử chỉ chuột (PC) và cử chỉ ngón tay (Mobile)
             noiDung.addEventListener('touchstart', batDauVuot); noiDung.addEventListener('touchmove', dangKeo); noiDung.addEventListener('touchend', ketThucVuot); 
             noiDung.addEventListener('mousedown', batDauVuot); window.addEventListener('mousemove', dangKeo); window.addEventListener('mouseup', ketThucVuot); 
         });
     });
 
-    // C. TAB THÊM GIAO DỊCH MỚI
+// C. TAB THÊM GIAO DỊCH MỚI
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // 1. Khai báo định danh các phần tử trên Form (Chỉ khai báo DUY NHẤT tại đây)
+    const idnutsave = document.getElementById('nut-save');
+    const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
+    const idDanhMuc = document.getElementById('danh-muc-giao-dich');
+    const idTen = document.getElementById('ten-khoan-thu-chi');
+    const idSoTien = document.getElementById('so-tien');
+    const labelSoTien = document.getElementById('label-so-tien');
+    const inputNgay = document.getElementById('ngay-giao-dich'); 
+    const inputGio = document.getElementById('gio-giao-dich'); 
     const nutHome = document.querySelector('[data-target="home"]');
+
+    // 2. Khởi tạo cấu hình thời gian mặc định ban đầu cho Form
     const bayGio = new Date(); 
     const nam = bayGio.getFullYear();
     const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
@@ -526,6 +542,12 @@
     const gio = String(bayGio.getHours()).padStart(2, '0');
     const phut = String(bayGio.getMinutes()).padStart(2, '0');
 
+    if (inputNgay && inputGio) {
+        inputNgay.value = `${nam}-${thang}-${ngay}`; 
+        inputGio.value = `${gio}:${phut}`;
+    }
+
+    // 3. Bộ lắng nghe thay đổi Danh mục dựa theo loại Thu hay Chi
     if (idLoaiGiaoDich && idDanhMuc) {
         idLoaiGiaoDich.addEventListener('change', () => {
             idDanhMuc.innerHTML = '';
@@ -537,14 +559,10 @@
         });
     }
 
-    if (inputNgay && inputGio) {
-        inputNgay.value = `${nam}-${thang}-${ngay}`; 
-        inputGio.value = `${gio}:${phut}`;
-    }
-
+    // 4. Định dạng hiển thị tiền tệ (Thêm dấu chấm hàng nghìn) khi người dùng gõ
     if (idSoTien && labelSoTien) {
         idSoTien.addEventListener('input', function () {
-            let value = this.value.replace(/\D/g, ''); // Tự động làm sạch ký tự lạ
+            let value = this.value.replace(/\D/g, ''); 
             this.value = value;
             if (!value) { labelSoTien.innerText = 'Số tiền (đ):'; return; } 
             let soDaPhanCach = Number(value).toLocaleString('vi-VN'); 
@@ -552,10 +570,10 @@
         });
     }
 
-    // KÍCH HOẠT LỆNH LƯU/SỬA KHI CLICK NÚT SAVE    
+    // 5. KÍCH HOẠT LỆNH LƯU / SỬA GIAO DỊCHl
     if (idnutsave) {
         idnutsave.addEventListener('click', async () => {
-            // ĐƯA TOÀN BỘ CÁC DÒNG LẤY VALUE VÀO TRONG SỰ KIỆN CLICK
+            // Đọc trực tiếp dữ liệu ngay tại thời điểm click chuột
             const ngayNhap = inputNgay ? inputNgay.value : ""; 
             const gioNhap = inputGio ? inputGio.value : ""; 
             const loai = idLoaiGiaoDich ? idLoaiGiaoDich.value : "chi";
@@ -564,6 +582,7 @@
             const soTien = idSoTien ? parseInt(idSoTien.value) : 0;
             const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
 
+            // Kiểm tra rào cản dữ liệu trống/sai
             if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
                 alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
                 return;
@@ -571,6 +590,7 @@
 
             try {
                 if (window.idGiaoDichDangSua) {
+                    // Chế độ SỬA dữ liệu cũ
                     const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
                     await updateDoc(GiaoDichThuChiDangSua, {
                         ten: ten,
@@ -582,6 +602,7 @@
                     window.idGiaoDichDangSua = null; 
                     idnutsave.innerText = "Ghi đè / Thêm mới";
                 } else {
+                    // Chế độ THÊM MỚI hoàn toàn
                     await addDoc(datathuchi, {
                         ten: ten,
                         soTien: soTien,
@@ -591,12 +612,11 @@
                     });
                 }
                 
-                // Reset form sau khi lưu thành công
+                // Dọn dẹp lại giao diện sau khi hoàn thành thao tác dữ liệu
                 if (idTen) idTen.value = ''; 
                 if (idSoTien) idSoTien.value = ''; 
                 if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):'; 
                 
-                // Trả về thời gian hiện tại chuẩn xác
                 const bayGioSauLuu = new Date();
                 if (inputNgay) inputNgay.value = `${bayGioSauLuu.getFullYear()}-${String(bayGioSauLuu.getMonth() + 1).padStart(2, '0')}-${String(bayGioSauLuu.getDate()).padStart(2, '0')}`;
                 if (inputGio) inputGio.value = `${String(bayGioSauLuu.getHours()).padStart(2, '0')}:${String(bayGioSauLuu.getMinutes()).padStart(2, '0')}`;
