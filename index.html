@@ -155,16 +155,15 @@
             </div>    
             <div class="han-muc-thanh-nen"><div id="thanh-phat-trien-han-muc"></div></div>    
             <div class="han-muc-hang-duoi"><div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div><span id="chi-tieu-tren-han-muc">0 / Chưa nhập hạn mức</span></div>
-        </div>
-    </div>
+        </div> </div>
 
     <div id="tab-lich-su" class="tab-menu-duoi">
         <div class="khung-so-du-hien-tai"> 
             <div class="nhan">Số dư hiện tại</div> 
             <div class="so-tien-du-hien-tai"> <span id="so-du">0</span> </div> </div>
         <div class="danh-sach-lich-su"> 
-            <div class="tieu-de-khung">Lịch sử dòng tiền chi tiết</div><div id="lich-su-giao-dich"><div id="danh-sach-lich-su-toan-bo"><div class="trang-thai-trong">Đang tải...</div></div></div></div>
-    </div>
+            <div class="tieu-de-khung">Lịch sử dòng tiền chi tiết</div><div id="lich-su-giao-dich"><div id="danh-sach-lich-su-toan-bo"><div class="trang-thai-trong">Đang tải...</div></div></div>
+        </div> </div>
 
     <div id="tab-add" class="tab-menu-duoi">
         <div class="tieu-de-khung" style="margin-top: 10px;">Thêm giao dịch mới</div>
@@ -187,8 +186,7 @@
         <div class="ten-va-o-nhap-2-o-1-hang" style="display: flex; gap: 10px;"> 
             <div class="ten-va-o-nhap" style="flex: 1;"> <label>Ngày tháng:</label> <input type="date" id="ngay-giao-dich"> </div> 
             <div class="ten-va-o-nhap" style="flex: 1;"> <label>Thời gian:</label> <input type="time" id="gio-giao-dich"> </div> </div>            
-        <button id="nut-save" class="nut-bam-save">Cập nhật ví</button>
-    </div>
+        <button id="nut-save" class="nut-bam-save">Cập nhật ví</button> </div>
 
     <div id="tab-report" class="tab-menu-duoi">
         <div class="tieu-de-khung" style="margin-top: 10px;">Tổng quan tài chính cá nhân</div>
@@ -202,8 +200,7 @@
             <div style="font-size: 45px; margin-bottom: 10px;">👤</div>
             <h3 style="margin: 5px 0;">Người dùng App Business</h3>
             <p style="color: #777; font-size: 13px; margin: 5px 0;">Hệ thống quản lý chi tiêu đám mây</p>
-        </div>
-    </div>
+        </div> </div>
 
     <nav class="menu-day-app menu dưới">
         <button class="nut-tab active" data-target="home">
@@ -228,8 +225,8 @@
 </div>
 
 <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // A. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -254,9 +251,10 @@
 // II. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
     const cacNutTab = document.querySelectorAll('.nut-tab');
     cacNutTab.forEach(nut => {nut.addEventListener('click', () => {const mucTieu = nut.getAttribute('data-target'); cacNutTab.forEach(b => b.classList.remove('active'));nut.classList.add('active'); const cacVungNoiDung = document.querySelectorAll('.tab-menu-duoi');                
-        cacVungNoiDung.forEach(content => content.classList.remove('active'));const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`); if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active'); });});
+        cacVungNoiDung.forEach(content => content.classList.remove('active'));const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`); if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active'); }); });
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// C. TAB HOME (HẠN MỨC)
+// C. SCRIPT CAC TRANG TAB
+// C.I TAB HOME (HẠN MỨC)
     const txtChu = document.getElementById('chi-tieu-tren-han-muc');
     const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
     const txtGoiY = document.getElementById('goi-y-han-muc');
@@ -351,7 +349,7 @@
     window.capNhatChuHienThiThang();
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// D. TAB LỊCH SỬ & ĐỔ DỮ LIỆU REALTIME
+// C.2 TAB LỊCH SỬ & ĐỔ DỮ LIỆU REALTIME
 //====================================================================================================================================================================================================================================================================
     // 1. Định danh các vùng hiển thị báo cáo số liệu ở trang Lịch sử & Báo cáo
     const idHienThiSoDu = document.getElementById('so-du');
@@ -518,7 +516,7 @@
         });
     });
 
-// C. TAB THÊM GIAO DỊCH MỚI
+// C.3 TAB THÊM GIAO DỊCH MỚI
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // 1. Khai báo định danh các phần tử trên Form (Chỉ khai báo DUY NHẤT tại đây)
     const idnutsave = document.getElementById('nut-save');
