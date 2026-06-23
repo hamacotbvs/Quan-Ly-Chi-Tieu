@@ -92,10 +92,10 @@
         /* ==========================================================================
         III. TAB 3: NHẬP LIỆU (+)
         ========================================================================== */
-            .form-group { margin-bottom: 18px; }
-            .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #555; }
-            .form-group input, .form-group select {width: 100%;padding: 12px;border: 1px solid #cbd5e1;border-radius: 8px;box-sizing: border-box;font-size: 15px;background-color: #fff;transition: border 0.2s;}
-            .form-group input:focus, .form-group select:focus { border-color: #3498db; outline: none; }        
+            .ten-va-o-nhap { margin-bottom: 18px; }
+            .ten-va-o-nhap label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #555; }
+            .ten-va-o-nhap input, .ten-va-o-nhap select {width: 100%;padding: 12px;border: 1px solid #cbd5e1;border-radius: 8px;box-sizing: border-box;font-size: 15px;background-color: #fff;transition: border 0.2s;}
+            .ten-va-o-nhap input:focus, .ten-va-o-nhap select:focus { border-color: #3498db; outline: none; }        
             /* Nút Lưu giao dịch */
             .nut-bam-luu {width: 100%;padding: 14px;background-color: #3498db;color: white;border: none;border-radius: 8px;font-size: 16px;cursor: pointer;font-weight: bold;margin-top: 10px;box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);}
             .nut-bam-luu:hover { background-color: #2980b9; }
@@ -169,13 +169,13 @@
 
     <div id="tab-add" class="tab-menu-duoi">
         <div class="tieu-de-khung" style="margin-top: 10px;">Thêm giao dịch mới</div>
-        <div class="form-group"><label>Loại dòng tiền:</label>
+        <div class="ten-va-o-nhap"><label>Loại dòng tiền:</label>
             <select id="loai-giao-dich">
                 <option value="chi">💸 Chi tiêu (Khoản ra)</option>
                 <option value="thu">💰 Thu nhập (Khoản vào)</option>
             </select>
         </div>
-        <div class="form-group"><label>Phân loại danh mục:</label>
+        <div class="ten-va-o-nhap"><label>Phân loại danh mục:</label>
             <select id="danh-muc-giao-dich">
                 <option value="Ăn uống">🍔 Ăn uống</option>
                 <option value="Di chuyển">🚗 Di chuyển</option>
@@ -185,9 +185,9 @@
                 <option value="Khác">✨ Khác</option>
             </select>
         </div>
-        <div class="form-group"><label>Tên khoản thu/chi:</label><input type="text" id="ten-khoan-thu-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng..."></div>
-        <div class="form-group"><label id="label-so-tien">Số tiền (đ):</label><input type="number" id="so-tien" placeholder="Ví dụ: 50000"></div>
-        <div class="form-group-row" style="display: flex; gap: 10px;"><div class="form-group" style="flex: 1;"><label>Ngày tháng:</label><input type="date" id="ngay-giao-dich"></div><div class="form-group" style="flex: 1;"><label>Thời gian:</label><input type="time" id="gio-giao-dich"></div></div>            
+        <div class="ten-va-o-nhap"><label>Tên khoản thu/chi:</label><input type="text" id="ten-khoan-thu-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng..."></div>
+        <div class="ten-va-o-nhap"><label id="label-so-tien">Số tiền (đ):</label><input type="number" id="so-tien" placeholder="Ví dụ: 50000"></div>
+        <div class="ten-va-o-nhap-row" style="display: flex; gap: 10px;"><div class="ten-va-o-nhap" style="flex: 1;"><label>Ngày tháng:</label><input type="date" id="ngay-giao-dich"></div><div class="ten-va-o-nhap" style="flex: 1;"><label>Thời gian:</label><input type="time" id="gio-giao-dich"></div></div>            
         <button id="nut-save" class="nut-bam-luu">Cập nhật ví</button>
     </div>
 
