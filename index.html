@@ -65,7 +65,7 @@
             /* 2.1 định dạng khung lịch sử */
             .danh-sach-lich-su {margin-top: 20px;background-color: #ffffff;border-radius: 14px;padding: 16px;box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);border: 1px solid #edf2f4;}
             /* 2.2 định dạng phần tiêu đề lịch sử */
-            .tieu-de-khoang {font-size: 16px;color: #7f8c8d;border-bottom: 1px solid #edf2f4;padding-bottom: 10px;margin-bottom: 5px;font-weight: 600;}      
+            .tieu-de-khung {font-size: 16px;color: #7f8c8d;border-bottom: 1px solid #edf2f4;padding-bottom: 10px;margin-bottom: 5px;font-weight: 600;}      
             /* 2.3 Định dạng từng dòng lịch sử (Cấu trúc Vuốt Chạm Swipe-to-Action) */
             .dong-giao-dich {position: relative;overflow: hidden;background-color: #ffffff;border-bottom: 1px solid #f8fafc;user-select: none; /* Tránh bôi đen chữ khi vuốt bằng chuột trên PC */}
             .dong-giao-dich:last-child {border-bottom: none;}
@@ -159,12 +159,16 @@
     </div>
 
     <div id="tab-lich-su" class="tab-menu-duoi">
-        <div class="khung-so-du-hien-tai"><div class="nhan">Số dư hiện tại</div><div class="so-tien-du-hien-tai"><span id="so-du">0</span></div></div>
-        <div class="danh-sach-lich-su"><div class="tieu-de-khoang">Lịch sử dòng tiền chi tiết</div><div id="lich-su-giao-dich"><div id="danh-sach-lich-su-toan-bo"><div class="trang-thai-trong">Đang tải...</div></div></div></div>
+        <div class="khung-so-du-hien-tai"> 
+            <div class="nhan">Số dư hiện tại</div> 
+            <div class="so-tien-du-hien-tai"> <span id="so-du">0</span> </div>
+        </div>
+        <div class="danh-sach-lich-su"> 
+            <div class="tieu-de-khung">Lịch sử dòng tiền chi tiết</div><div id="lich-su-giao-dich"><div id="danh-sach-lich-su-toan-bo"><div class="trang-thai-trong">Đang tải...</div></div></div></div>
     </div>
 
     <div id="tab-add" class="tab-menu-duoi">
-        <div class="tieu-de-khoang" style="margin-top: 10px;">Thêm giao dịch mới</div>
+        <div class="tieu-de-khung" style="margin-top: 10px;">Thêm giao dịch mới</div>
         <div class="form-group"><label>Loại dòng tiền:</label>
             <select id="loai-giao-dich">
                 <option value="chi">💸 Chi tiêu (Khoản ra)</option>
@@ -188,13 +192,13 @@
     </div>
 
     <div id="tab-report" class="tab-menu-duoi">
-        <div class="tieu-de-khoang" style="margin-top: 10px;">Tổng quan chu kỳ tài chính</div>
+        <div class="tieu-de-khung" style="margin-top: 10px;">Tổng quan chu kỳ tài chính</div>
         <div class="the-bao-cao"><div class="thong-ke-dong"><span>Tổng thu nhập (vào):</span><span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span></div><div class="thanh-phan-tram-khung"><div id="thanh-thu-ti-le" class="thanh-tien-vao"></div></div></div>
         <div class="the-bao-cao"><div class="thong-ke-dong"><span>Tổng chi tiêu (ra):</span><span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span></div><div class="thanh-phan-tram-khung"><div id="thanh-chi-ti-le" class="thanh-tien-ra"></div></div></div>
     </div>
 
     <div id="tab-tai-khoan" class="tab-menu-duoi">
-        <div class="tieu-de-khoang" style="margin-top: 10px;">Thông tin cá nhân</div>
+        <div class="tieu-de-khung" style="margin-top: 10px;">Thông tin cá nhân</div>
         <div style="padding: 20px; text-align: center; background: white; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <div style="font-size: 45px; margin-bottom: 10px;">👤</div>
             <h3 style="margin: 5px 0;">Người dùng App Business</h3>
