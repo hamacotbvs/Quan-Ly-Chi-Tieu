@@ -141,175 +141,34 @@
             /* Dòng trạng thái trống */
             .trang-thai-trong {text-align: center;color: #94a3b8;font-style: italic;padding: 30px 0;font-size: 14px;}
     /* A.4 GIAO DIỆN HỆ THỐNG AUTH (ĐĂNG NHẬP / ĐĂNG KÝ) */
-/* Giao diện nền phủ toàn màn hình khóa Auth */
-.man-hinh-auth-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #ffffff; /* Đổi thành nền trắng sạch sẽ hoàn toàn */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    padding: 30px;
-    box-sizing: border-box;
-}
-
-/* Thẻ chứa Form đăng nhập */
-.the-auth-giao-dien {
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-    animation: hieuUngHienThi 0.35s ease-out;
-}
-
-@keyframes hieuUngHienThi {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-/* Khu vực hiển thị Logo ảnh */
-.vung-chua-logo {
-    margin-bottom: 20px;
-}
-.auth-logo-app {
-    width: 75px;
-    height: 75px;
-    object-fit: contain;
-}
-
-.the-auth-giao-dien h2 {
-    margin: 0 0 5px 0;
-    color: #2c3e50;
-    font-size: 22px;
-}
-
-.the-auth-giao-dien p {
-    margin: 0 0 25px 0;
-    color: #7f8c8d;
-    font-size: 14px;
-}
-
-/* Các cụm nhập liệu */
-.nhom-nhap-lieu {
-    text-align: left;
-    margin-bottom: 15px;
-}
-
-.nhom-nhap-lieu label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: #34495e;
-    margin-bottom: 6px;
-}
-
-.nhom-nhap-lieu input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #dcdde1;
-    border-radius: 8px;
-    font-size: 15px;
-    outline: none;
-    transition: border-color 0.2s;
-    box-sizing: border-box;
-}
-
-.nhom-nhap-lieu input:focus {
-    border-color: #3498db;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.2);
-}
-
-/* Khung chứa Quên mật khẩu - Căn phải */
-.vung-link-quen-mk {
-    display: flex;
-    justify-content: flex-end;
-    margin: 10px 0 20px 0;
-}
-
-/* Định dạng riêng chữ Quên mật khẩu (Màu xanh dương nhạt như hình) */
-#link-quen-mk {
-    color: #5ac4f7;
-    text-decoration: none;
-    font-size: 14px;
-    font-family: sans-serif;
-}
-
-/* Khung chứa dòng Đăng ký - Căn giữa */
-.vung-link-chuyen-trang {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0 10px 0;
-}
-
-/* Chữ "Chưa có tài khoản?" mặc định màu xám mờ nhẹ */
-#link-chuyen-trang {
-    color: #7f8c8d;
-    text-decoration: none;
-    font-size: 14px;
-    font-family: sans-serif;
-}
-
-/* Chữ "Đăng ký" điểm nhấn màu xanh dương nhạt */
-#link-chuyen-trang .chu-dang-ky {
-    color: #5ac4f7;
-    margin-left: 4px;
-}
-
-/* Hiệu ứng mờ nhẹ khi rê chuột vào các link cho tự nhiên */
-#link-quen-mk:hover, #link-chuyen-trang:hover .chu-dang-ky {
-    opacity: 0.8;
-}
-
-/* Nút bấm Đăng nhập / Đăng ký chính */
-.nut-bam-auth {
-    width: 100%;
-    padding: 12px;
-    background-color: #0082C8;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-}
-
-.nut-bam-auth:hover {
-    background-color: #27ae60;
-}
-
-.nut-bam-auth:active {
-    transform: scale(0.98);
-}
-
-/* Thẻ hiển thị thông tin User trong App chính */
-.the-thong-tin-user {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    margin: 15px;
-    font-family: inherit;
-}
-.the-thong-tin-user h3 {
-    margin-top: 0;
-    color: #2c3e50;
-}
-.the-thong-tin-user hr {
-    border: 0;
-    height: 1px;
-    background: #eceff1;
-    margin: 15px 0;
-}
-.the-thong-tin-user p {
-    font-size: 15px;
-    color: #555;
-    margin: 10px 0;
-}
+            .man-hinh-auth-wrapper {position: fixed; top: 0; left: 0; width: 100%;height: 100%; background: #ffffff; display: flex; justify-content: center; align-items: center; z-index: 9999;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 30px; box-sizing: border-box;} /* Giao diện nền phủ toàn màn hình khóa Auth */
+            .the-auth-giao-dien {width: 100%; max-width: 400px; text-align: center; animation: hieuUngHienThi 0.35s ease-out;} /* Thẻ chứa Form đăng nhập */
+            @keyframes hieuUngHienThi {from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; }}
+            /* Khu vực hiển thị Logo ảnh */
+            .vung-chua-logo {margin-bottom: 20px;}
+            .auth-logo-app {width: 75px; height: 75px; object-fit: contain;}
+            .the-auth-giao-dien h2 {margin: 0 0 5px 0; color: #2c3e50; font-size: 22px;}
+            .the-auth-giao-dien p {margin: 0 0 25px 0; color: #7f8c8d; font-size: 14px;}
+            /* Các cụm nhập liệu */
+            .nhom-nhap-lieu {text-align: left; margin-bottom: 15px;}
+            .nhom-nhap-lieu label {display: block; font-size: 13px; font-weight: 600; color: #34495e; margin-bottom: 6px;}
+            .nhom-nhap-lieu input {width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 8px; font-size: 15px; outline: none; transition: border-color 0.2s; box-sizing: border-box;}
+            .nhom-nhap-lieu input:focus {border-color: #3498db; box-shadow: 0 0 5px rgba(52, 152, 219, 0.2);}
+            .vung-link-quen-mk {display: flex; justify-content: flex-end; margin: 10px 0 20px 0;} /* Khung chứa Quên mật khẩu - Căn phải */
+            #link-quen-mk {color: #5ac4f7; text-decoration: none; font-size: 14px; font-family: sans-serif;} /* Định dạng riêng chữ Quên mật khẩu (Màu xanh dương nhạt như hình) */
+            .vung-link-chuyen-trang {display: flex; justify-content: center; margin: 20px 0 10px 0;} /* Khung chứa dòng Đăng ký - Căn giữa */
+            #link-chuyen-trang {color: #7f8c8d; text-decoration: none; font-size: 14px; font-family: sans-serif;} /* Chữ "Chưa có tài khoản?" mặc định màu xám mờ nhẹ */
+            #link-chuyen-trang .chu-dang-ky {color: #5ac4f7; margin-left: 4px;} /* Chữ "Đăng ký" điểm nhấn màu xanh dương nhạt */
+            #link-quen-mk:hover, #link-chuyen-trang:hover .chu-dang-ky {opacity: 0.8;} /* Hiệu ứng mờ nhẹ khi rê chuột vào các link cho tự nhiên */
+            .nut-bam-auth {width: 100%; padding: 12px; background-color: #0082C8; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s, transform 0.1s;} /* Nút bấm Đăng nhập / Đăng ký chính */
+            .nut-bam-auth:hover {background-color: #27ae60;}
+            .nut-bam-auth:active {transform: scale(0.98);}
+            /* Thẻ hiển thị thông tin User trong App chính */
+            .the-thong-tin-user {background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin: 15px; font-family: inherit;}
+            .the-thong-tin-user h3 {margin-top: 0; color: #2c3e50;}
+            .the-thong-tin-user hr {border: 0; height: 1px; background: #eceff1; margin: 15px 0;}
+            .the-thong-tin-user p {font-size: 15px; color: #555; margin: 10px 0;}
 
     </style>
 </head>
@@ -318,31 +177,13 @@
 <div id="man-hinh-auth" class="man-hinh-auth-wrapper">
     <div class="the-auth-giao-dien">
         <div class="vung-chua-logo"> <img src="logo.png" class="auth-logo-app" alt="Logo App"> </div>
-        <h2 id="auth-tieu-de">Đăng nhập tài khoản</h2>
-        <p id="auth-ghi-chu">Ứng dụng quản lý thu chi cá nhân</p>
-
-        <div class="nhom-nhap-lieu">
-            <input type="email" id="auth-username" placeholder="Gmail" required>
-        </div>
-
-        <div class="nhom-nhap-lieu">
-            <input type="password" id="auth-password" placeholder="Mật khẩu" required>
-        </div>
-
-        <div class="nhom-nhap-lieu" id="vung-nhap-lai-mat-khau" style="display: none;">
-            <input type="password" id="auth-re-password" placeholder="Xác nhận lại mật khẩu">
-        </div>
-
-        <div class="vung-link-quen-mk">
-            <a href="#" id="link-quen-mk">Quên mật khẩu</a>
-        </div>
-
+        <h2 id="auth-tieu-de">Đăng nhập tài khoản</h2> <p id="auth-ghi-chu">Ứng dụng quản lý thu chi cá nhân</p>
+        <div class="nhom-nhap-lieu"> <input type="email" id="auth-username" placeholder="Gmail" required> </div>
+        <div class="nhom-nhap-lieu"> <input type="password" id="auth-password" placeholder="Mật khẩu" required> </div>
+        <div class="nhom-nhap-lieu" id="vung-nhap-lai-mat-khau" style="display: none;"> <input type="password" id="auth-re-password" placeholder="Xác nhận lại mật khẩu"> </div>
+        <div class="vung-link-quen-mk"> <a href="#" id="link-quen-mk">Quên mật khẩu</a> </div>
         <button id="nut-hanh-dong-auth" class="nut-bam-auth">Đăng Nhập</button>
-
-        <div class="vung-link-chuyen-trang">
-            <a href="#" id="link-chuyen-trang">Chưa có tài khoản? <span class="chu-dang-ky">Đăng ký</span></a>
-        </div>
-
+        <div class="vung-link-chuyen-trang"> <a href="#" id="link-chuyen-trang"> Chưa có tài khoản? <span class="chu-dang-ky"> Đăng ký </span></a> </div>
     </div>
 </div>
 
@@ -510,8 +351,8 @@
                 linkQuenMk.style.display = "inline";
                 linkChuyenTrang.innerText = "Chưa có tài khoản? Đăng ký";
             } else {
-                authTieuDe.innerText = "Đăng Ký Tài Khoản";
-                authGhiChu.innerText = "Tạo tài khoản đám mây cá nhân hoàn toàn miễn phí";
+                authTieuDe.innerText = "Đăng ký tài khoản";
+                authGhiChu.innerText = "Ứng dụng quản lý thu chi cá nhân";
                 vungNhapLaiMatKhau.style.display = "block";
                 nutHanhDongAuth.innerText = "Đăng Ký Ngay";
                 linkQuenMk.style.display = "none";
