@@ -169,14 +169,13 @@
 
     <div id="tab-add" class="tab-menu-duoi">
         <div class="tieu-de-khung" style="margin-top: 10px;">Thêm giao dịch mới</div>
-        <div class="ten-va-o-nhap"><label>Loại dòng tiền:</label>
-            <select id="loai-giao-dich">
+        <div class="ten-va-o-nhap"> <label>Loại dòng tiền:</label>
+            <select id="loai-dong-tien">
                 <option value="chi">💸 Chi tiêu (Khoản ra)</option>
                 <option value="thu">💰 Thu nhập (Khoản vào)</option>
-            </select>
-        </div>
-        <div class="ten-va-o-nhap"><label>Phân loại danh mục:</label>
-            <select id="danh-muc-giao-dich">
+            </select> </div>
+        <div class="ten-va-o-nhap"> <label>Phân nhóm:</label>
+            <select id="phan-nhom-thu-chi">
                 <option value="Ăn uống">🍔 Ăn uống</option>
                 <option value="Di chuyển">🚗 Di chuyển</option>
                 <option value="Mua sắm">🛍️ Mua sắm</option>
@@ -529,8 +528,8 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // 1. Khai báo định danh các phần tử trên Form (Chỉ khai báo DUY NHẤT tại đây)
     const idnutsave = document.getElementById('nut-save');
-    const idLoaiGiaoDich = document.getElementById('loai-giao-dich');
-    const idDanhMuc = document.getElementById('danh-muc-giao-dich');
+    const idLoaiGiaoDich = document.getElementById('loai-dong-tien');
+    const idDanhMuc = document.getElementById('phan-nhom-thu-chi');
     const idTen = document.getElementById('ten-khoan-thu-chi');
     const idSoTien = document.getElementById('so-tien');
     const labelSoTien = document.getElementById('label-so-tien');
