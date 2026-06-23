@@ -106,7 +106,7 @@
             .noi-dung-bao-cao-thanh-ngang { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
             .thong-ke-so { font-weight: bold; }        
             /* Thanh đồ họa tiến trình (Progress Bar) so sánh trực quan */
-            .thanh-mau-tien-do { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
+            .khung-thanh-mau-tien-do { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
             .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
             .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
     /* A.3 ĐỊNH DẠNG THANH MENU DƯỚI */    
@@ -192,8 +192,8 @@
 
     <div id="tab-report" class="tab-menu-duoi">
         <div class="tieu-de-khung" style="margin-top: 10px;">Tổng quan tài chính cá nhân</div>
-        <div class="khung-bao-cao-thanh-ngang"> <div class="noi-dung-bao-cao-thanh-ngang"> <span>Tổng thu nhập (vào):</span> <span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span> </div> <div class="thanh-mau-tien-do"> <div id="thanh-thu-ti-le" class="thanh-tien-vao"></div></div></div>
-        <div class="khung-bao-cao-thanh-ngang"> <div class="noi-dung-bao-cao-thanh-ngang"> <span>Tổng chi tiêu (ra):</span> <span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span> </div> <div class="thanh-mau-tien-do"> <div id="thanh-chi-ti-le" class="thanh-tien-ra"></div></div></div>
+        <div class="khung-bao-cao-thanh-ngang"> <div class="noi-dung-bao-cao-thanh-ngang"> <span>Tổng thu nhập (vào):</span> <span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span> </div> <div class="khung-thanh-mau-tien-do"> <div id="thanh-thu-ti-le" class="thanh-tien-vao"></div></div></div>
+        <div class="khung-bao-cao-thanh-ngang"> <div class="noi-dung-bao-cao-thanh-ngang"> <span>Tổng chi tiêu (ra):</span> <span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span> </div> <div class="khung-thanh-mau-tien-do"> <div id="thanh-chi-ti-le" class="thanh-tien-ra"></div></div></div>
     </div>
 
     <div id="tab-tai-khoan" class="tab-menu-duoi">
@@ -209,26 +209,21 @@
         <button class="nut-tab active" data-target="home">
             <img src="homemau.png" class="img-icon-2d icon-active" alt="Tổng quan">
             <img src="homevien.png" class="img-icon-2d icon-inactive" alt="Tổng quan">
-            <span class="chu-menu">HOME</span>
-        </button>
+            <span class="chu-menu">HOME</span> </button>
         <button class="nut-tab" data-target="lich-su">
             <img src="lichsumau.png" class="img-icon-2d icon-active" alt="Lịch sử">
             <img src="lichsuvien.png" class="img-icon-2d icon-inactive" alt="Lịch sử">
-            <span class="chu-menu">Lịch sử</span>
-        </button>
+            <span class="chu-menu">Lịch sử</span> </button>
         <button class="nut-tab nut-tab-them-trung-tam" data-target="add">
-            <span class="icon">＋</span>
-        </button>
+            <span class="icon">＋</span> </button>
         <button class="nut-tab" data-target="report">
             <img src="baocaomau.png" class="img-icon-2d icon-active" alt="Báo cáo">
             <img src="baocaovien.png" class="img-icon-2d icon-inactive" alt="Báo cáo">
-            <span class="chu-menu">Báo cáo</span>
-        </button>
+            <span class="chu-menu">Báo cáo</span> </button>
         <button class="nut-tab" data-target="tai-khoan">
             <img src="taikhoanmau.png" class="img-icon-2d icon-active" alt="Tài khoản">
             <img src="taikhoanvien.png" class="img-icon-2d icon-inactive" alt="Tài khoản">
-            <span class="chu-menu">Tài khoản</span>
-        </button>
+            <span class="chu-menu">Tài khoản</span> </button>
     </nav>
 </div>
 
