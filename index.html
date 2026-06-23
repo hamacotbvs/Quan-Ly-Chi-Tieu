@@ -231,25 +231,6 @@
     </nav>
 </div>
 
-<template id="mau-dong-giao-dich">
-    <div class="dong-giao-dich">
-        <div class="nen-hanh-dong">
-            <div class="hanh-dong-sua">✏️ Sửa</div>
-            <div class="hanh-dong-xoa">🗑️ Xóa</div>
-        </div>
-        <div class="giao-dich-noi-dung">
-            <div class="giao-dich-trai">
-                <span class="giao-dich-muc"></span>
-                <span class="giao-dich-ten"></span>
-            </div>
-            <div class="giao-dich-phai-cum">
-                <span class="giao-dich-thoi-gian"></span>
-                <span class="giao-dich-phai"></span>
-            </div>
-        </div>
-    </div>
-</template>
-
 <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -429,24 +410,20 @@
                 kyTuDau = '-'; lopMauSac = 'mau-chi';
             }
 
-            const template = document.getElementById('mau-dong-giao-dich');
-            const clone = template.content.cloneNode(true); // Nhân bản cái khuôn mẫu HTML
-
-            // Lấy ra phần tử nội dung chính để cấu hình
-            const noiDung = clone.querySelector('.giao-dich-noi-dung');
-            noiDung.setAttribute('data-id', docId);
-
-            // Đổ text sạch vào từng thẻ (An toàn hơn innerHTML, chống lỗi hiển thị)
-            clone.querySelector('.giao-dich-muc').innerText = `${iconPhuHop} ${hienThiDanhMuc}`;
-            clone.querySelector('.giao-dich-ten').innerText = giaoDich.ten;
-            clone.querySelector('.giao-dich-thoi-gian').innerText = `🕒 ${hienThiThoiGian}`;
-            
-            const theSoTien = clone.querySelector('.giao-dich-phai');
-            theSoTien.innerText = `${kyTuDau}${parseFloat(giaoDich.soTien).toLocaleString('vi-VN')} đ`;
-            theSoTien.classList.add(lopMauSac); // Thêm màu xanh/đỏ tùy loại thu/chi
-
-            // Đẩy dòng giao dịch đã hoàn thiện vào vùng hiển thị lịch sử
-            idVungLichSu.appendChild(clone);
+        // Khởi tạo cấu trúc thẻ HTML cho từng dòng giao dịch
+        const dongMoi = document.createElement('div');
+        dongMoi.classList.add('dong-giao-dich');
+        dongMoi.innerHTML = `
+            <div class="nen-hanh-dong">
+                <div class="hanh-dong-sua">✏️ Sửa</div>
+                <div class="hanh-dong-xoa">🗑️ Xóa</div>
+            </div>
+            <div class="giao-dich-noi-dung" data-id="${docId}">
+                <div class="giao-dich-trai"> <span class="giao-dich-muc">${iconPhùHợp} ${hienThiDanhMuc}</span> <span class="giao-dich-ten">${giaoDich.ten}</span> </div>
+                <div class="giao-dich-phai-cum"> <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span> <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${parseFloat(giaoDich.soTien).toLocaleString('vi-VN')} đ</span> </div>
+            </div>
+        `;
+        idVungLichSu.appendChild(dongMoi);
         });
 
         // Đổ tổng số liệu tiền tệ sau tính toán lên giao diện ứng dụng
