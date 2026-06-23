@@ -223,20 +223,20 @@
 }
 
 /* Khu vực link nhấn chuyển đổi */
-.vung-link-tien-ich {
+.link-quen-mat-khau {
     display: flex;
     justify-content: space-between;
     margin: 15px 0 25px 0;
     font-size: 13px;
 }
 
-.vung-link-tien-ich a {
+.link-quen-mat-khau a {
     color: #3498db;
     text-decoration: none;
     transition: color 0.2s;
 }
 
-.vung-link-tien-ich a:hover {
+.link-quen-mat-khau a:hover {
     color: #2980b9;
     text-decoration: underline;
 }
@@ -295,30 +295,29 @@
 <div id="man-hinh-auth" class="man-hinh-auth-wrapper">
     <div class="the-auth-giao-dien">
         <div class="auth-bieu-tuong">🪙</div>
-        <h2 id="auth-tieu-de">Đăng Nhập Hệ Thống</h2>
-        <p id="auth-ghi-chu">Vui lòng đăng nhập để quản lý dòng tiền đám mây</p>
+        <h2 id="auth-tieu-de">Đăng nhập tài khoản</h2>
 
         <div class="nhom-nhap-lieu">
-            <label for="auth-username">Tài khoản Email:</label>
-            <input type="email" id="auth-username" placeholder="vi-du: tenban@gmail.com" required>
+            <input type="email" id="auth-username" placeholder="Gmail" required>
         </div>
 
         <div class="nhom-nhap-lieu">
-            <label for="auth-password">Mật khẩu:</label>
-            <input type="password" id="auth-password" placeholder="Nhập mật khẩu của bạn" required>
+            <input type="password" id="auth-password" placeholder="Mật khẩu" required>
         </div>
 
         <div class="nhom-nhap-lieu" id="vung-nhap-lai-mat-khau" style="display: none;">
-            <label for="auth-re-password">Nhập lại mật khẩu:</label>
             <input type="password" id="auth-re-password" placeholder="Xác nhận lại mật khẩu">
         </div>
 
-        <div class="vung-link-tien-ich">
-            <a href="#" id="link-quen-mk">Quên mật khẩu?</a>
-            <a href="#" id="link-chuyen-trang">Chưa có tài khoản? Đăng ký</a>
+        <div class="link-quen-mat-khau">
+            <a href="#" id="link-quen-mk">Quên mật khẩu</a>
         </div>
 
         <button id="nut-hanh-dong-auth" class="nut-bam-auth">Đăng Nhập</button>
+                
+        <div class="link-quen-mat-khau">
+            <a href="#" id="link-dang-ky">Chưa có tài khoản? Đăng ký</a>
+        </div>
     </div>
 </div>
 
@@ -441,7 +440,7 @@
     const inputAuthRePassword = document.getElementById('auth-re-password');
     const nutHanhDongAuth = document.getElementById('nut-hanh-dong-auth');
     const linkQuenMk = document.getElementById('link-quen-mk');
-    const linkChuyenTrang = document.getElementById('link-chuyen-trang');
+    const linkChuyenTrang = document.getElementById('link-dang-ky');
 
     let isLoginMode = true; // Thừa hành trạng thái: Đăng nhập (true) hoặc Đăng ký (false)
 
