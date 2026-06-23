@@ -97,8 +97,8 @@
             .ten-va-o-nhap input, .ten-va-o-nhap select {width: 100%;padding: 12px;border: 1px solid #cbd5e1;border-radius: 8px;box-sizing: border-box;font-size: 15px;background-color: #fff;transition: border 0.2s;}
             .ten-va-o-nhap input:focus, .ten-va-o-nhap select:focus { border-color: #3498db; outline: none; }        
             /* Nút Lưu giao dịch */
-            .nut-bam-luu {width: 100%;padding: 14px;background-color: #3498db;color: white;border: none;border-radius: 8px;font-size: 16px;cursor: pointer;font-weight: bold;margin-top: 10px;box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);}
-            .nut-bam-luu:hover { background-color: #2980b9; }
+            .nut-bam-save {width: 100%;padding: 14px;background-color: #3498db;color: white;border: none;border-radius: 8px;font-size: 16px;cursor: pointer;font-weight: bold;margin-top: 10px;box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);}
+            .nut-bam-save:hover { background-color: #2980b9; }
         /* ==========================================================================
         IV. TAB 4: BÁO CÁO
         ========================================================================== */
@@ -161,8 +161,7 @@
     <div id="tab-lich-su" class="tab-menu-duoi">
         <div class="khung-so-du-hien-tai"> 
             <div class="nhan">Số dư hiện tại</div> 
-            <div class="so-tien-du-hien-tai"> <span id="so-du">0</span> </div>
-        </div>
+            <div class="so-tien-du-hien-tai"> <span id="so-du">0</span> </div> </div>
         <div class="danh-sach-lich-su"> 
             <div class="tieu-de-khung">Lịch sử dòng tiền chi tiết</div><div id="lich-su-giao-dich"><div id="danh-sach-lich-su-toan-bo"><div class="trang-thai-trong">Đang tải...</div></div></div></div>
     </div>
@@ -182,12 +181,13 @@
                 <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
                 <option value="Giải trí">🎬 Giải trí & Cà phê</option>
                 <option value="Khác">✨ Khác</option>
-            </select>
-        </div>
-        <div class="ten-va-o-nhap"><label>Tên khoản thu/chi:</label><input type="text" id="ten-khoan-thu-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng..."></div>
-        <div class="ten-va-o-nhap"><label id="label-so-tien">Số tiền (đ):</label><input type="number" id="so-tien" placeholder="Ví dụ: 50000"></div>
-        <div class="ten-va-o-nhap-row" style="display: flex; gap: 10px;"><div class="ten-va-o-nhap" style="flex: 1;"><label>Ngày tháng:</label><input type="date" id="ngay-giao-dich"></div><div class="ten-va-o-nhap" style="flex: 1;"><label>Thời gian:</label><input type="time" id="gio-giao-dich"></div></div>            
-        <button id="nut-save" class="nut-bam-luu">Cập nhật ví</button>
+            </select> </div>
+        <div class="ten-va-o-nhap"> <label>Tên khoản thu/chi:</label> <input type="text" id="ten-khoan-thu-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng..."> </div>
+        <div class="ten-va-o-nhap"> <label id="label-so-tien">Số tiền (đ):</label> <input type="number" id="so-tien" placeholder="Ví dụ: 50000"> </div>
+        <div class="ten-va-o-nhap-2-o-1-hang" style="display: flex; gap: 10px;"> 
+            <div class="ten-va-o-nhap" style="flex: 1;"> <label>Ngày tháng:</label> <input type="date" id="ngay-giao-dich"> </div> 
+            <div class="ten-va-o-nhap" style="flex: 1;"> <label>Thời gian:</label> <input type="time" id="gio-giao-dich"> </div> </div>            
+        <button id="nut-save" class="nut-bam-save">Cập nhật ví</button>
     </div>
 
     <div id="tab-report" class="tab-menu-duoi">
