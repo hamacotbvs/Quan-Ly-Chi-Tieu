@@ -141,173 +141,151 @@
             /* Dòng trạng thái trống */
             .trang-thai-trong {text-align: center;color: #94a3b8;font-style: italic;padding: 30px 0;font-size: 14px;}
     /* A.4 GIAO DIỆN HỆ THỐNG AUTH (ĐĂNG NHẬP / ĐĂNG KÝ) */
-/* Giao diện nền phủ toàn màn hình thiết bị */
+/* Giao diện nền phủ toàn màn hình khóa Auth */
 .man-hinh-auth-wrapper {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: #ffffff; /* Đổi thành nền trắng sạch sẽ hoàn toàn */
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    padding: 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
     box-sizing: border-box;
 }
 
-/* Thẻ chứa Form đăng nhập */
+/* Thẻ Form màu trắng nằm giữa */
 .the-auth-giao-dien {
+    background: #ffffff;
+    padding: 30px 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
     text-align: center;
-    animation: hieuUngHienThi 0.35s ease-out;
+    animation: hieuUngHienThi 0.4s ease-out;
 }
 
 @keyframes hieuUngHienThi {
-    from { transform: scale(0.95); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
-/* Khu vực hiển thị Logo ảnh */
 .vung-chua-logo {
-    margin-bottom: 20px;
-}
-.auth-logo-app {
-    width: 75px;
-    height: 75px;
-    object-fit: contain;
+    font-size: 40px;
+    margin-bottom: 10px;
 }
 
 .the-auth-giao-dien h2 {
-    margin: 0 0 30px 0;
-    color: #000000;
-    font-size: 24px;
-    font-weight: bold;
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+    font-size: 22px;
 }
 
-/* Các ô nhập liệu phẳng bo tròn góc giống mẫu */
+.the-auth-giao-dien p {
+    margin: 0 0 25px 0;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+/* Các cụm nhập liệu */
 .nhom-nhap-lieu {
+    text-align: left;
     margin-bottom: 15px;
+}
+
+.nhom-nhap-lieu label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #34495e;
+    margin-bottom: 6px;
 }
 
 .nhom-nhap-lieu input {
     width: 100%;
-    padding: 16px;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px; /* Bo góc tròn mềm mại */
-    font-size: 16px;
-    background-color: #ffffff;
+    padding: 12px;
+    border: 1px solid #dcdde1;
+    border-radius: 8px;
+    font-size: 15px;
     outline: none;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s;
     box-sizing: border-box;
 }
 
-.nhom-nhap-lieu input::placeholder {
-    color: #b0b0b0;
-}
-
 .nhom-nhap-lieu input:focus {
-    border-color: #43bbf6; /* Đổi sang màu xanh dương khi click vào */
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.2);
 }
 
-/* Khu vực liên kết chức năng */
+/* Khu vực link nhấn chuyển đổi */
 .vung-link-tien-ich {
     display: flex;
-    flex-direction: column; /* Đưa các link thành dòng sắp xếp trực quan */
-    align-items: center;
-    gap: 15px;
+    justify-content: space-between;
     margin: 15px 0 25px 0;
-    font-size: 14px;
+    font-size: 13px;
 }
 
-/* Link quên mật khẩu đẩy sang phải nhẹ */
-#link-quen-mk {
-    align-self: flex-end;
-    color: #43bbf6;
+.vung-link-tien-ich a {
+    color: #3498db;
     text-decoration: none;
+    transition: color 0.2s;
 }
 
-#link-chuyen-trang {
-    color: #666666;
-    text-decoration: none;
+.vung-link-tien-ich a:hover {
+    color: #2980b9;
+    text-decoration: underline;
 }
 
-/* Nút đăng nhập xanh dương sáng chuẩn màu ảnh */
+/* Nút bấm Đăng nhập / Đăng ký chính */
 .nut-bam-auth {
     width: 100%;
-    padding: 15px;
-    background-color: #43bbf6;
+    padding: 12px;
+    background-color: #2ecc71;
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 8px;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
-    box-shadow: 0 4px 12px rgba(67, 187, 246, 0.2);
 }
 
 .nut-bam-auth:hover {
-    background-color: #29aae9;
+    background-color: #27ae60;
 }
 
 .nut-bam-auth:active {
-    transform: scale(0.99);
+    transform: scale(0.98);
 }
 
-/* Dòng chữ gạch ngang "Hoặc đăng nhập bằng" */
-.vung-chia-dong-hoac {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: 35px 0 20px 0;
-    color: #999999;
-    font-size: 14px;
+/* Thẻ hiển thị thông tin User trong App chính */
+.the-thong-tin-user {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin: 15px;
+    font-family: inherit;
 }
-
-.vung-chia-dong-hoac::before, .vung-chia-dong-hoac::after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px solid #f0f0f0;
+.the-thong-tin-user h3 {
+    margin-top: 0;
+    color: #2c3e50;
 }
-
-.vung-chia-dong-hoac:not(:empty)::before {
-    margin-right: .5em;
+.the-thong-tin-user hr {
+    border: 0;
+    height: 1px;
+    background: #eceff1;
+    margin: 15px 0;
 }
-
-.vung-chia-dong-hoac:not(:empty)::after {
-    margin-left: .5em;
-}
-
-/* Khu vực nút liên kết Google duy nhất */
-.vung-nut-mxh {
-    display: flex;
-    justify-content: center;
-}
-
-.nut-mxh-item {
-    background: #f5f6f9;
-    border: none;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.nut-mxh-item:hover {
-    background: #eef0f5;
-}
-
-.nut-mxh-item img {
-    width: 26px;
-    height: 26px;
+.the-thong-tin-user p {
+    font-size: 15px;
+    color: #555;
+    margin: 10px 0;
 }
 
     </style>
@@ -316,15 +294,13 @@
 <body>
 <div id="man-hinh-auth" class="man-hinh-auth-wrapper">
     <div class="the-auth-giao-dien">
-        
         <div class="vung-chua-logo">
-            <img src="https://img.icons8.com/fluent/96/wallet.png" alt="Logo App" class="auth-logo-app">
+            <img src="logo.png" alt="Logo App" class="auth-logo-app">
         </div>
-        
         <h2 id="auth-tieu-de">Đăng nhập tài khoản</h2>
 
         <div class="nhom-nhap-lieu">
-            <input type="email" id="auth-username" placeholder="Email hoặc số điện thoại" required>
+            <input type="email" id="auth-username" placeholder="Gmail" required>
         </div>
 
         <div class="nhom-nhap-lieu">
@@ -332,26 +308,15 @@
         </div>
 
         <div class="nhom-nhap-lieu" id="vung-nhap-lai-mat-khau" style="display: none;">
-            <input type="password" id="auth-re-password" placeholder="Nhập lại mật khẩu để xác nhận">
+            <input type="password" id="auth-re-password" placeholder="Xác nhận lại mật khẩu">
         </div>
 
         <div class="vung-link-tien-ich">
-            <a href="#" id="link-quen-mk">Quên mật khẩu?</a>
-            <a href="#" id="link-chuyen-trang" class="link-chuyen-che-do">Bạn chưa có tài khoản? <span style="color: #43bbf6; font-weight: 600;">Đăng ký</span></a>
+            <a href="#" id="link-quen-mk">Quên mật khẩu</a>
+            <a href="#" id="link-chuyen-trang">Chưa có tài khoản? Đăng ký</a>
         </div>
 
-        <button id="nut-hanh-dong-auth" class="nut-bam-auth">Đăng nhập</button>
-
-        <div class="vung-chia-dong-hoac">
-            <span>Hoặc đăng nhập bằng</span>
-        </div>
-        
-        <div class="vung-nut-mxh">
-            <button id="nut-auth-google" class="nut-mxh-item">
-                <img src="https://img.icons8.com/color/48/google-logo.png" alt="Google">
-            </button>
-        </div>
-
+        <button id="nut-hanh-dong-auth" class="nut-bam-auth">Đăng Nhập</button>
     </div>
 </div>
 
