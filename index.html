@@ -144,6 +144,36 @@
 </head>
 
 <body>
+<div id="man-hinh-auth" class="KHUNG-DANG-NHAP">
+    <div class="the-auth-khung">
+        <div class="auth-logo">📱</div>
+        <h2 id="auth-tieu-de">Đăng Nhập Hệ Thống</h2>
+        <p id="auth-ghi-chu" style="color: #666; font-size: 13px; text-align: center; margin-bottom: 20px;">Vui lòng đăng nhập để quản lý dòng tiền đám mây</p>
+
+        <div class="ten-va-o-nhap">
+            <label>Tài khoản (Email/Username):</label>
+            <input type="text" id="auth-username" placeholder="Nhập tài khoản...">
+        </div>
+        
+        <div class="ten-va-o-nhap" id="vung-mat-khau">
+            <label>Mật khẩu:</label>
+            <input type="password" id="auth-password" placeholder="Nhập mật khẩu...">
+        </div>
+
+        <div class="ten-va-o-nhap" id="vung-nhap-lai-mat-khau" style="display: none;">
+            <label>Nhập lại mật khẩu:</label>
+            <input type="password" id="auth-re-password" placeholder="Xác nhận lại mật khẩu...">
+        </div>
+
+        <button id="nut-hanh-dong-auth" class="nut-bam-save" style="margin-top: 5px;">Đăng Nhập</button>
+
+        <div class="auth-chuyen-doi">
+            <a href="#" id="link-quen-mk">Quên mật khẩu?</a>
+            <a href="#" id="link-chuyen-trang">Chưa có tài khoản? Đăng ký</a>
+        </div>
+    </div>
+</div>
+
 <div class="KHUNG-CHUA-APP">      
     
     <button id="NUT-LAM-MOI-APP" class="nut-reset-treo" title="Tải lại ứng dụng"><svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/></svg></button>
@@ -254,7 +284,7 @@
         cacVungNoiDung.forEach(content => content.classList.remove('active'));const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`); if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active'); }); });
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // C. SCRIPT CAC TRANG TAB
-// C.I TAB HOME (HẠN MỨC)
+// C.I TAB HOME
     const txtChu = document.getElementById('chi-tieu-tren-han-muc');
     const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
     const txtGoiY = document.getElementById('goi-y-han-muc');
