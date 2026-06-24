@@ -485,7 +485,7 @@
     const linkChuyenTrang = document.getElementById('link-dang-ky');
     let isLoginMode = true; // Thừa hành trạng thái: Đăng nhập (true) hoặc Đăng ký (false)
     // Lắng nghe trạng thái đăng nhập hệ thống (Bảo mật thời gian thực)
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
             // Trường hợp: Đã đăng nhập thành công
             if (manHinhAuth) manHinhAuth.style.display = 'none';
