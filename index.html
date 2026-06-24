@@ -655,7 +655,7 @@
     const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Trang phục": "🛍️", "Mỹ phẩm": "🛍️", "Hóa đơn": "💵", "Nhà cửa": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Thu nhập khác": "💸", "Khác": "✨"};
 
 // BIỂU ĐỒ NGÂN SÁCH THU CHI 12 THÁNG
-// Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ và vẽ biểu đồ đè lồng nhau (Đã sửa lỗi cache)
+// Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ chuẩn và vẽ biểu đồ đè lồng nhau
 function capNhatBieuDoBaoCaoNam(docs) {
     const ctx = document.getElementById('bieuDoNganSach');
     if (!ctx) return;
@@ -670,19 +670,28 @@ function capNhatBieuDoBaoCaoNam(docs) {
     // Mảng lưu tổng chi tiêu thực tế gốc của 12 tháng chu kỳ
     const mangDaChiThucTe = Array(12).fill(0);
     
-    // Duyệt qua từng giao dịch để phân loại vào THÁNG CHU KỲ
+    // 🔑 MẸO THÔNG MINH: Lấy ngày chốt chu kỳ thực tế đang chạy trong hệ thống để đối chiếu
+    const chuKyChuanHienTai = layRangeChuKy(window.thoiGianDangXem);
+    const ngayChotHeThong = chuKyChuanHienTai ? chuKyChuanHienTai.tuNgay.getDate() : 1;
+
+    // Duyệt qua từng giao dịch để phân loại vào đúng THÁNG CHU KỲ bằng toán học
     docs.forEach(docItem => {
         const data = docItem.data();
         if (data.loai === 'chi' && data.thoiGian) {
             const thoiGianMoc = parseChuoiThoiGian(data.thoiGian);
             
-            for (let m = 0; m < 12; m++) {
-                const ngayDaiDienThang = new Date(namDangXem, m, 1);
-                const chuKyMoc = layRangeChuKy(ngayDaiDienThang);
+            if (thoiGianMoc.getFullYear() === namDangXem) {
+                let thangIndex = thoiGianMoc.getMonth(); // Tháng dương lịch gốc (0 = T1, 5 = T6, 6 = T7...)
+                const ngayGiaoDich = thoiGianMoc.getDate();
                 
-                if (thoiGianMoc >= chuKyMoc.tuNgay && thoiGianMoc <= chuKyMoc.denNgay) {
-                    mangDaChiThucTe[m] += parseFloat(data.soTien) || 0;
-                    break; 
+                // Nếu ngày giao dịch vượt qua hoặc bằng ngày chốt, nó tính cho chu kỳ tháng sau
+                if (ngayGiaoDich >= ngayChotHeThong && ngayChotHeThong > 1) {
+                    thangIndex = thangIndex + 1;
+                }
+                
+                // Cộng dồn vào mảng nếu hợp lệ trong phạm vi 12 tháng công thức
+                if (thangIndex <= 11) {
+                    mangDaChiThucTe[thangIndex] += parseFloat(data.soTien) || 0;
                 }
             }
         }
@@ -696,7 +705,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
     const mangLoaiMax = Array(12).fill('');  
     const mangLoaiMin = Array(12).fill('');
 
-    // So sánh từng tháng để quyết định thứ tự trước/sau và màu sắc
+    // So sánh từng tháng để quyết định thứ tự trước/sau và màu sắc cột
     for (let m = 0; m < 12; m++) {
         const chuoiThangNam = `${namDangXem}-${String(m + 1).padStart(2, '0')}`;
         const hanMuc = window.boSuoTapHanMuc[chuoiThangNam] || 0;
@@ -721,12 +730,12 @@ function capNhatBieuDoBaoCaoNam(docs) {
         }
     }
 
-    // 🔥 BƯỚC QUAN TRỌNG NHẤT: Nếu đã có biểu đồ cũ, hủy hoàn toàn để xóa sạch cấu hình "tách cột" cũ
+    // Nếu đã có thực thể biểu đồ cũ, hủy hoàn toàn để làm sạch bộ nhớ layout cột
     if (bieuDoInstance) {
         bieuDoInstance.destroy();
     }
 
-    // Khởi tạo mới hoàn toàn biểu đồ với cấu hình ép đè lồng bắt buộc
+    // Khởi tạo mới hoàn toàn biểu đồ với cấu hình ép đè lồng bắt buộc từng cụm data
     bieuDoInstance = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -737,18 +746,18 @@ function capNhatBieuDoBaoCaoNam(docs) {
                     data: mangMax,
                     backgroundColor: mangMauMax,
                     barPercentage: 0.85, 
-                    categoryPercentage: 0.8, // Giữ tỷ lệ khoảng cách đồng bộ giữa các tháng
+                    categoryPercentage: 0.8, 
                     borderRadius: 4,
-                    grouped: false // 🔑 Ép buộc thanh này không chia tách không gian cột
+                    grouped: false // 🔑 Cưỡng chế không tách cột
                 },
                 {
                     label: 'Thanh Trước',
                     data: mangMin,
                     backgroundColor: mangMauMin,
-                    barPercentage: 0.55, // Co nhỏ thanh trước lại để lộ viền thanh sau ra ngoài
+                    barPercentage: 0.55, // Thu nhỏ lõi trước để tạo hiệu ứng lồng viền chuyên nghiệp
                     categoryPercentage: 0.8,
                     borderRadius: 4,
-                    grouped: false // 🔑 Ép buộc thanh này nhảy vào đứng chung tâm với thanh sau
+                    grouped: false // 🔑 Ép nhảy chung vào tâm của thanh sau
                 }
             ]
         },
@@ -770,7 +779,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
             },
             scales: {
                 x: {
-                    stacked: false // Đảm bảo các cột không chồng nối đuôi nhau lên trời mà là đè lấp lên nhau
+                    stacked: false // Đảm bảo các cột đè lấp lên nhau chứ không chồng nối đuôi nhau lên trời
                 },
                 y: {
                     beginAtZero: true,
