@@ -483,37 +483,39 @@
     const nutHanhDongAuth = document.getElementById('nut-hanh-dong-auth');
     const linkQuenMk = document.getElementById('link-quen-mk');
     const linkChuyenTrang = document.getElementById('link-dang-ky');
-
     let isLoginMode = true; // Thừa hành trạng thái: Đăng nhập (true) hoặc Đăng ký (false)
-
     // Lắng nghe trạng thái đăng nhập hệ thống (Bảo mật thời gian thực)
     onAuthStateChanged(auth, (user) => {
         if (user) {
             // Trường hợp: Đã đăng nhập thành công
             if (manHinhAuth) manHinhAuth.style.display = 'none';
             if (khungAppChinh) khungAppChinh.style.display = 'block';
-            
             // Cập nhật thông tin lên Tab Tài Khoản
             const txtTenUser = document.getElementById('ten-user-hien-thi');
             const txtEmailUser = document.getElementById('email-user-hien-thi');
             if (txtTenUser) txtTenUser.innerText = user.displayName || user.email.split('@')[0];
             if (txtEmailUser) txtEmailUser.innerText = user.email;
-
-            // Thêm nút Đăng xuất vào Tab Tài Khoản nếu chưa có
-            tichHopNutDangXuat();
-
-            // Kích hoạt lắng nghe luồng dữ liệu thu chi độc lập của riêng User này
-            kichHoatHeThongDuLieuRealtime(user);
+            // --- ĐOẠN BỔ SUNG: Tải ngày cấu hình chu kỳ từ Firebase ---
+            window.ngayBatDauChuKy = 1; // Mặc định ban đầu là ngày 1
+            try {
+                const docRef = doc(db, "cau_hinh_user", user.uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data().ngayBatDau) {window.ngayBatDauChuKy = parseInt(docSnap.data().ngayBatDau); if (selectChuKy) selectChuKy.value = window.ngayBatDauChuKy;} } catch (err) {console.error("Lỗi tải cấu hình chu kỳ:", err);}
+            tichHopNutDangXuat(); // Thêm nút Đăng xuất vào Tab Tài Khoản nếu chưa có
+            kichHoatHeThongDuLieuRealtime(user); // Kích hoạt lắng nghe luồng dữ liệu thu chi độc lập của riêng User này
         } else {
             // Trường hợp: Chưa đăng nhập hoặc vừa đăng xuất
             if (manHinhAuth) manHinhAuth.style.display = 'flex';
             if (khungAppChinh) khungAppChinh.style.display = 'none';
-            
             // Hủy theo dõi dữ liệu cũ để tránh lộ thông tin hoặc tốn tài nguyên tải ngầm
-            if (huyTheoDoiThuChi) { huyTheoDoiThuChi(); huyTheoDoiThuChi = null; }
-        }
-    });
-
+            if (huyTheoDoiThuChi) { huyTheoDoiThuChi(); huyTheoDoiThuChi = null; } } });
+    // Xử lý sự kiện bấm nút "Lưu cấu hình" ngày chu kỳ lên Firebase đám mây
+    document.getElementById('nut-luu-chu-ky')?.addEventListener('click', async () => {
+        if (!auth.currentUser) return alert("Phiên đăng nhập đã hết hạn!");
+        const ngayChon = parseInt(document.getElementById('chon-ngay-chu-ky').value);
+        try {await setDoc(doc(db, "cau_hinh_user", auth.currentUser.uid), {ngayBatDau: ngayChon}, { merge: true }); window.ngayBatDauChuKy = ngayChon; alert("Đã lưu ngày bắt đầu chu kỳ tính toán mới thành công!");
+        // Yêu cầu ứng dụng tính toán lại giao diện ngay lập tức dựa trên dữ liệu đã cache
+        if (window.duLieuSnapshotQuocTe) {capNhatToanBoGiaoDien(window.duLieuSnapshotQuocTe);} } catch (err) {alert("Không thể lưu cấu hình: " + err.message);} });
     // Chuyển đổi qua lại giữa giao diện Đăng Nhập / Đăng Ký
     if (linkChuyenTrang) {
         linkChuyenTrang.addEventListener('click', (e) => {
