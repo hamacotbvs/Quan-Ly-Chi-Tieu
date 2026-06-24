@@ -655,7 +655,7 @@
     const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Trang phục": "🛍️", "Mỹ phẩm": "🛍️", "Hóa đơn": "💵", "Nhà cửa": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Thu nhập khác": "💸", "Khác": "✨"};
 
 // BIỂU ĐỒ NGÂN SÁCH THU CHI 12 THÁNG
-// Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ và vẽ biểu đồ đè lồng nhau (Đã sửa lỗi che cột)
+// Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ, vẽ biểu đồ đè lồng nhau và thêm đường CÒN LẠI
 function capNhatBieuDoBaoCaoNam(docs) {
     const ctx = document.getElementById('bieuDoNganSach');
     if (!ctx) return;
@@ -688,19 +688,23 @@ function capNhatBieuDoBaoCaoNam(docs) {
         }
     });
 
-    // Tạo các mảng động cấu trúc biểu đồ lồng nhau
+    // Tạo các mảng động cấu trúc biểu đồ lồng nhau và mảng còn lại
     const mangMax = Array(12).fill(0);       
     const mangMin = Array(12).fill(0);       
+    const mangConLai = Array(12).fill(0); // 🔑 Mảng lưu số tiền còn lại để chi tiêu
     const mangMauMax = Array(12).fill('');   
     const mangMauMin = Array(12).fill('');   
     const mangLoaiMax = Array(12).fill('');  
     const mangLoaiMin = Array(12).fill('');
 
-    // So sánh từng tháng để quyết định thứ tự trước/sau và màu sắc
+    // So sánh từng tháng để quyết định thứ tự trước/sau, màu sắc và tính số tiền còn lại
     for (let m = 0; m < 12; m++) {
         const chuoiThangNam = `${namDangXem}-${String(m + 1).padStart(2, '0')}`;
         const hanMuc = window.boSuoTapHanMuc[chuoiThangNam] || 0;
         const daChi = mangDaChiThucTe[m];
+
+        // Tính số tiền còn lại (Nếu âm tức là đã chi vượt mức)
+        mangConLai[m] = hanMuc - daChi; 
 
         if (hanMuc >= daChi) {
             // Trường hợp AN TOÀN: Ngân sách lớn làm nền (Xanh), Chi tiêu nhỏ nằm trước (Đỏ)
@@ -721,36 +725,51 @@ function capNhatBieuDoBaoCaoNam(docs) {
         }
     }
 
-    // BƯỚC QUAN TRỌNG NHẤT: Nếu đã có biểu đồ cũ, hủy hoàn toàn để xóa sạch cấu hình "tách cột" cũ
+    // BƯỚC QUAN TRỌNG NHẤT: Nếu đã có biểu đồ cũ, hủy hoàn toàn để tránh xung đột cấu hình
     if (bieuDoInstance) {
         bieuDoInstance.destroy();
     }
 
-    // Khởi tạo mới hoàn toàn biểu đồ với cấu hình ép đè lồng bắt buộc
+    // Khởi tạo mới hoàn toàn biểu đồ hỗn hợp (Cột lồng nhau + Đường line)
     bieuDoInstance = new Chart(ctx, {
-        type: 'bar',
+        type: 'bar', // Loại mặc định là cột, các phần tử line sẽ được khai báo riêng ở dataset
         data: {
             labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
             datasets: [
                 {
-                    label: 'Thanh Sau',
-                    data: mangMax,
-                    backgroundColor: mangMauMax,
-                    barPercentage: 0.85, 
-                    categoryPercentage: 0.8, // Giữ tỷ lệ khoảng cách đồng bộ giữa các tháng
-                    borderRadius: 4,
-                    grouped: false, // Ép buộc thanh này không chia tách không gian cột
-                    order: 2 // 🔑 QUAN TRỌNG: Đặt order = 2 để nó nằm ở LỚP DƯỚI (vẽ trước)
+                    // 🔑 ĐƯỜNG SỐ TIỀN CÒN LẠI
+                    type: 'line', 
+                    label: 'Còn lại',
+                    data: mangConLai,
+                    borderColor: '#2ecc71', // Đường màu xanh lá (hoặc #f1c40f màu vàng tùy bạn chọn)
+                    backgroundColor: '#2ecc71',
+                    borderWidth: 3,
+                    tension: 0.2, // Bo góc cong nhẹ cho đường nối mượt mà
+                    pointRadius: 4, // Điểm tròn tại mốc tháng
+                    pointHoverRadius: 6,
+                    fill: false,
+                    grouped: false,
+                    order: 1 // 🔑 Đặt tự trọng nhỏ nhất để vẽ TRÊN CÙNG, không bị các cột che khuất
                 },
                 {
                     label: 'Thanh Trước',
                     data: mangMin,
                     backgroundColor: mangMauMin,
-                    barPercentage: 0.55, // Co nhỏ thanh trước lại để lộ viền thanh sau ra ngoài
+                    barPercentage: 0.55, 
                     categoryPercentage: 0.8,
                     borderRadius: 4,
-                    grouped: false, // Ép buộc thanh này nhảy vào đứng chung tâm với thanh sau
-                    order: 1 // 🔑 QUAN TRỌNG: Đặt order = 1 để nó nằm ở LỚP TRÊN (vẽ đè lên)
+                    grouped: false, 
+                    order: 2 // Nằm ở lớp giữa
+                },
+                {
+                    label: 'Thanh Sau',
+                    data: mangMax,
+                    backgroundColor: mangMauMax,
+                    barPercentage: 0.85, 
+                    categoryPercentage: 0.8, 
+                    borderRadius: 4,
+                    grouped: false, 
+                    order: 3 // Nằm ở lớp dưới cùng làm nền
                 }
             ]
         },
@@ -764,7 +783,17 @@ function capNhatBieuDoBaoCaoNam(docs) {
                         label: function(context) {
                             const m = context.dataIndex;
                             const val = context.raw;
-                            const loai = context.datasetIndex === 0 ? mangLoaiMax[m] : mangLoaiMin[m];
+                            let loai = '';
+                            
+                            // Phân loại chữ hiển thị tooltip dựa theo thứ tự datasetIndex
+                            if (context.datasetIndex === 0) {
+                                loai = 'Còn lại';
+                            } else if (context.datasetIndex === 1) {
+                                loai = mangLoaiMin[m];
+                            } else {
+                                loai = mangLoaiMax[m];
+                            }
+                            
                             return loai + ': ' + val.toLocaleString('vi-VN') + ' đ';
                         }
                     }
@@ -772,7 +801,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
             },
             scales: {
                 x: {
-                    stacked: false // Đảm bảo các cột không chồng nối đuôi nhau lên trời mà là đè lấp lên nhau
+                    stacked: false 
                 },
                 y: {
                     beginAtZero: true,
