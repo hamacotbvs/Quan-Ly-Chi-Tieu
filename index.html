@@ -228,8 +228,10 @@
             <select id="phan-nhom-thu-chi">
                 <option value="Ăn uống">🍔 Ăn uống</option>
                 <option value="Di chuyển">🚗 Di chuyển</option>
-                <option value="Mua sắm">🛍️ Mua sắm</option>
-                <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option>
+                <option value="Trang phục">🛍️ Trang phục</option>
+                <option value="Mỹ phẩm">🛍️ Mỹ phẩm</option>
+                <option value="Hóa đơn">💵 Hóa đơn</option>
+                <option value="Nhà cửa">💵 Nhà cửa</option>
                 <option value="Giải trí">🎬 Giải trí & Cà phê</option>
                 <option value="Khác">✨ Khác</option>
             </select> </div>
@@ -650,7 +652,7 @@
     const idBcChi = document.getElementById('bao-cao-chi');
     const idThanhThu = document.getElementById('thanh-thu-ti-le');
     const idThanhChi = document.getElementById('thanh-chi-ti-le');
-    const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Mua sắm": "🛍️", "Hóa đơn": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Thu nhập khác": "💸", "Khác": "✨"};
+    const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Trang phục": "🛍️", "Mỹ phẩm": "🛍️", "Hóa đơn": "💵", "Nhà cửa": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Thu nhập khác": "💸", "Khác": "✨"};
 
 // BIỂU ĐỒ NGÂN SÁCH THU CHI 12 THÁNG
 // Hàm xử lý gom dữ liệu 12 tháng và vẽ biểu đồ Chart.js
@@ -893,7 +895,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
         idLoaiGiaoDich.addEventListener('change', () => {
             idDanhMuc.innerHTML = '';
             if (idLoaiGiaoDich.value === 'chi') {
-                idDanhMuc.innerHTML = `<option value="Ăn uống">🍔 Ăn uống</option> <option value="Di chuyển">🚗 Di chuyển</option> <option value="Mua sắm">🛍️ Mua sắm</option> <option value="Hóa đơn">💵 Hóa đơn & Tiện ích</option> <option value="Giải trí">🎬 Giải trí & Cà phê</option> <option value="Khác">✨ Khác</option> `;
+                idDanhMuc.innerHTML = `<option value="Ăn uống">🍔 Ăn uống</option> <option value="Di chuyển">🚗 Di chuyển</option> <option value="Trang phục">🛍️ Trang phục</option> <option value="Mỹ phẩm">🛍️ Mỹ phẩm</option> <option value="Hóa đơn">💵 Hóa đơn </option> <option value="Nhà cửa">💵 Nhà cửa </option> <option value="Giải trí">🎬 Giải trí & Cà phê</option> <option value="Khác">✨ Khác</option> `;
             } else if (idLoaiGiaoDich.value === 'thu') {
                 idDanhMuc.innerHTML = `<option value="Thu nhập từ lương">💵 Thu nhập từ lương</option> <option value="Thu nhập khác">💰 Thu nhập khác</option>`;
             }
