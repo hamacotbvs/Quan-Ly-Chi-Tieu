@@ -278,31 +278,25 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, deleteDoc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, deleteDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // HỖ TRỢ CHỌN NGÀY ĐẦU THÁNG
-    const selectChuKy = document.getElementById('chon-ngay-chu-ky');
-    if (selectChuKy) {
-        for (let i = 1; i <= 31; i++) {
-            const opt = document.createElement('option');
-            opt.value = i;
-            opt.innerText = `Ngày ${i} hàng tháng`;
-            selectChuKy.appendChild(opt);
-        } 
-    }
+    // Biến toàn cục lưu ngày chốt chu kỳ (Mặc định là ngày 25 nếu chưa tải xong từ DB)
+    window.ngayChotChuKy = 25; 
 
-    // Hàm tính toán mốc thời gian Chu kỳ
-    function layRangeChuKy(anchorDate, ngayBatDau) {
+    // Hàm tính toán mốc thời gian: Ngày chọn đóng vai trò là NGÀY KẾT THÚC CHU KỲ
+    function layRangeChuKy(anchorDate) {
         const y = anchorDate.getFullYear();
         const m = anchorDate.getMonth(); 
-        const maxNgayThangNay = new Date(y, m + 1, 0).getDate();
-        const dStart = Math.min(ngayBatDau, maxNgayThangNay);
-        const tuNgay = new Date(y, m, dStart, 0, 0, 0, 0);
-        const maxNgayThangSau = new Date(y, m + 2, 0).getDate();
-        const dEnd = Math.min(ngayBatDau, maxNgayThangSau);
-        const denNgay = new Date(y, m + 1, dEnd, 0, 0, 0, 0);
-        denNgay.setMilliseconds(-1); 
+        const ngayChot = window.ngayChotChuKy || 25;
+
+        // 1. Ngày KẾT THÚC chu kỳ của tháng đang xem (ví dụ: ngày 25 lúc 23:59:59)
+        const denNgay = new Date(y, m, ngayChot, 23, 59, 59, 999);
+        
+        // 2. Ngày BẮT ĐẦU chu kỳ (là ngày tiếp theo ngay sau ngày chốt của tháng trước)
+        // Tháng trước là m - 1. Ngày bắt đầu sẽ là ngàyChot + 1 lúc 00:00:00
+        const tuNgay = new Date(y, m - 1, ngayChot + 1, 0, 0, 0, 0);
+        
         return { tuNgay, denNgay };
     }
 
@@ -329,8 +323,8 @@
     const auth = getAuth(app); 
     const datathuchi = collection(db, "giao_dich_business");
     
-    // Biến toàn cục duy nhất để quản lý hủy theo dõi dữ liệu realtime
     let huyTheoDoiThuChi = null;
+    let huyTheoDoiCauHinh = null;
 
     // B. THAO TÁC CHUNG & QUẢN LÝ TÀI KHOẢN (AUTH)
     const manHinhAuth = document.getElementById('man-hinh-auth');
@@ -357,42 +351,52 @@
             if (txtTenUser) txtTenUser.innerText = user.displayName || user.email.split('@')[0];
             if (txtEmailUser) txtEmailUser.innerText = user.email;
             
-            window.ngayBatDauChuKy = 1; 
-            try {
-                const docRef = doc(db, "cau_hinh_user", user.uid);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists() && docSnap.data().ngayBatDau) {
-                    window.ngayBatDauChuKy = parseInt(docSnap.data().ngayBatDau); 
-                    if (selectChuKy) selectChuKy.value = window.ngayBatDauChuKy;
-                } 
-            } catch (err) {
-                console.error("Lỗi tải cấu hình chu kỳ:", err);
-            }
             tichHopNutDangXuat(); 
-            kichHoatHeThongDuLieuRealtime(user); 
+            
+            // Tải cấu hình ngày chốt từ bảng cau_hinh_user về trước
+            const docRefCauHinh = doc(db, "cau_hinh_user", user.uid);
+            huyTheoDoiCauHinh = onSnapshot(docRefCauHinh, (docSnap) => {
+                if (docSnap.exists()) {
+                    const dataCH = docSnap.data();
+                    window.ngayChotChuKy = dataCH.ngayChot || 25;
+                    const selectNgay = document.getElementById('select-ngay-chu-ky');
+                    if (selectNgay) selectNgay.value = window.ngayChotChuKy;
+                }
+                
+                // Sau khi có ngày chốt, tiến hành đồng bộ dữ liệu thu chi realtime
+                if (!huyTheoDoiThuChi) {
+                    kichHoatHeThongDuLieuRealtime(user); 
+                } else {
+                    hayLaiHeThongGiaoDienYeuCau();
+                }
+            });
+
         } else {
             if (manHinhAuth) manHinhAuth.style.display = 'flex';
             if (khungAppChinh) khungAppChinh.style.display = 'none';
             if (huyTheoDoiThuChi) { huyTheoDoiThuChi(); huyTheoDoiThuChi = null; } 
+            if (huyTheoDoiCauHinh) { huyTheoDoiCauHinh(); huyTheoDoiCauHinh = null; } 
         } 
     });
 
-    // Lưu cấu hình chu kỳ
-    document.getElementById('nut-luu-chu-ky')?.addEventListener('click', async () => {
-        if (!auth.currentUser) return alert("Phiên đăng nhập đã hết hạn!");
-        const ngayChon = parseInt(document.getElementById('chon-ngay-chu-ky').value);
-        try {
-            await setDoc(doc(db, "cau_hinh_user", auth.currentUser.uid), {ngayBatDau: ngayChon}, { merge: true }); 
-            window.ngayBatDauChuKy = ngayChon; 
-            alert("Đã lưu ngày bắt đầu chu kỳ tính toán mới thành công!");
-            if (window.duLieuSnapshotQuocTe) {
-                capNhatToanBoGiaoDien(window.duLieuSnapshotQuocTe);
-                capNhatThanhHanMuc(window.duLieuSnapshotQuocTe);
-            } 
-        } catch (err) {
-            alert("Không thể lưu cấu hình: " + err.message);
-        } 
-    });
+    // Xử lý sự kiện bấm nút SAVE cấu hình ngày chốt chu kỳ
+    const selectNgayChuKy = document.getElementById('select-ngay-chu-ky');
+    const nutLuuChuKy = document.getElementById('nut-luu-chu-ky');
+    if (nutLuuChuKy && selectNgayChuKy) {
+        nutLuuChuKy.addEventListener('click', async () => {
+            if (!auth.currentUser) { alert("Phiên đăng nhập đã hết hạn!"); return; }
+            const ngayChon = parseInt(selectNgayChuKy.value);
+            try {
+                // Ghi đè cấu hình vào bảng cau_hinh_user theo UID tài khoản
+                await setDoc(doc(db, "cau_hinh_user", auth.currentUser.uid), {
+                    ngayChot: ngayChon
+                }, { merge: true });
+                alert("Đã cập nhật ngày kết thúc chu kỳ thành công!");
+            } catch (error) {
+                alert("Không thể lưu cấu hình: " + error.message);
+            }
+        });
+    }
 
     // Chuyển đổi giao diện Đăng Nhập / Đăng Ký
     if (linkChuyenTrang) {
@@ -426,10 +430,6 @@
                 alert("Vui lòng điền đầy đủ Email và Mật khẩu!");
                 return;
             }
-            if (!email.includes('@')) {
-                alert("Tài khoản phải đúng định dạng Email (Ví dụ: vidu@gmail.com)!");
-                return;
-            }
             try {
                 if (isLoginMode) {
                     await signInWithEmailAndPassword(auth, email, password);
@@ -448,11 +448,8 @@
                     alert("Đăng ký tài khoản thành công!");
                 }
             } catch (error) {
-                console.error("Lỗi Auth: ", error.code);
                 if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
                     alert("Tài khoản hoặc mật khẩu không chính xác!");
-                } else if (error.code === 'auth/email-already-in-use') {
-                    alert("Email này đã được đăng ký bởi một người dùng khác!");
                 } else {
                     alert("Thao tác thất bại: " + error.message);
                 }
@@ -466,19 +463,18 @@
             e.preventDefault();
             const email = inputAuthUsername.value.trim();
             if (!email || !email.includes('@')) {
-                alert("Vui lòng nhập chính xác Email của bạn vào ô 'Tài khoản' trước khi bấm quên mật khẩu!");
+                alert("Vui lòng nhập chính xác Email của bạn vào ô 'Tài khoản'!");
                 return;
             }
             try {
                 await sendPasswordResetEmail(auth, email);
-                alert(`Hệ thống đã gửi một liên kết đặt lại mật khẩu mới vào hòm thư: ${email}. Vui lòng kiểm tra hộp thư!`);
+                alert(`Hệ thống đã gửi liên kết đặt lại mật khẩu vào hòm thư: ${email}`);
             } catch (error) {
-                alert("Không thể gửi email đặt lại mật khẩu: " + error.message);
+                alert("Không thể gửi email: " + error.message);
             }
         });
     }
 
-    // Hàm tạo nút đăng xuất tự động ở tab Tài Khoản
     function tichHopNutDangXuat() {
         const vungThongTin = document.querySelector('#tab-tai-khoan > div');
         if (vungThongTin && !document.getElementById('nut-dang-xuat-app')) {
@@ -489,9 +485,7 @@
             nutDangXuat.style.marginTop = '20px';
             nutDangXuat.innerText = '🔒 Đăng xuất ứng dụng';
             nutDangXuat.addEventListener('click', () => {
-                if (confirm("Bạn có chắc chắn muốn đăng xuất tài khoản không?")) {
-                    signOut(auth);
-                }
+                if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) signOut(auth);
             });
             vungThongTin.appendChild(nutDangXuat);
         }
@@ -504,7 +498,7 @@
             const iconSvg = idNutLamMoi.querySelector('svg'); 
             if (iconSvg) {
                 iconSvg.style.transform = 'rotate(360deg)';
-                iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                iconSvg.style.transition = 'transform 0.4s ease';
             }
             setTimeout(() => { window.location.reload(); }, 350);
         });
@@ -524,7 +518,6 @@
         }); 
     });
 
-    // C. SCRIPT CAC TRANG TAB
     // C.I TAB HOME (QUẢN LÝ HẠN MỨC)
     const txtChu = document.getElementById('chi-tieu-tren-han-muc');
     const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
@@ -534,16 +527,12 @@
     if (typeof thoiGianDangXem === 'undefined') {
         window.thoiGianDangXem = new Date();
         window.layChuoiThangNam = function(dateObj) {
-            const nam = dateObj.getFullYear(); 
-            const thang = String(dateObj.getMonth() + 1).padStart(2, '0'); 
-            return `${nam}-${thang}`;
+            return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
         }
         window.capNhatChuHienThiThang = function() {
             const txtThangNam = document.getElementById('hien-thi-thang-nam-han-muc'); 
             if (txtThangNam) {
-                const thang = String(window.thoiGianDangXem.getMonth() + 1).padStart(2, '0'); 
-                const nam = window.thoiGianDangXem.getFullYear(); 
-                txtThangNam.innerText = `Tháng ${thang}/${nam}`;
+                txtThangNam.innerText = `Tháng ${String(window.thoiGianDangXem.getMonth() + 1).padStart(2, '0')}/${window.thoiGianDangXem.getFullYear()}`;
             }
         }
     }
@@ -552,20 +541,16 @@
         let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
         let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0; 
         const [nam, thg] = thangDangXem.split('-'); 
-        let thongBaoThang = `tháng ${thg}/${nam}`; 
         let loiNhac = hanMucThangDangXem > 0
-            ? `Hạn mức ${thongBaoThang} hiện tại là ${hanMucThangDangXem.toLocaleString('vi-VN')} đ.\nNhập hạn mức mới (đ):`
-            : `Nhập hạn mức chi tiêu bạn muốn đặt cho ${thongBaoThang} (đ):`;        
+            ? `Hạn mức tháng ${thg}/${nam} hiện tại là ${hanMucThangDangXem.toLocaleString('vi-VN')} đ.\nNhập hạn mức mới (đ):`
+            : `Nhập hạn mức chi tiêu cho tháng ${thg}/${nam} (đ):`;        
         let nhapVao = prompt(loiNhac, hanMucThangDangXem > 0 ? hanMucThangDangXem : "");    
         if (nhapVao !== null) {
             let soTienMoi = parseFloat(nhapVao.toString().replace(/[^0-9]/g, '')); 
             if (!isNaN(soTienMoi) && soTienMoi > 0) {
                 boSuoTapHanMuc[thangDangXem] = soTienMoi;
-            } else if (nhapVao === "0" || nhapVao === "") {
-                delete boSuoTapHanMuc[thangDangXem];
             } else {
-                alert("Số tiền nhập vào không hợp lệ!");
-                return;
+                delete boSuoTapHanMuc[thangDangXem];
             }
             localStorage.setItem('bo_suo_tap_han_muc', JSON.stringify(boSuoTapHanMuc));
             if (window.duLieuSnapshotQuocTe) { capNhatThanhHanMuc(window.duLieuSnapshotQuocTe); }
@@ -576,7 +561,6 @@
     document.getElementById('nut-thang-truoc')?.addEventListener('click', (e) => { e.stopPropagation(); window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() - 1); hayLaiHeThongGiaoDienYeuCau(); });
     document.getElementById('nut-thang-sau')?.addEventListener('click', (e) => { e.stopPropagation(); window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() + 1); hayLaiHeThongGiaoDienYeuCau(); }); 
 
-    // Hàm duy nhất để chạy lại hệ thống đồng bộ 2 tab khi click chuyển đổi tháng
     function hayLaiHeThongGiaoDienYeuCau() {
         window.capNhatChuHienThiThang(); 
         if (window.duLieuSnapshotQuocTe) {
@@ -589,31 +573,30 @@
         window.duLieuSnapshotQuocTe = docs; 
         let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
         let tongDaChi = 0; 
+        const chuKyMoc = layRangeChuKy(window.thoiGianDangXem);
+
         docs.forEach(docItem => {
             const data = docItem.data(); 
-            if (data.thoiGian && data.thoiGian.startsWith(thangDangXem) && data.loai === 'chi') {
+            const thoiGianMoc = parseChuoiThoiGian(data.thoiGian);
+            if (thoiGianMoc >= chuKyMoc.tuNgay && thoiGianMoc <= chuKyMoc.denNgay && data.loai === 'chi') {
                 tongDaChi += parseFloat(data.soTien) || 0;
             }
         }); 
+
         let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
         if (!txtChu || !thanhPhanTram) return;
         if (hanMucThangDangXem === 0) {
             txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')} đ / Chưa đặt`; 
             thanhPhanTram.style.width = '0%'; 
-            thanhPhanTram.style.backgroundColor = '#e0e0e0'; 
-            if (txtGoiY) { txtGoiY.innerText = "💡 Bấm vào đây để cài đặt hạn mức"; txtGoiY.style.color = '#999999'; }
+            if (txtGoiY) { txtGoiY.innerText = "💡 Bấm vào đây để cài đặt hạn mức tháng"; txtGoiY.style.color = '#999999'; }
             return;
         }
         let phanTram = (tongDaChi / hanMucThangDangXem) * 100; 
-        let phanTramHienThi = phanTram > 100 ? 100 : phanTram; 
         txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')}/${hanMucThangDangXem.toLocaleString('vi-VN')}đ`; 
-        thanhPhanTram.style.width = `${phanTramHienThi}%`;
+        thanhPhanTram.style.width = `${phanTram > 100 ? 100 : phanTram}%`;
         if (phanTram >= 100) {
             thanhPhanTram.style.backgroundColor = '#e74c3c'; 
-            if (txtGoiY) { txtGoiY.innerText = `⚠️ Bạn đã tiêu vượt quá hạn mức ${(phanTram - 100).toFixed(0)}%!`; txtGoiY.style.color = '#e74c3c'; }
-        } else if (phanTram >= 75) {
-            thanhPhanTram.style.backgroundColor = '#f1c40f'; 
-            if (txtGoiY) { txtGoiY.innerText = `🔔 Cẩn thận, đã tiêu hết ${phanTram.toFixed(0)}% hạn mức!`; txtGoiY.style.color = '#f1c40f'; }
+            if (txtGoiY) { txtGoiY.innerText = `⚠️ Vượt quá hạn mức ${(phanTram - 100).toFixed(0)}%!`; txtGoiY.style.color = '#e74c3c'; }
         } else {
             thanhPhanTram.style.backgroundColor = '#2ecc71'; 
             if (txtGoiY) { txtGoiY.innerText = `✅ Còn ${(hanMucThangDangXem - tongDaChi).toLocaleString('vi-VN')}đ chi tiêu`; txtGoiY.style.color = '#999999'; }
@@ -621,7 +604,7 @@
     }
     window.capNhatChuHienThiThang();
 
-    // C.2 TAB LỊCH SỬ & ĐỔ DỮ LIỆU REALTIME THEO TỪNG USER
+    // C.2 TAB LỊCH SỬ & ĐỔ DỮ LIỆU REALTIME
     const idHienThiSoDu = document.getElementById('so-du');
     const idVungLichSu = document.getElementById('lich-su-giao-dich');
     const idBcThu = document.getElementById('bao-cao-thu');
@@ -634,7 +617,7 @@
         const truyVanDocLapUser = query(datathuchi, where("userId", "==", user.uid)); 
         huyTheoDoiThuChi = onSnapshot(truyVanDocLapUser, (snapshot) => {
             capNhatToanBoGiaoDien(snapshot.docs);
-            capNhatThanhHanMuc(snapshot.docs); // Cập nhật luôn cả thanh hạn mức ở Home
+            capNhatThanhHanMuc(snapshot.docs);
         });
     }
 
@@ -646,23 +629,17 @@
         let tongThuNhap = 0; 
         let tongChiTieu = 0; 
 
-        const chuKy = layRangeChuKy(window.thoiGianDangXem, window.ngayBatDauChuKy || 1);
-        const tuNgay = chuKy.tuNgay;
-        const denNgay = chuKy.denNgay;
+        const chuKy = layRangeChuKy(window.thoiGianDangXem);
 
         if (!docs || docs.length === 0) {
             idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chưa có giao dịch nào!</div>'; 
             if (idHienThiSoDu) idHienThiSoDu.innerText = "0 đ";
             if (idBcThu) idBcThu.innerText = "0 đ";
             if (idBcChi) idBcChi.innerText = "0 đ";
-            if (idThanhThu) idThanhThu.style.width = "0%";
-            if (idThanhChi) idThanhChi.style.width = "0%";
             return;
         }
 
-        const mangSapXep = [...docs].sort((a, b) => {
-            return (b.data().thoiGian || '').localeCompare(a.data().thoiGian || '');
-        });
+        const mangSapXep = [...docs].sort((a, b) => (b.data().thoiGian || '').localeCompare(a.data().thoiGian || ''));
 
         mangSapXep.forEach((docItem) => {
             const giaoDich = docItem.data();
@@ -670,22 +647,15 @@
             const soTienGiaoDich = parseFloat(giaoDich.soTien) || 0;
             const thoiGianMoc = parseChuoiThoiGian(giaoDich.thoiGian);
 
-            if (giaoDich.loai === 'thu') {
-                tongSoDu += soTienGiaoDich;
-            } else {
-                tongSoDu -= soTienGiaoDich;
-            }
+            if (giaoDich.loai === 'thu') { tongSoDu += soTienGiaoDich; } else { tongSoDu -= soTienGiaoDich; }
 
-            if (thoiGianMoc >= tuNgay && thoiGianMoc <= denNgay) {
-                if (giaoDich.loai === 'thu') {
-                    tongThuNhap += soTienGiaoDich;
-                } else {
-                    tongChiTieu += soTienGiaoDich;
-                }
+            // Lọc dữ liệu nằm trong khoảng chu kỳ (đầu đến cuối tháng chốt)
+            if (thoiGianMoc >= chuKy.tuNgay && thoiGianMoc <= chuKy.denNgay) {
+                if (giaoDich.loai === 'thu') { tongThuNhap += soTienGiaoDich; } else { tongChiTieu += soTienGiaoDich; }
 
-                const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+                const hienThiDanhMuc = giaoDich.danhMuc || "Khác";
                 const iconPhuHop = danhSachIcon[hienThiDanhMuc] || "📂";
-                const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
+                const hienThiThoiGian = giaoDich.thoiGian || "--/--/---- --:--";
 
                 let kyTuDau = giaoDich.loai === 'thu' ? '+' : '-';
                 let lopMauSac = giaoDich.loai === 'thu' ? 'mau-thu' : 'mau-chi';
@@ -693,10 +663,7 @@
                 const dongMoi = document.createElement('div');
                 dongMoi.classList.add('dong-giao-dich');
                 dongMoi.innerHTML = `
-                    <div class="nen-hanh-dong">
-                        <div class="hanh-dong-sua">✏️ Sửa</div>
-                        <div class="hanh-dong-xoa">🗑️ Xóa</div>
-                    </div>
+                    <div class="nen-hanh-dong"><div class="hanh-dong-sua">✏️ Sửa</div><div class="hanh-dong-xoa">🗑️ Xóa</div></div>
                     <div class="giao-dich-noi-dung" data-id="${docId}">
                         <div class="giao-dich-trai"> <span class="giao-dich-muc">${iconPhuHop} ${hienThiDanhMuc}</span> <span class="giao-dich-ten">${giaoDich.ten}</span> </div>
                         <div class="giao-dich-phai-cum"> <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span> <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${soTienGiaoDich.toLocaleString('vi-VN')} đ</span> </div>
@@ -707,7 +674,7 @@
         });
 
         if (idVungLichSu.innerHTML === '') {
-            idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chu kỳ này không phát sinh giao dịch nào!</div>';
+            idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chu kỳ tháng này không phát sinh giao dịch!</div>';
         }
 
         if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN') + " đ"; 
@@ -719,29 +686,22 @@
             if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`; 
             if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
         } else {
-            if (idThanhThu) idThanhThu.style.width = "0%";
-            if (idThanhChi) idThanhChi.style.width = "0%";
+            if (idThanhThu) idThanhThu.style.width = "0%"; if (idThanhChi) idThanhChi.style.width = "0%";
         }
 
-        // --- CODE XỬ LÝ VUỐT CHẠM CỦA CÁC ITEM DÒNG LỊCH SỬ ---
+        // ĐOẠN XỬ LÝ VUỐT CHẠM (SWIPE TO EDIT/DELETE)
         document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
             let xBatDau = 0; let xDiChuyen = 0; let dangVuot = false;
-            const batDauVuot = (e) => { 
-                dangVuot = true; 
-                xBatDau = e.touches ? e.touches[0].clientX : e.clientX; 
-            };
+            const batDauVuot = (e) => { dangVuot = true; xBatDau = e.touches ? e.touches[0].clientX : e.clientX; };
             const dangKeo = (e) => { 
                 if (!dangVuot) return; 
                 const xHienTai = e.touches ? e.touches[0].clientX : e.clientX; 
                 xDiChuyen = xHienTai - xBatDau; 
-                if (xDiChuyen > 100) xDiChuyen = 100;
-                if (xDiChuyen < -100) xDiChuyen = -100; 
-                noiDung.style.transform = `translateX(${xDiChuyen}px)`; 
-                noiDung.style.transition = 'none';
+                if (xDiChuyen > 100) xDiChuyen = 100; if (xDiChuyen < -100) xDiChuyen = -100; 
+                noiDung.style.transform = `translateX(${xDiChuyen}px)`; noiDung.style.transition = 'none';
             };
             const ketThucVuot = async () => { 
-                if (!dangVuot) return; 
-                dangVuot = false; 
+                if (!dangVuot) return; dangVuot = false; 
                 noiDung.style.transition = 'transform 0.2s ease-out';
                 const idTaiLieu = noiDung.getAttribute('data-id');
                 const tenGiaoDich = noiDung.querySelector('.giao-dich-ten')?.innerText || '';
@@ -753,63 +713,35 @@
                     noiDung.style.transform = 'translateX(-50%)'; 
                     setTimeout(async () => {
                         if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
-                            try {
-                                const taiLieuRef = doc(db, "giao_dich_business", idTaiLieu); 
-                                await deleteDoc(taiLieuRef);
-                            } catch (error) {
-                                console.error("Lỗi xóa:", error); 
-                                alert("Không thể xóa giao dịch!"); 
-                                noiDung.style.transform = 'translateX(0)';
-                            }
+                            try { await deleteDoc(doc(db, "giao_dich_business", idTaiLieu)); } catch (err) { noiDung.style.transform = 'translateX(0)'; }
                         } else { noiDung.style.transform = 'translateX(0)'; }
                     }, 200);
                 } 
                 else if (xDiChuyen > 60) {
                     noiDung.style.transform = 'translateX(0)';
                     if (idTen) idTen.value = tenGiaoDich; 
-                    if (idSoTien) { 
-                        let soTienSạch = soTienGiaoDich.replace(/[^\d]/g, ''); 
-                        idSoTien.value = soTienSạch; 
-                        idSoTien.dispatchEvent(new Event('input'));
-                    } 
-                    if (idLoaiGiaoDich) {
-                        idLoaiGiaoDich.value = soTienGiaoDich.includes('+') ? 'thu' : 'chi';
-                        idLoaiGiaoDich.dispatchEvent(new Event('change'));
-                    } 
-                    setTimeout(() => {
-                        if (idDanhMuc) { 
-                            let danhMucSạch = danhMucGiaoDich.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, "").trim(); 
-                            idDanhMuc.value = danhMucSạch || 'Khác';
-                        } 
-                    }, 100);                        
+                    if (idSoTien) { idSoTien.value = soTienGiaoDich.replace(/[^\d]/g, ''); idSoTien.dispatchEvent(new Event('input')); } 
+                    if (idLoaiGiaoDich) { idLoaiGiaoDich.value = soTienGiaoDich.includes('+') ? 'thu' : 'chi'; idLoaiGiaoDich.dispatchEvent(new Event('change')); } 
+                    setTimeout(() => { if (idDanhMuc) idDanhMuc.value = danhMucGiaoDich.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, "").trim() || 'Khác'; }, 100);                        
                     let thoiGianSạch = thoiGianGiaoDich.replace('🕒', '').trim(); 
                     if (thoiGianSạch && thoiGianSạch.includes(' ')) {
                         const mangPhanTach = thoiGianSạch.split(' '); 
-                        if (inputNgay) inputNgay.value = mangPhanTach[0]; 
-                        if (inputGio) inputGio.value = mangPhanTach[1];
+                        if (inputNgay) inputNgay.value = mangPhanTach[0]; if (inputGio) inputGio.value = mangPhanTach[1];
                     } 
                     window.idGiaoDichDangSua = idTaiLieu; 
                     if (idnutsave) idnutsave.innerText = "💾 Cập nhật thay đổi"; 
-                    const tabNhapLieu = document.querySelector('[data-target="add"]');
-                    if (tabNhapLieu) { tabNhapLieu.click(); }
+                    document.querySelector('[data-target="add"]')?.click();
                 } 
                 else { noiDung.style.transform = 'translateX(0)'; }
                 xDiChuyen = 0;
             };
 
-            noiDung.addEventListener('touchstart', batDauVuot); 
-            noiDung.addEventListener('touchmove', dangKeo); 
-            noiDung.addEventListener('touchend', ketThucVuot); 
+            noiDung.addEventListener('touchstart', batDauVuot); noiDung.addEventListener('touchmove', dangKeo); noiDung.addEventListener('touchend', ketThucVuot); 
             noiDung.addEventListener('mousedown', (e) => {
                 batDauVuot(e);
                 const xửLýDiChuột = (ev) => dangKeo(ev);
-                const xửLýThảChuột = () => {
-                    ketThucVuot();
-                    window.removeEventListener('mousemove', xửLýDiChuột);
-                    window.removeEventListener('mouseup', xửLýThảChuột);
-                };
-                window.addEventListener('mousemove', xửLýDiChuột); 
-                window.addEventListener('mouseup', xửLýThảChuột);
+                const xửLýThảChuột = () => { ketThucVuot(); window.removeEventListener('mousemove', xửLýDiChuột); window.removeEventListener('mouseup', xửLýThảChuột); };
+                window.addEventListener('mousemove', xửLýDiChuột); window.addEventListener('mouseup', xửLýThảChuột);
             }); 
         });
     }
@@ -844,20 +776,15 @@
 
     if (idSoTien && labelSoTien) {
         idSoTien.addEventListener('input', function () {
-            let value = this.value.replace(/\D/g, ''); 
-            this.value = value;
+            let value = this.value.replace(/\D/g, ''); this.value = value;
             if (!value) { labelSoTien.innerText = 'Số tiền (đ):'; return; } 
-            let soDaPhanCach = Number(value).toLocaleString('vi-VN'); 
-            labelSoTien.innerText = `Số tiền: ${soDaPhanCach}đ`;
+            labelSoTien.innerText = `Số tiền: ${Number(value).toLocaleString('vi-VN')}đ`;
         });
     }
 
     if (idnutsave) {
         idnutsave.addEventListener('click', async () => {
-            if (!auth.currentUser) {
-                alert("Phiên đăng nhập đã hết hạn, vui lòng tải lại trang để đăng nhập lại!");
-                return;
-            }
+            if (!auth.currentUser) { alert("Phiên đăng nhập đã hết hạn!"); return; }
             const ngayNhap = inputNgay ? inputNgay.value : ""; 
             const gioNhap = inputGio ? inputGio.value : ""; 
             const loai = idLoaiGiaoDich ? idLoaiGiaoDich.value : "chi";
@@ -867,29 +794,22 @@
             const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
 
             if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
-                alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
-                return;
+                alert('Vui lòng kiểm tra lại thông tin hợp lệ!'); return;
             }
             try {
                 if (window.idGiaoDichDangSua) {
-                    const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
-                    await updateDoc(GiaoDichThuChiDangSua, {ten: ten, soTien: soTien, loai: loai, danhMuc: danhMuc, thoiGian: chuoiThoiGianGop, userId: auth.currentUser.uid}); 
-                    window.idGiaoDichDangSua = null; 
-                    idnutsave.innerText = "Ghi đè / Thêm mới";
+                    await updateDoc(doc(db, "giao_dich_business", window.idGiaoDichDangSua), {ten: ten, soTien: soTien, loai: loai, danhMuc: danhMuc, thoiGian: chuoiThoiGianGop, userId: auth.currentUser.uid}); 
+                    window.idGiaoDichDangSua = null; idnutsave.innerText = "Ghi đè / Thêm mới";
                 } else {
                     await addDoc(datathuchi, {ten: ten, soTien: soTien, loai: loai, danhMuc: danhMuc, thoiGian: chuoiThoiGianGop, userId: auth.currentUser.uid});
                 }
-                if (idTen) idTen.value = ''; 
-                if (idSoTien) idSoTien.value = ''; 
+                if (idTen) idTen.value = ''; if (idSoTien) idSoTien.value = ''; 
                 if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):'; 
                 const bayGioSauLuu = new Date();
                 if (inputNgay) inputNgay.value = `${bayGioSauLuu.getFullYear()}-${String(bayGioSauLuu.getMonth() + 1).padStart(2, '0')}-${String(bayGioSauLuu.getDate()).padStart(2, '0')}`;
                 if (inputGio) inputGio.value = `${String(bayGioSauLuu.getHours()).padStart(2, '0')}:${String(bayGioSauLuu.getMinutes()).padStart(2, '0')}`;
-                if (nutHome) { nutHome.click(); } 
-            } catch (loi) {
-                console.error("Lỗi kết nối Firebase: ", loi); 
-                alert("Không thể ghi nhận giao dịch lên đám mây!");
-            } 
+                if (nutHome) nutHome.click();
+            } catch (loi) { alert("Không thể ghi nhận giao dịch!"); } 
         });
     }
 </script>
