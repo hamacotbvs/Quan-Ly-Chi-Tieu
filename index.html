@@ -655,7 +655,7 @@
     const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Trang phục": "🛍️", "Mỹ phẩm": "🛍️", "Hóa đơn": "💵", "Nhà cửa": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Thu nhập khác": "💸", "Khác": "✨"};
 
 // BIỂU ĐỒ NGÂN SÁCH THU CHI 12 THÁNG
-// Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ và vẽ biểu đồ đè lồng nhau (Đã sửa lỗi cache)
+// Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ và vẽ biểu đồ đè lồng nhau (Đã sửa lỗi che cột)
 function capNhatBieuDoBaoCaoNam(docs) {
     const ctx = document.getElementById('bieuDoNganSach');
     if (!ctx) return;
@@ -721,7 +721,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
         }
     }
 
-    // 🔥 BƯỚC QUAN TRỌNG NHẤT: Nếu đã có biểu đồ cũ, hủy hoàn toàn để xóa sạch cấu hình "tách cột" cũ
+    // BƯỚC QUAN TRỌNG NHẤT: Nếu đã có biểu đồ cũ, hủy hoàn toàn để xóa sạch cấu hình "tách cột" cũ
     if (bieuDoInstance) {
         bieuDoInstance.destroy();
     }
@@ -739,7 +739,8 @@ function capNhatBieuDoBaoCaoNam(docs) {
                     barPercentage: 0.85, 
                     categoryPercentage: 0.8, // Giữ tỷ lệ khoảng cách đồng bộ giữa các tháng
                     borderRadius: 4,
-                    grouped: false // 🔑 Ép buộc thanh này không chia tách không gian cột
+                    grouped: false, // Ép buộc thanh này không chia tách không gian cột
+                    order: 2 // 🔑 QUAN TRỌNG: Đặt order = 2 để nó nằm ở LỚP DƯỚI (vẽ trước)
                 },
                 {
                     label: 'Thanh Trước',
@@ -748,7 +749,8 @@ function capNhatBieuDoBaoCaoNam(docs) {
                     barPercentage: 0.55, // Co nhỏ thanh trước lại để lộ viền thanh sau ra ngoài
                     categoryPercentage: 0.8,
                     borderRadius: 4,
-                    grouped: false // 🔑 Ép buộc thanh này nhảy vào đứng chung tâm với thanh sau
+                    grouped: false, // Ép buộc thanh này nhảy vào đứng chung tâm với thanh sau
+                    order: 1 // 🔑 QUAN TRỌNG: Đặt order = 1 để nó nằm ở LỚP TRÊN (vẽ đè lên)
                 }
             ]
         },
