@@ -288,21 +288,18 @@
     // Biến toàn cục lưu ngày chốt chu kỳ (Mặc định là ngày 25 nếu chưa tải xong từ DB)
     window.ngayChotChuKy = 25; 
 
-// Biến toàn cục lưu ngày chốt chu kỳ (Mặc định ban đầu là ngày 25 nếu chưa tải xong từ DB)
+// Biến toàn cục hệ thống
     window.ngayChotChuKy = 25; 
-    let checkKhoiTaoLanDau = true; // Cờ kiểm tra để tự động nhảy tháng lúc mới mở app
+    window.boSuoTapHanMuc = {}; // Thay vì localStorage, biến này sẽ được đồng bộ từ Firebase
+    let checkKhoiTaoLanDau = true; 
 
-    // Hàm tính toán mốc thời gian: Ngày chọn đóng vai trò là NGÀY KẾT THÚC CHU KỲ
+    // Hàm tính toán mốc thời gian chu kỳ tính toán
     function layRangeChuKy(anchorDate) {
         const y = anchorDate.getFullYear();
         const m = anchorDate.getMonth(); 
         const ngayChot = window.ngayChotChuKy || 25;
 
-        // 1. Ngày KẾT THÚC chu kỳ của tháng đang xem (Ví dụ: ngày 24 lúc 23:59:59)
         const denNgay = new Date(y, m, ngayChot, 23, 59, 59, 999);
-        
-        // 2. Ngày BẮT ĐẦU chu kỳ (Là ngày tiếp theo ngay sau ngày chốt của tháng trước)
-        // Tháng trước là m - 1. Ngày bắt đầu sẽ là ngàyChot + 1 lúc 00:00:00
         const tuNgay = new Date(y, m - 1, ngayChot + 1, 0, 0, 0, 0);
         
         return { tuNgay, denNgay };
@@ -361,27 +358,34 @@
             
             tichHopNutDangXuat(); 
             
-            // Tải cấu hình ngày chốt từ bảng cau_hinh_user về trước
+            // Tải cấu hình ngày chốt và HẠN MỨC từ bảng cau_hinh_user realtime
             const docRefCauHinh = doc(db, "cau_hinh_user", user.uid);
             huyTheoDoiCauHinh = onSnapshot(docRefCauHinh, (docSnap) => {
                 if (docSnap.exists()) {
                     const dataCH = docSnap.data();
                     window.ngayChotChuKy = dataCH.ngayChot || 25;
+                    // 🔥 Lấy hạn mức từ Firebase đổ vào biến toàn cục
+                    window.boSuoTapHanMuc = dataCH.hanMucThang || {};
+                    
                     const selectNgay = document.getElementById('select-ngay-chu-ky');
                     if (selectNgay) selectNgay.value = window.ngayChotChuKy;
                 }
                 
-                // 🔥 TỰ ĐỘNG NHẢY SANG CHU KỲ THÁNG TIẾP THEO NẾU NGÀY HÔM NAY ĐÃ VƯỢT QUA NGÀY CHỐT
+                // Tự động nhảy sang chu kỳ tháng tiếp theo nếu vượt quá ngày chốt
                 if (checkKhoiTaoLanDau) {
                     const homNay = new Date();
                     if (homNay.getDate() > window.ngayChotChuKy) {
                         window.thoiGianDangXem.setMonth(homNay.getMonth() + 1);
                     }
-                    window.capNhatChuHienThiThang(); // Cập nhật lại chữ hiển thị "Tháng XX/YYYY" trên tiêu đề
+                    window.capNhatChuHienThiThang(); 
                     checkKhoiTaoLanDau = false; 
                 }
 
-                // Sau khi có ngày chốt, tiến hành đồng bộ dữ liệu thu chi realtime
+                // Cập nhật lại giao diện hạn mức ngay khi dữ liệu cấu hình từ Firebase trả về
+                if (window.duLieuSnapshotQuocTe) {
+                    capNhatThanhHanMuc(window.duLieuSnapshotQuocTe);
+                }
+
                 if (!huyTheoDoiThuChi) {
                     kichHoatHeThongDuLieuRealtime(user); 
                 } else {
@@ -397,7 +401,7 @@
         } 
     });
 
-    // Xử lý sự kiện bấm nút SAVE cấu hình ngày chốt chu kỳ
+    // Lưu ngày chốt chu kỳ
     const selectNgayChuKy = document.getElementById('select-ngay-chu-ky');
     const nutLuuChuKy = document.getElementById('nut-luu-chu-ky');
     if (nutLuuChuKy && selectNgayChuKy) {
@@ -405,7 +409,6 @@
             if (!auth.currentUser) { alert("Phiên đăng nhập đã hết hạn!"); return; }
             const ngayChon = parseInt(selectNgayChuKy.value);
             try {
-                // Ghi đè cấu hình vào bảng cau_hinh_user theo UID tài khoản
                 await setDoc(doc(db, "cau_hinh_user", auth.currentUser.uid), {
                     ngayChot: ngayChon
                 }, { merge: true });
@@ -540,7 +543,6 @@
     const txtChu = document.getElementById('chi-tieu-tren-han-muc');
     const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
     const txtGoiY = document.getElementById('goi-y-han-muc');
-    let boSuoTapHanMuc = JSON.parse(localStorage.getItem('bo_suo_tap_han_muc')) || {};
 
     if (typeof thoiGianDangXem === 'undefined') {
         window.thoiGianDangXem = new Date();
@@ -555,23 +557,36 @@
         }
     }
 
-    document.getElementById('vung-han-muc-chi-tieu')?.addEventListener('click', () => {
+    // 🔥 XỬ LÝ SỰ KIỆN NHẬP HẠN MỨC - LƯU THẲNG LÊN FIREBASE
+    document.getElementById('vung-han-muc-chi-tieu')?.addEventListener('click', async () => {
+        if (!auth.currentUser) { alert("Phiên đăng nhập đã hết hạn!"); return; }
+        
         let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
-        let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0; 
+        let hanMucThangDangXem = window.boSuoTapHanMuc[thangDangXem] || 0; 
         const [nam, thg] = thangDangXem.split('-'); 
         let loiNhac = hanMucThangDangXem > 0
             ? `Hạn mức tháng ${thg}/${nam} hiện tại là ${hanMucThangDangXem.toLocaleString('vi-VN')} đ.\nNhập hạn mức mới (đ):`
             : `Nhập hạn mức chi tiêu cho tháng ${thg}/${nam} (đ):`;        
+        
         let nhapVao = prompt(loiNhac, hanMucThangDangXem > 0 ? hanMucThangDangXem : "");    
         if (nhapVao !== null) {
             let soTienMoi = parseFloat(nhapVao.toString().replace(/[^0-9]/g, '')); 
             if (!isNaN(soTienMoi) && soTienMoi > 0) {
-                boSuoTapHanMuc[thangDangXem] = soTienMoi;
+                window.boSuoTapHanMuc[thangDangXem] = soTienMoi;
             } else {
-                delete boSuoTapHanMuc[thangDangXem];
+                delete window.boSuoTapHanMuc[thangDangXem];
             }
-            localStorage.setItem('bo_suo_tap_han_muc', JSON.stringify(boSuoTapHanMuc));
-            if (window.duLieuSnapshotQuocTe) { capNhatThanhHanMuc(window.duLieuSnapshotQuocTe); }
+            
+            // Tiến hành update đẩy object map lên Firebase dữ liệu cấu hình user
+            try {
+                await setDoc(doc(db, "cau_hinh_user", auth.currentUser.uid), {
+                    hanMucThang: window.boSuoTapHanMuc
+                }, { merge: true });
+                
+                if (window.duLieuSnapshotQuocTe) { capNhatThanhHanMuc(window.duLieuSnapshotQuocTe); }
+            } catch (error) {
+                alert("Lỗi không thể lưu hạn mức lên đám mây: " + error.message);
+            }
         }
     });
 
@@ -601,7 +616,8 @@
             }
         }); 
 
-        let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
+        // 🔥 Đọc dữ liệu từ map cấu hình lấy về từ Firebase
+        let hanMucThangDangXem = window.boSuoTapHanMuc[thangDangXem] || 0;
         if (!txtChu || !thanhPhanTram) return;
         if (hanMucThangDangXem === 0) {
             txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')} đ / Chưa đặt`; 
@@ -667,7 +683,6 @@
 
             if (giaoDich.loai === 'thu') { tongSoDu += soTienGiaoDich; } else { tongSoDu -= soTienGiaoDich; }
 
-            // Lọc dữ liệu nằm trong khoảng chu kỳ (đầu đến cuối tháng chốt)
             if (thoiGianMoc >= chuKy.tuNgay && thoiGianMoc <= chuKy.denNgay) {
                 if (giaoDich.loai === 'thu') { tongThuNhap += soTienGiaoDich; } else { tongChiTieu += soTienGiaoDich; }
 
