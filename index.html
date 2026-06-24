@@ -417,16 +417,38 @@
     // Nhập thêm các hàm bảo mật từ thư viện Firebase Auth
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// Tạo danh sách từ ngày 1 đến ngày 31 cho thẻ select
-const selectChuKy = document.getElementById('chon-ngay-chu-ky');
-if (selectChuKy) {
-    for (let i = 1; i <= 31; i++) {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.innerText = `Ngày ${i} hàng tháng`;
-        selectChuKy.appendChild(opt);
-    }
-}
+// HỖ TRỢ CHỌN NGÀY ĐẦU THÁNG
+    // Tạo danh sách từ ngày 1 đến ngày 31 cho thẻ select
+    const selectChuKy = document.getElementById('chon-ngay-chu-ky');
+    if (selectChuKy) {
+        for (let i = 1; i <= 31; i++) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.innerText = `Ngày ${i} hàng tháng`;
+            selectChuKy.appendChild(opt);} }
+    // Hàm tính toán mốc thời gian Chu kỳ (Xử lý mượt mà cả các tháng thiếu ngày như tháng 2)
+    function layRangeChuKy(anchorDate, ngayBatDau) {
+        const y = anchorDate.getFullYear();
+        const m = anchorDate.getMonth(); // 0 - 11
+    
+        const maxNgayThangNay = new Date(y, m + 1, 0).getDate();
+        const dStart = Math.min(ngayBatDau, maxNgayThangNay);
+        const tuNgay = new Date(y, m, dStart, 0, 0, 0, 0);
+    
+        const maxNgayThangSau = new Date(y, m + 2, 0).getDate();
+        const dEnd = Math.min(ngayBatDau, maxNgayThangSau);
+        const denNgay = new Date(y, m + 1, dEnd, 0, 0, 0, 0);
+        denNgay.setMilliseconds(-1); // Lùi lại 1ms để lấy sát giờ cuối ngày hôm trước
+    
+        return { tuNgay, denNgay };}
+
+    // Hàm chuyển đổi chuỗi định dạng "YYYY-MM-DD HH:mm" của bạn thành đối tượng Date để so sánh
+    function parseChuoiThoiGian(chuoi) {
+        if (!chuoi) return new Date(0);
+        const [ngayPart, gioPart] = chuoi.split(' ');
+        const [nam, thang, ngay] = ngayPart.split('-').map(Number);
+        const [gio, phut] = gioPart ? gioPart.split(':').map(Number) : [0, 0];
+        return new Date(nam, thang - 1, ngay, gio, phut);}
 // A. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     const firebaseConfig = {
