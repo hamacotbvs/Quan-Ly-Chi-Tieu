@@ -250,7 +250,7 @@
         <button id="nut-luu-chu-ky" style="padding: 10px 18px; background-color: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s;">Save</button>
     </div>
     <small style="color: #7f8c8d; display: block; margin-top: 6px; font-size: 12px; line-height: 1.4;">
-        *Ví dụ: Nếu chọn ngày 5, khi xem Tháng 4, hệ thống sẽ gom nhóm tính toán toàn bộ thu/chi từ ngày 6 tháng 3 đến hết ngày 5 tháng 4.*
+        *Ví dụ: Nếu chọn ngày 24, khi xem Tháng 6, hệ thống sẽ gom nhóm tính toán toàn bộ thu/chi từ ngày 25 tháng 5 đến hết ngày 24 tháng 6.*
     </small> 
 </div>
     </div>
@@ -282,6 +282,9 @@
     import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, deleteDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+    // Tạo danh sách từ ngày 1 đến ngày 31 cho thẻ select
+    const selectChuKy = document.getElementById('select-ngay-chu-ky');
+    if (selectChuKy) {for (let i = 1; i <= 31; i++) {const opt = document.createElement('option'); opt.value = i; opt.innerText = `Ngày ${i} hàng tháng`; selectChuKy.appendChild(opt);}}
     // Biến toàn cục lưu ngày chốt chu kỳ (Mặc định là ngày 25 nếu chưa tải xong từ DB)
     window.ngayChotChuKy = 25; 
 
