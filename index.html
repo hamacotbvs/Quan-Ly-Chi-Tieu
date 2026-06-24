@@ -417,6 +417,16 @@
     // Nhập thêm các hàm bảo mật từ thư viện Firebase Auth
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+// Tạo danh sách từ ngày 1 đến ngày 31 cho thẻ select
+const selectChuKy = document.getElementById('chon-ngay-chu-ky');
+if (selectChuKy) {
+    for (let i = 1; i <= 31; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.innerText = `Ngày ${i} hàng tháng`;
+        selectChuKy.appendChild(opt);
+    }
+}
 // A. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     const firebaseConfig = {
