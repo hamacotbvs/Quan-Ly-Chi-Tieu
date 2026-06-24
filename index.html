@@ -655,7 +655,7 @@
     const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Trang phục": "🛍️", "Mỹ phẩm": "🛍️", "Hóa đơn": "💵", "Nhà cửa": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Thu nhập khác": "💸", "Khác": "✨"};
 
 // BIỂU ĐỒ NGÂN SÁCH THU CHI 12 THÁNG
-// Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ, vẽ biểu đồ đè lồng nhau và thêm đường CÒN LẠI
+// Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ, vẽ biểu đồ đè lồng nhau và đường CÒN LẠI (Màu vàng, không chấm)
 function capNhatBieuDoBaoCaoNam(docs) {
     const ctx = document.getElementById('bieuDoNganSach');
     if (!ctx) return;
@@ -691,23 +691,20 @@ function capNhatBieuDoBaoCaoNam(docs) {
     // Tạo các mảng động cấu trúc biểu đồ lồng nhau và mảng còn lại
     const mangMax = Array(12).fill(0);       
     const mangMin = Array(12).fill(0);       
-    const mangConLai = Array(12).fill(0); // 🔑 Mảng lưu số tiền còn lại để chi tiêu
+    const mangConLai = Array(12).fill(0); 
     const mangMauMax = Array(12).fill('');   
     const mangMauMin = Array(12).fill('');   
     const mangLoaiMax = Array(12).fill('');  
     const mangLoaiMin = Array(12).fill('');
 
-    // So sánh từng tháng để quyết định thứ tự trước/sau, màu sắc và tính số tiền còn lại
     for (let m = 0; m < 12; m++) {
         const chuoiThangNam = `${namDangXem}-${String(m + 1).padStart(2, '0')}`;
         const hanMuc = window.boSuoTapHanMuc[chuoiThangNam] || 0;
         const daChi = mangDaChiThucTe[m];
 
-        // Tính số tiền còn lại (Nếu âm tức là đã chi vượt mức)
         mangConLai[m] = hanMuc - daChi; 
 
         if (hanMuc >= daChi) {
-            // Trường hợp AN TOÀN: Ngân sách lớn làm nền (Xanh), Chi tiêu nhỏ nằm trước (Đỏ)
             mangMax[m] = hanMuc;
             mangMin[m] = daChi;
             mangMauMax[m] = '#3498db'; 
@@ -715,7 +712,6 @@ function capNhatBieuDoBaoCaoNam(docs) {
             mangLoaiMax[m] = 'Ngân sách';
             mangLoaiMin[m] = 'Thực tế chi';
         } else {
-            // Trường hợp VƯỢT MỨC: Chi tiêu vượt vọt lên làm nền (Đỏ), Ngân sách thu gọn ở trước (Xanh)
             mangMax[m] = daChi;
             mangMin[m] = hanMuc;
             mangMauMax[m] = '#e74c3c'; 
@@ -725,31 +721,29 @@ function capNhatBieuDoBaoCaoNam(docs) {
         }
     }
 
-    // BƯỚC QUAN TRỌNG NHẤT: Nếu đã có biểu đồ cũ, hủy hoàn toàn để tránh xung đột cấu hình
     if (bieuDoInstance) {
         bieuDoInstance.destroy();
     }
 
-    // Khởi tạo mới hoàn toàn biểu đồ hỗn hợp (Cột lồng nhau + Đường line)
     bieuDoInstance = new Chart(ctx, {
-        type: 'bar', // Loại mặc định là cột, các phần tử line sẽ được khai báo riêng ở dataset
+        type: 'bar', 
         data: {
             labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
             datasets: [
                 {
-                    // 🔑 ĐƯỜNG SỐ TIỀN CÒN LẠI
+                    // 🔑 ĐƯỜNG SỐ TIỀN CÒN LẠI (ĐÃ CẬP NHẬT)
                     type: 'line', 
                     label: 'Còn lại',
                     data: mangConLai,
-                    borderColor: '#2ecc71', // Đường màu xanh lá (hoặc #f1c40f màu vàng tùy bạn chọn)
-                    backgroundColor: '#2ecc71',
+                    borderColor: '#f1c40f',    // Đổi sang màu vàng rực (Flat UI Yellow) giúp nổi bật trên nền trắng/xanh/đỏ
+                    backgroundColor: '#f1c40f',
                     borderWidth: 3,
-                    tension: 0.2, // Bo góc cong nhẹ cho đường nối mượt mà
-                    pointRadius: 4, // Điểm tròn tại mốc tháng
-                    pointHoverRadius: 6,
+                    tension: 0.2, 
+                    pointRadius: 0,            // 🔑 Đặt bằng 0 để ẩn hoàn toàn các dấu chấm tròn mặc định
+                    pointHoverRadius: 0,       // 🔑 Đặt bằng 0 để khi rê chuột vào cũng không hiện chấm tròn
                     fill: false,
                     grouped: false,
-                    order: 1 // 🔑 Đặt tự trọng nhỏ nhất để vẽ TRÊN CÙNG, không bị các cột che khuất
+                    order: 1 
                 },
                 {
                     label: 'Thanh Trước',
@@ -759,7 +753,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
                     categoryPercentage: 0.8,
                     borderRadius: 4,
                     grouped: false, 
-                    order: 2 // Nằm ở lớp giữa
+                    order: 2
                 },
                 {
                     label: 'Thanh Sau',
@@ -769,7 +763,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
                     categoryPercentage: 0.8, 
                     borderRadius: 4,
                     grouped: false, 
-                    order: 3 // Nằm ở lớp dưới cùng làm nền
+                    order: 3
                 }
             ]
         },
@@ -779,13 +773,14 @@ function capNhatBieuDoBaoCaoNam(docs) {
             plugins: {
                 legend: { display: false }, 
                 tooltip: {
+                    mode: 'index', // 🔑 Giúp kích hoạt tooltip dễ dàng khi rê chuột vào vùng cột mà không cần chạm đúng đường line
+                    intersect: false,
                     callbacks: {
                         label: function(context) {
                             const m = context.dataIndex;
                             const val = context.raw;
                             let loai = '';
                             
-                            // Phân loại chữ hiển thị tooltip dựa theo thứ tự datasetIndex
                             if (context.datasetIndex === 0) {
                                 loai = 'Còn lại';
                             } else if (context.datasetIndex === 1) {
@@ -800,9 +795,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 }
             },
             scales: {
-                x: {
-                    stacked: false 
-                },
+                x: { stacked: false },
                 y: {
                     beginAtZero: true,
                     ticks: {
