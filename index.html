@@ -591,93 +591,142 @@
     const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Mua sắm": "🛍️", "Hóa đơn": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Thu nhập khác": "💸", "Khác": "✨"};
     // 1. Định nghĩa lại hàm kích hoạt luồng dữ liệu thời gian thực
     function kichHoatHeThongDuLieuRealtime(user) {
-        // Tạo truy vấn có bộ lọc điều kiện: chỉ lấy dữ liệu của user đang đăng nhập
         const truyVanDocLapUser = query(datathuchi, where("userId", "==", user.uid)); 
-        // Gán bộ lắng nghe realtime và lưu hàm hủy vào biến toàn cục
         huyTheoDoiThuChi = onSnapshot(truyVanDocLapUser, (snapshot) => {
             // Đổ ngược danh sách tài liệu gốc vào biến toàn cục để tái sử dụng khi nhấn chuyển tháng
-            capNhatToanBoGiaoDien(snapshot.docs);});}
-    // 2. Viết lại hàm Chạy Lại Hệ Thống khi người dùng nhấn nút bấm chuyển tháng
-    function chayLaiHeThongGiaoDien() {window.capNhatChuHienThiThang(); if (window.duLieuSnapshotQuocTe) {capNhatToanBoGiaoDien(window.duLieuSnapshotQuocTe); } }
-    // 3. Hàm cốt lõi chịu trách nhiệm tổng hợp dữ liệu báo cáo theo chu kỳ tùy chỉnh
-    function capNhatToanBoGiaoDien(docs) {window.duLieuSnapshotQuocTe = docs; if (!idVungLichSu) return;idVungLichSu.innerHTML = ''; 
-        let tongSoDu = 0;    // Số dư tổng thể tài khoản (Lũy kế toàn thời gian để đảm bảo độ chính xác của ví)
-        let tongThuNhap = 0; // Tính toán bó hẹp theo chu kỳ ngày lựa chọn
-        let tongChiTieu = 0; // Tính toán bó hẹp theo chu kỳ ngày lựa chọn
-        // Xác định mốc thời gian chu kỳ kích hoạt hiện hành
-        const chuKy = layRangeChuKy(window.thoiGianDangXem, window.ngayBatDauChuKy || 1);
-        const tuNgay = chuKy.tuNgay;
-        const denNgay = chuKy.denNgay;
-        if (!docs || docs.length === 0) {
-            idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chưa có giao dịch nào!</div>'; 
-            if (idHienThiSoDu) idHienThiSoDu.innerText = "0 đ";
-            if (idBcThu) idBcThu.innerText = "0 đ";
-            if (idBcChi) idBcChi.innerText = "0 đ";
-            if (idThanhThu) idThanhThu.style.width = "0%";
-            if (idThanhChi) idThanhChi.style.width = "0%";
-            if (txtChu) txtChu.innerText = "0 đ / Chưa đặt";
-            if (thanhPhanTram) thanhPhanTram.style.width = '0%'; return;}
-        // Sắp xếp dữ liệu theo thứ tự mới nhất lên trên đầu
-        const mangSapXep = [...docs].sort((a, b) => {return (b.data().thoiGian || '').localeCompare(a.data().thoiGian || ''); });
-        mangSapXep.forEach((docItem) => {
-            const giaoDich = docItem.data();
-            const docId = docItem.id;
-            const soTienGiaoDich = parseFloat(giaoDich.soTien) || 0;
-            const thoiGianMoc = parseChuoiThoiGian(giaoDich.thoiGian);
-            // A. Tính toán số dư dòng tiền thực tế toàn thời gian
-            if (giaoDich.loai === 'thu') {tongSoDu += soTienGiaoDich;} else {tongSoDu -= soTienGiaoDich;}
-            // B. Lọc dữ liệu báo cáo và in lịch sử chỉ khi nằm trong chu kỳ đang xem
-            if (thoiGianMoc >= tuNgay && thoiGianMoc <= denNgay) {if (giaoDich.loai === 'thu') {tongThuNhap += soTienGiaoDich;} else {tongChiTieu += soTienGiaoDich;}
-                const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
-                const iconPhuHop = danhSachIcon[hienThiDanhMuc] || "📂";
-                const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
-                let kyTuDau = giaoDich.loai === 'thu' ? '+' : '-';
-                let lopMauSac = giaoDich.loai === 'thu' ? 'mau-thu' : 'mau-chi';
-                const dongMoi = document.createElement('div');
-                dongMoi.classList.add('dong-giao-dich');
-                dongMoi.innerHTML = `
-                    <div class="nen-hanh-dong">
-                        <div class="hanh-dong-sua">✏️ Sửa</div>
-                        <div class="hanh-dong-xoa">🗑️ Xóa</div>
-                    </div>
-                    <div class="giao-dich-noi-dung" data-id="${docId}">
-                        <div class="giao-dich-trai"> <span class="giao-dich-muc">${iconPhuHop} ${hienThiDanhMuc}</span> <span class="giao-dich-ten">${giaoDich.ten}</span> </div>
-                        <div class="giao-dich-phai-cum"> <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span> <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${soTienGiaoDich.toLocaleString('vi-VN')} đ</span> </div>
-                    </div>`;
-                idVungLichSu.appendChild(dongMoi);} });
-        if (idVungLichSu.innerHTML === '') {idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chu kỳ này không phát sinh giao dịch nào!</div>';}
-        // C. Kết xuất dữ liệu lên các thẻ báo cáo tổng quan (Thu / Chi)
-        if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN') + " đ"; 
-        if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ"; 
-        if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
-        const maxTong = Math.max(tongThuNhap, tongChiTieu);
-        if (maxTong > 0) {
-            if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`; 
-            if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;} else {
-            if (idThanhThu) idThanhThu.style.width = "0%";
-            if (idThanhChi) idThanhChi.style.width = "0%";}
-        // D. Cập nhật thanh chỉ báo hạn mức tiêu dùng ở Tab Home theo chu kỳ mới
-        let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
-        let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
-        if (txtChu && thanhPhanTram) {
-            if (hanMucThangDangXem === 0) {
-                txtChu.innerText = `${tongChiTieu.toLocaleString('vi-VN')} đ / Chưa đặt`; 
-                thanhPhanTram.style.width = '0%'; 
-                thanhPhanTram.style.backgroundColor = '#e0e0e0'; 
-                if (txtGoiY) { txtGoiY.innerText = "💡 Bấm vào đây để cài đặt hạn mức"; txtGoiY.style.color = '#999999'; } } else {
-                let phanTram = (tongChiTieu / hanMucThangDangXem) * 100; 
-                let phanTramHienThi = phanTram > 100 ? 100 : phanTram; 
-                txtChu.innerText = `${tongChiTieu.toLocaleString('vi-VN')}/${hanMucThangDangXem.toLocaleString('vi-VN')}đ`; 
-                thanhPhanTram.style.width = `${phanTramHienThi}%`;
-                if (phanTram >= 100) {
-                    thanhPhanTram.style.backgroundColor = '#e74c3c'; 
-                    if (txtGoiY) { txtGoiY.innerText = `⚠️ Bạn đã tiêu vượt quá hạn mức ${(phanTram - 100).toFixed(0)}%!`; txtGoiY.style.color = '#e74c3c'; }
-                } else if (phanTram >= 75) {
-                    thanhPhanTram.style.backgroundColor = '#f1c40f'; 
-                    if (txtGoiY) { txtGoiY.innerText = `🔔 Cẩn thận, đã tiêu hết ${phanTram.toFixed(0)}% hạn mức!`; txtGoiY.style.color = '#f1c40f'; }
-                } else {
-                    thanhPhanTram.style.backgroundColor = '#2ecc71'; 
-                    if (txtGoiY) { txtGoiY.innerText = `✅ Còn ${(hanMucThangDangXem - tongChiTieu).toLocaleString('vi-VN')}đ chi tiêu`; txtGoiY.style.color = '#999999'; } } } } }
+            capNhatToanBoGiaoDien(snapshot.docs);
+        });
+    }
+
+// 2. Viết lại hàm Chạy Lại Hệ Thống khi người dùng nhấn nút bấm chuyển tháng
+function chayLaiHeThongGiaoDien() {
+    window.capNhatChuHienThiThang(); 
+    if (window.duLieuSnapshotQuocTe) {
+        capNhatToanBoGiaoDien(window.duLieuSnapshotQuocTe); 
+    }
+} 
+
+// 3. Hàm cốt lõi chịu trách nhiệm tổng hợp dữ liệu báo cáo theo chu kỳ tùy chỉnh
+function capNhatToanBoGiaoDien(docs) {
+    window.duLieuSnapshotQuocTe = docs;
+    if (!idVungLichSu) return;
+    idVungLichSu.innerHTML = ''; 
+
+    let tongSoDu = 0;    // Số dư tổng thể tài khoản (Lũy kế toàn thời gian để đảm bảo độ chính xác của ví)
+    let tongThuNhap = 0; // Tính toán bó hẹp theo chu kỳ ngày lựa chọn
+    let tongChiTieu = 0; // Tính toán bó hẹp theo chu kỳ ngày lựa chọn
+
+    // Xác định mốc thời gian chu kỳ kích hoạt hiện hành
+    const chuKy = layRangeChuKy(window.thoiGianDangXem, window.ngayBatDauChuKy || 1);
+    const tuNgay = chuKy.tuNgay;
+    const denNgay = chuKy.denNgay;
+
+    if (!docs || docs.length === 0) {
+        idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chưa có giao dịch nào!</div>'; 
+        if (idHienThiSoDu) idHienThiSoDu.innerText = "0 đ";
+        if (idBcThu) idBcThu.innerText = "0 đ";
+        if (idBcChi) idBcChi.innerText = "0 đ";
+        if (idThanhThu) idThanhThu.style.width = "0%";
+        if (idThanhChi) idThanhChi.style.width = "0%";
+        if (txtChu) txtChu.innerText = "0 đ / Chưa đặt";
+        if (thanhPhanTram) thanhPhanTram.style.width = '0%';
+        return;
+    }
+
+    // Sắp xếp dữ liệu theo thứ tự mới nhất lên trên đầu
+    const mangSapXep = [...docs].sort((a, b) => {
+        return (b.data().thoiGian || '').localeCompare(a.data().thoiGian || '');
+    });
+
+    mangSapXep.forEach((docItem) => {
+        const giaoDich = docItem.data();
+        const docId = docItem.id;
+        const soTienGiaoDich = parseFloat(giaoDich.soTien) || 0;
+        const thoiGianMoc = parseChuoiThoiGian(giaoDich.thoiGian);
+
+        // A. Tính toán số dư dòng tiền thực tế toàn thời gian
+        if (giaoDich.loai === 'thu') {
+            tongSoDu += soTienGiaoDich;
+        } else {
+            tongSoDu -= soTienGiaoDich;
+        }
+
+        // B. Lọc dữ liệu báo cáo và in lịch sử chỉ khi nằm trong chu kỳ đang xem
+        if (thoiGianMoc >= tuNgay && thoiGianMoc <= denNgay) {
+            if (giaoDich.loai === 'thu') {
+                tongThuNhap += soTienGiaoDich;
+            } else {
+                tongChiTieu += soTienGiaoDich;
+            }
+
+            const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+            const iconPhuHop = danhSachIcon[hienThiDanhMuc] || "📂";
+            const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
+
+            let kyTuDau = giaoDich.loai === 'thu' ? '+' : '-';
+            let lopMauSac = giaoDich.loai === 'thu' ? 'mau-thu' : 'mau-chi';
+
+            const dongMoi = document.createElement('div');
+            dongMoi.classList.add('dong-giao-dich');
+            dongMoi.innerHTML = `
+                <div class="nen-hanh-dong">
+                    <div class="hanh-dong-sua">✏️ Sửa</div>
+                    <div class="hanh-dong-xoa">🗑️ Xóa</div>
+                </div>
+                <div class="giao-dich-noi-dung" data-id="${docId}">
+                    <div class="giao-dich-trai"> <span class="giao-dich-muc">${iconPhuHop} ${hienThiDanhMuc}</span> <span class="giao-dich-ten">${giaoDich.ten}</span> </div>
+                    <div class="giao-dich-phai-cum"> <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span> <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${soTienGiaoDich.toLocaleString('vi-VN')} đ</span> </div>
+                </div>
+            `;
+            idVungLichSu.appendChild(dongMoi);
+        }
+    });
+
+    if (idVungLichSu.innerHTML === '') {
+        idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chu kỳ này không phát sinh giao dịch nào!</div>';
+    }
+
+    // C. Kết xuất dữ liệu lên các thẻ báo cáo tổng quan (Thu / Chi)
+    if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN') + " đ"; 
+    if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ"; 
+    if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
+    
+    const maxTong = Math.max(tongThuNhap, tongChiTieu);
+    if (maxTong > 0) {
+        if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`; 
+        if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
+    } else {
+        if (idThanhThu) idThanhThu.style.width = "0%";
+        if (idThanhChi) idThanhChi.style.width = "0%";
+    }
+
+    // D. Cập nhật thanh chỉ báo hạn mức tiêu dùng ở Tab Home theo chu kỳ mới
+    let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
+    let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
+    
+    if (txtChu && thanhPhanTram) {
+        if (hanMucThangDangXem === 0) {
+            txtChu.innerText = `${tongChiTieu.toLocaleString('vi-VN')} đ / Chưa đặt`; 
+            thanhPhanTram.style.width = '0%'; 
+            thanhPhanTram.style.backgroundColor = '#e0e0e0'; 
+            if (txtGoiY) { txtGoiY.innerText = "💡 Bấm vào đây để cài đặt hạn mức"; txtGoiY.style.color = '#999999'; }
+        } else {
+            let phanTram = (tongChiTieu / hanMucThangDangXem) * 100; 
+            let phanTramHienThi = phanTram > 100 ? 100 : phanTram; 
+            txtChu.innerText = `${tongChiTieu.toLocaleString('vi-VN')}/${hanMucThangDangXem.toLocaleString('vi-VN')}đ`; 
+            thanhPhanTram.style.width = `${phanTramHienThi}%`;
+            if (phanTram >= 100) {
+                thanhPhanTram.style.backgroundColor = '#e74c3c'; 
+                if (txtGoiY) { txtGoiY.innerText = `⚠️ Bạn đã tiêu vượt quá hạn mức ${(phanTram - 100).toFixed(0)}%!`; txtGoiY.style.color = '#e74c3c'; }
+            } else if (phanTram >= 75) {
+                thanhPhanTram.style.backgroundColor = '#f1c40f'; 
+                if (txtGoiY) { txtGoiY.innerText = `🔔 Cẩn thận, đã tiêu hết ${phanTram.toFixed(0)}% hạn mức!`; txtGoiY.style.color = '#f1c40f'; }
+            } else {
+                thanhPhanTram.style.backgroundColor = '#2ecc71'; 
+                if (txtGoiY) { txtGoiY.innerText = `✅ Còn ${(hanMucThangDangXem - tongChiTieu).toLocaleString('vi-VN')}đ chi tiêu`; txtGoiY.style.color = '#999999'; }
+            }
+        }
+    }
 
     // Tái kích hoạt lại trình lắng nghe Vuốt Chạm (Swipe to edit/delete) trên các Element mới sinh ra
     // (Bên dưới dòng này bạn giữ nguyên toàn bộ logic xử lý vuốt `document.querySelectorAll('.giao-dich-noi-dung').forEach...` từ mã gốc của bạn)
@@ -755,8 +804,7 @@
                 noiDung.addEventListener('touchstart', batDauVuot); noiDung.addEventListener('touchmove', dangKeo); noiDung.addEventListener('touchend', ketThucVuot); 
                 noiDung.addEventListener('mousedown', batDauVuot); window.addEventListener('mousemove', dangKeo); window.addEventListener('mouseup', ketThucVuot); 
             });
-        });
-    }
+        
 // C.3 TAB THÊM GIAO DỊCH MỚI
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     const idnutsave = document.getElementById('nut-save');
