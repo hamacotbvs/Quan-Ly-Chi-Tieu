@@ -317,111 +317,46 @@
     // Lắng nghe trạng thái đăng nhập hệ thống (Bảo mật thời gian thực)
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // Trường hợp: Đã đăng nhập thành công
-            if (khungAppChinh) khungAppChinh.style.display = 'block';
-            if (manHinhAuth) manHinhAuth.style.display = 'none'; 
+            if (khungAppChinh) khungAppChinh.style.display = 'block';if (manHinhAuth) manHinhAuth.style.display = 'none'; // Trường hợp: Đã đăng nhập thành công
             // Cập nhật thông tin lên Tab Tài Khoản
             const txtTenUser = document.getElementById('ten-user-hien-thi');
             const txtEmailUser = document.getElementById('email-user-hien-thi');
-            if (txtTenUser) txtTenUser.innerText = user.displayName || user.email.split('@')[0];
-            if (txtEmailUser) txtEmailUser.innerText = user.email;
-            // Thêm nút Đăng xuất vào Tab Tài Khoản nếu chưa có
-            tichHopNutDangXuat();
+            if (txtTenUser) txtTenUser.innerText = user.displayName || user.email.split('@')[0]; if (txtEmailUser) txtEmailUser.innerText = user.email;
+            tichHopNutDangXuat(); // Thêm nút Đăng xuất vào Tab Tài Khoản nếu chưa có
             // Kích hoạt lắng nghe luồng dữ liệu thu chi độc lập của riêng User này
-            kichHoatHeThongDuLieuRealtime(user);
-        } else {
-            // Trường hợp: Chưa đăng nhập hoặc vừa đăng xuất
-            if (manHinhAuth) manHinhAuth.style.display = 'flex';
-            if (khungAppChinh) khungAppChinh.style.display = 'none';
-            // Hủy theo dõi dữ liệu cũ để tránh lộ thông tin hoặc tốn tài nguyên tải ngầm
-            if (huyTheoDoiThuChi) { huyTheoDoiThuChi(); huyTheoDoiThuChi = null; }
-        }
-    });
+            kichHoatHeThongDuLieuRealtime(user); } else {
+            if (manHinhAuth) manHinhAuth.style.display = 'flex'; if (khungAppChinh) khungAppChinh.style.display = 'none'; // Trường hợp: Chưa đăng nhập hoặc vừa đăng xuất
+            if (huyTheoDoiThuChi) { huyTheoDoiThuChi(); huyTheoDoiThuChi = null; } } }); // Hủy theo dõi dữ liệu cũ để tránh lộ thông tin hoặc tốn tài nguyên tải ngầm
     // Chuyển đổi qua lại giữa giao diện Đăng Nhập / Đăng Ký
     if (linkChuyenTrang) {
-        linkChuyenTrang.addEventListener('click', (e) => {
-            e.preventDefault();
-            isLoginMode = !isLoginMode;
-            if (isLoginMode) {
-                authTieuDe.innerText = "Đăng nhập tài khoản";
-                authGhiChu.innerText = "Sử dụng Gmail để đăng ký";
-                vungNhapLaiMatKhau.style.display = "none";
-                nutHanhDongAuth.innerText = "Đăng Nhập";
-                linkQuenMk.style.display = "inline";
-                linkChuyenTrang.innerText = "Chưa có tài khoản? Đăng ký";
-            } else {
-                authTieuDe.innerText = "Đăng ký tài khoản";
-                authGhiChu.innerText = "Ứng dụng quản lý thu chi cá nhân";
-                vungNhapLaiMatKhau.style.display = "block";
-                nutHanhDongAuth.innerText = "Đăng Ký Ngay";
-                linkQuenMk.style.display = "none";
-                linkChuyenTrang.innerText = "Đã có tài khoản? Đăng nhập";
-            }
-        });
-    }
+        linkChuyenTrang.addEventListener('click', (e) => {e.preventDefault(); isLoginMode = !isLoginMode;
+            if (isLoginMode) {authTieuDe.innerText = "Đăng nhập tài khoản"; authGhiChu.innerText = "Ứng dụng quản lý thu chi cá nhân"; vungNhapLaiMatKhau.style.display = "none"; nutHanhDongAuth.innerText = "Đăng Nhập"; linkQuenMk.style.display = "inline"; linkChuyenTrang.innerText = "Chưa có tài khoản? Đăng ký";
+            } else {authTieuDe.innerText = "Đăng ký tài khoản"; authGhiChu.innerText = "Ứng dụng quản lý thu chi cá nhân"; vungNhapLaiMatKhau.style.display = "block"; nutHanhDongAuth.innerText = "Đăng Ký Ngay"; linkQuenMk.style.display = "none"; linkChuyenTrang.innerText = "Đã có tài khoản? Đăng nhập";} }); }
     // Xử lý sự kiện bấm nút Đăng Nhập hoặc Đăng Ký
     if (nutHanhDongAuth) {
         nutHanhDongAuth.addEventListener('click', async () => {
             const email = inputAuthUsername.value.trim();
             const password = inputAuthPassword.value;
-            if (!email || !password) {
-                alert("Vui lòng điền đầy đủ Email và Mật khẩu!");
-                return;
-            }
+            if (!email || !password) {alert("Vui lòng điền đầy đủ Email và Mật khẩu!"); return;}
             // Lưu ý: Firebase Auth yêu cầu định dạng Email (ví dụ: tenban@gmail.com) làm tài khoản đăng nhập
-            if (!email.includes('@')) {
-                alert("Tài khoản phải đúng định dạng Email (Ví dụ: vidu@gmail.com) để sử dụng tính năng đám mây bảo mật!");
-                return;
-            }
+            if (!email.includes('@')) {alert("Tài khoản phải đúng định dạng Email (Ví dụ: vidu@gmail.com) để sử dụng tính năng đám mây bảo mật!");return;}
             try {
-                if (isLoginMode) {
-                    // Xử lý ĐĂNG NHẬP
-                    await signInWithEmailAndPassword(auth, email, password);
-                } else {
-                    // Xử lý ĐĂNG KÝ
-                    const rePassword = inputAuthRePassword.value;
-                    if (password !== rePassword) {
-                        alert("Mật khẩu nhập lại không trùng khớp!");
-                        return;
-                    }
-                    if (password.length < 6) {
-                        alert("Mật khẩu bảo mật phải từ 6 ký tự trở lên!");
-                        return;
-                    }
+                if (isLoginMode) {await signInWithEmailAndPassword(auth, email, password); // Xử lý ĐĂNG NHẬP
+                } else {const rePassword = inputAuthRePassword.value; if (password !== rePassword) {alert("Mật khẩu nhập lại không trùng khớp!"); return;} // Xử lý ĐĂNG KÝ
+                    if (password.length < 6) {alert("Mật khẩu bảo mật phải từ 6 ký tự trở lên!"); return;}
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    // Đặt tên hiển thị mặc định lấy từ phần trước ký tự @ của Email
-                    await updateProfile(userCredential.user, { displayName: email.split('@')[0] });
-                    alert("Đăng ký tài khoản thành công!");
-                }
-            } catch (error) {
-                console.error("Lỗi Auth: ", error.code);
-                if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                    alert("Tài khoản hoặc mật khẩu không chính xác!");
-                } else if (error.code === 'auth/email-already-in-use') {
-                    alert("Email này đã được đăng ký bởi một người dùng khác!");
-                } else {
-                    alert("Thao tác thất bại: " + error.message);
-                }
-            }
-        });
-    }
+                    await updateProfile(userCredential.user, { displayName: email.split('@')[0] }); alert("Đăng ký tài khoản thành công!");} // Đặt tên hiển thị mặc định lấy từ phần trước ký tự @ của Email
+            } catch (error) {console.error("Lỗi Auth: ", error.code);
+                if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {alert("Tài khoản hoặc mật khẩu không chính xác!");
+                } else if (error.code === 'auth/email-already-in-use') {alert("Email này đã được đăng ký bởi một người dùng khác!");
+                } else {alert("Thao tác thất bại: " + error.message);} } }); }
     // Xử lý sự kiện bấm nút "Quên mật khẩu" đám mây
     if (linkQuenMk) {
-        linkQuenMk.addEventListener('click', async (e) => {
-            e.preventDefault();
+        linkQuenMk.addEventListener('click', async (e) => {e.preventDefault();
             const email = inputAuthUsername.value.trim();
-            if (!email || !email.includes('@')) {
-                alert("Vui lòng nhập chính xác Email của bạn vào ô 'Tài khoản' trước khi bấm quên mật khẩu!");
-                return;
-            }
-            try {
-                await sendPasswordResetEmail(auth, email);
-                alert(`Hệ thống đã gửi một liên kết đặt lại mật khẩu mới vào hòm thư: ${email}. Vui lòng kiểm tra hộp thư đến (hoặc thư rác) của bạn!`);
-            } catch (error) {
-                alert("Không thể gửi email đặt lại mật khẩu: " + error.message);
-            }
-        });
-    }
+            if (!email || !email.includes('@')) {alert("Vui lòng nhập chính xác Email của bạn vào ô 'Tài khoản' trước khi bấm quên mật khẩu!");return;}
+            try {await sendPasswordResetEmail(auth, email);alert(`Hệ thống đã gửi một liên kết đặt lại mật khẩu vào: ${email}. Vui lòng kiểm tra hộp thư đến (hoặc thư rác) của bạn!`);
+            } catch (error) {alert("Không thể gửi email đặt lại mật khẩu: " + error.message);} }); }
     // Hàm tạo nút đăng xuất tự động ở tab Tài Khoản
     function tichHopNutDangXuat() {
         const vungThongTin = document.querySelector('#tab-tai-khoan > div');
@@ -433,9 +368,7 @@
             nutDangXuat.style.marginTop = '20px';
             nutDangXuat.innerText = '🔒 Đăng xuất ứng dụng';
             nutDangXuat.addEventListener('click', () => {
-                if (confirm("Bạn có chắc chắn muốn đăng xuất tài khoản không?")) {
-                    signOut(auth);
-                }
+                if (confirm("Bạn có chắc chắn muốn đăng xuất tài khoản không?")) {signOut(auth);}
             });
             vungThongTin.appendChild(nutDangXuat);
         }
@@ -448,6 +381,28 @@
     cacNutTab.forEach(nut => {nut.addEventListener('click', () => {const mucTieu = nut.getAttribute('data-target'); cacNutTab.forEach(b => b.classList.remove('active'));nut.classList.add('active'); const cacVungNoiDung = document.querySelectorAll('.tab-menu-duoi');                
         cacVungNoiDung.forEach(content => content.classList.remove('active'));const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`); if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active'); }); });
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// C. CHUYỂN ĐỔI NGÀY ĐẦU KỲ
+    // Biến lưu trữ ngày đầu tháng mặc định (sẽ đồng bộ từ Firestore về)
+    let ngayDauThangCauHinh = 1; 
+    // Hàm lắng nghe cấu hình ngày đầu tháng của User từ Firestore
+    function kichHoatCauHinhRealtime(user) {const { doc, onSnapshot, setDoc } = FirebaseFirestore; // Đảm bảo đã import từ SDK
+    const cauHinhDocRef = doc(db, "cau_hinh_user", user.uid);
+    onSnapshot(cauHinhDocRef, (snapshot) => {const selectNgay = document.getElementById('cau-hinh-ngay-dau-thang');
+        if (snapshot.exists()) {
+            const data = snapshot.val ? snapshot.val() : snapshot.data();
+            if (data && data.ngayDauThang) {ngayDauThangCauHinh = parseInt(data.ngayDauThang);
+                if (selectNgay) selectNgay.value = ngayDauThangCauHinh.toString();}
+        } else {ngayDauThangCauHinh = 1; if (selectNgay) selectNgay.value = "1";} // Nếu user mới chưa có cấu hình, mặc định chọn ngày 1
+        chayLaiHeThongGiaoDien(); }); } // Mỗi lần cấu hình ngày thay đổi, kích hoạt tính toán lại giao diện
+    // Lắng nghe sự kiện thay đổi trên Dropdown để lưu lên Firestore
+    document.getElementById('cau-hinh-ngay-dau-thang')?.addEventListener('change', async function(e) {
+        if (!auth.currentUser) {alert("Vui lòng đăng nhập để lưu cấu hình!");return;}
+        const { doc, setDoc } = FirebaseFirestore;
+        const ngayMoi = parseInt(e.target.value);
+        const cauHinhDocRef = doc(db, "cau_hinh_user", auth.currentUser.uid);
+        try {await setDoc(cauHinhDocRef, { ngayDauThang: ngayMoi }, { merge: true }); console.log("Đã cập nhật ngày đầu tháng lên Firestore!");} catch (error) {console.error("Lỗi cập nhật cấu hình ngày:", error); alert("Không thể lưu cấu hình ngày đầu tháng!");} });
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // C. SCRIPT CAC TRANG TAB
 // C.I TAB HOME
     const txtChu = document.getElementById('chi-tieu-tren-han-muc');
@@ -455,10 +410,6 @@
     const txtGoiY = document.getElementById('goi-y-han-muc');
     let boSuoTapHanMuc = JSON.parse(localStorage.getItem('bo_suo_tap_han_muc')) || {};
 
-
-
-
-    
     if (typeof thoiGianDangXem === 'undefined') {
         window.thoiGianDangXem = new Date();
         window.layChuoiThangNam = function(dateObj) {
