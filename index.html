@@ -589,14 +589,16 @@
     const idThanhThu = document.getElementById('thanh-thu-ti-le');
     const idThanhChi = document.getElementById('thanh-chi-ti-le');
     const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Mua sắm": "🛍️", "Hóa đơn": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Thu nhập khác": "💸", "Khác": "✨"};
-    // 1. Định nghĩa lại hàm kích hoạt luồng dữ liệu thời gian thực
-    function kichHoatHeThongDuLieuRealtime(user) {
-        const truyVanDocLapUser = query(datathuchi, where("userId", "==", user.uid)); 
-        huyTheoDoiThuChi = onSnapshot(truyVanDocLapUser, (snapshot) => {
-            // Đổ ngược danh sách tài liệu gốc vào biến toàn cục để tái sử dụng khi nhấn chuyển tháng
-            capNhatToanBoGiaoDien(snapshot.docs);
-        });
-    }
+// 1. Định nghĩa lại hàm kích hoạt luồng dữ liệu thời gian thực
+// Thêm let/const hoặc đảm bảo biến này được khai báo rõ ràng
+let huyTheoDoiThuChi = null; 
+
+function kichHoatHeThongDuLieuRealtime(user) {
+    const truyVanDocLapUser = query(datathuchi, where("userId", "==", user.uid)); 
+    huyTheoDoiThuChi = onSnapshot(truyVanDocLapUser, (snapshot) => {
+        capNhatToanBoGiaoDien(snapshot.docs);
+    });
+}
 
 // 2. Viết lại hàm Chạy Lại Hệ Thống khi người dùng nhấn nút bấm chuyển tháng
 function chayLaiHeThongGiaoDien() {
@@ -612,11 +614,10 @@ function capNhatToanBoGiaoDien(docs) {
     if (!idVungLichSu) return;
     idVungLichSu.innerHTML = ''; 
 
-    let tongSoDu = 0;    // Số dư tổng thể tài khoản (Lũy kế toàn thời gian để đảm bảo độ chính xác của ví)
-    let tongThuNhap = 0; // Tính toán bó hẹp theo chu kỳ ngày lựa chọn
-    let tongChiTieu = 0; // Tính toán bó hẹp theo chu kỳ ngày lựa chọn
+    let tongSoDu = 0;    
+    let tongThuNhap = 0; 
+    let tongChiTieu = 0; 
 
-    // Xác định mốc thời gian chu kỳ kích hoạt hiện hành
     const chuKy = layRangeChuKy(window.thoiGianDangXem, window.ngayBatDauChuKy || 1);
     const tuNgay = chuKy.tuNgay;
     const denNgay = chuKy.denNgay;
@@ -633,7 +634,6 @@ function capNhatToanBoGiaoDien(docs) {
         return;
     }
 
-    // Sắp xếp dữ liệu theo thứ tự mới nhất lên trên đầu
     const mangSapXep = [...docs].sort((a, b) => {
         return (b.data().thoiGian || '').localeCompare(a.data().thoiGian || '');
     });
@@ -644,14 +644,12 @@ function capNhatToanBoGiaoDien(docs) {
         const soTienGiaoDich = parseFloat(giaoDich.soTien) || 0;
         const thoiGianMoc = parseChuoiThoiGian(giaoDich.thoiGian);
 
-        // A. Tính toán số dư dòng tiền thực tế toàn thời gian
         if (giaoDich.loai === 'thu') {
             tongSoDu += soTienGiaoDich;
         } else {
             tongSoDu -= soTienGiaoDich;
         }
 
-        // B. Lọc dữ liệu báo cáo và in lịch sử chỉ khi nằm trong chu kỳ đang xem
         if (thoiGianMoc >= tuNgay && thoiGianMoc <= denNgay) {
             if (giaoDich.loai === 'thu') {
                 tongThuNhap += soTienGiaoDich;
@@ -686,7 +684,6 @@ function capNhatToanBoGiaoDien(docs) {
         idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chu kỳ này không phát sinh giao dịch nào!</div>';
     }
 
-    // C. Kết xuất dữ liệu lên các thẻ báo cáo tổng quan (Thu / Chi)
     if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN') + " đ"; 
     if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ"; 
     if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
@@ -700,7 +697,6 @@ function capNhatToanBoGiaoDien(docs) {
         if (idThanhChi) idThanhChi.style.width = "0%";
     }
 
-    // D. Cập nhật thanh chỉ báo hạn mức tiêu dùng ở Tab Home theo chu kỳ mới
     let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
     let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
     
@@ -728,82 +724,106 @@ function capNhatToanBoGiaoDien(docs) {
         }
     }
 
-    // Tái kích hoạt lại trình lắng nghe Vuốt Chạm (Swipe to edit/delete) trên các Element mới sinh ra
-    // (Bên dưới dòng này bạn giữ nguyên toàn bộ logic xử lý vuốt `document.querySelectorAll('.giao-dich-noi-dung').forEach...` từ mã gốc của bạn)
-            // KÍCH HOẠT SỰ KIỆN VUỐT CHẠM (SWIPE TO ACTION)
-            document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
-                let xBatDau = 0; let xDiChuyen = 0; let dangVuot = false;
-                const batDauVuot = (e) => { dangVuot = true; xBatDau = e.touches ? e.touches[0].clientX : e.clientX; };
-                const dangKeo = (e) => { 
-                    if (!dangVuot) return; 
-                    const xHienTai = e.touches ? e.touches[0].clientX : e.clientX; 
-                    xDiChuyen = xHienTai - xBatDau; 
-                    if (xDiChuyen > 100) xDiChuyen = 100;
-                    if (xDiChuyen < -100) xDiChuyen = -100; 
-                    noiDung.style.transform = `translateX(${xDiChuyen}px)`; 
-                    noiDung.style.transition = 'none';
-                };
-                const ketThucVuot = async () => { 
-                    if (!dangVuot) return; 
-                    dangVuot = false; 
-                    noiDung.style.transition = 'transform 0.2s ease-out';
-                    const idTaiLieu = noiDung.getAttribute('data-id');
-                    const tenGiaoDich = noiDung.querySelector('.giao-dich-ten')?.innerText || '';
-                    const danhMucGiaoDich = noiDung.querySelector('.giao-dich-muc')?.innerText || '';
-                    const thoiGianGiaoDich = noiDung.querySelector('.giao-dich-thoi-gian')?.innerText || '';
-                    const soTienGiaoDich = noiDung.querySelector('.giao-dich-phai')?.innerText || '';
-                    // Vuốt sang TRÁI -> XÓA
-                    if (xDiChuyen < -60) {
-                        noiDung.style.transform = 'translateX(-50%)'; 
-                        setTimeout(async () => {
-                            if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
-                                try {
-                                    const taiLieuRef = doc(db, "giao_dich_business", idTaiLieu); 
-                                    await deleteDoc(taiLieuRef);
-                                } catch (error) {
-                                    console.error("Lỗi xóa:", error); 
-                                    alert("Không thể xóa giao dịch!"); 
-                                    noiDung.style.transform = 'translateX(0)';
-                                }
-                            } else { noiDung.style.transform = 'translateX(0)'; }
-                        }, 200);
+    // ================= SỬA LỖI VUỐT CHẠM TẠI ĐÂY =================
+    document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
+        let xBatDau = 0; let xDiChuyen = 0; let dangVuot = false;
+
+        const batDauVuot = (e) => { 
+            dangVuot = true; 
+            xBatDau = e.touches ? e.touches[0].clientX : e.clientX; 
+        };
+
+        const dangKeo = (e) => { 
+            if (!dangVuot) return; 
+            const xHienTai = e.touches ? e.touches[0].clientX : e.clientX; 
+            xDiChuyen = xHienTai - xBatDau; 
+            if (xDiChuyen > 100) xDiChuyen = 100;
+            if (xDiChuyen < -100) xDiChuyen = -100; 
+            noiDung.style.transform = `translateX(${xDiChuyen}px)`; 
+            noiDung.style.transition = 'none';
+        };
+
+        const ketThucVuot = async () => { 
+            if (!dangVuot) return; 
+            dangVuot = false; 
+            noiDung.style.transition = 'transform 0.2s ease-out';
+            const idTaiLieu = noiDung.getAttribute('data-id');
+            const tenGiaoDich = noiDung.querySelector('.giao-dich-ten')?.innerText || '';
+            const danhMucGiaoDich = noiDung.querySelector('.giao-dich-muc')?.innerText || '';
+            const thoiGianGiaoDich = noiDung.querySelector('.giao-dich-thoi-gian')?.innerText || '';
+            const soTienGiaoDich = noiDung.querySelector('.giao-dich-phai')?.innerText || '';
+
+            if (xDiChuyen < -60) {
+                noiDung.style.transform = 'translateX(-50%)'; 
+                setTimeout(async () => {
+                    if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
+                        try {
+                            const taiLieuRef = doc(db, "giao_dich_business", idTaiLieu); 
+                            await deleteDoc(taiLieuRef);
+                        } catch (error) {
+                            console.error("Lỗi xóa:", error); 
+                            alert("Không thể xóa giao dịch!"); 
+                            noiDung.style.transform = 'translateX(0)';
+                        }
+                    } else { noiDung.style.transform = 'translateX(0)'; }
+                }, 200);
+            } 
+            else if (xDiChuyen > 60) {
+                noiDung.style.transform = 'translateX(0)';
+                if (idTen) idTen.value = tenGiaoDich; 
+                if (idSoTien) { 
+                    let soTienSạch = soTienGiaoDich.replace(/[^\d]/g, ''); 
+                    idSoTien.value = soTienSạch; 
+                    idSoTien.dispatchEvent(new Event('input'));
+                } 
+                if (idLoaiGiaoDich) {
+                    idLoaiGiaoDich.value = soTienGiaoDich.includes('+') ? 'thu' : 'chi';
+                    idLoaiGiaoDich.dispatchEvent(new Event('change'));
+                } 
+                setTimeout(() => {
+                    if (idDanhMuc) { 
+                        let danhMucSạch = danhMucGiaoDich.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, "").trim(); 
+                        idDanhMuc.value = danhMucSạch || 'Khác';
                     } 
-                    // Vuốt sang PHẢI -> SỬA (Đổ ngược dữ liệu lên Form nhập liệu)
-                    else if (xDiChuyen > 60) {
-                        noiDung.style.transform = 'translateX(0)';
-                        if (idTen) idTen.value = tenGiaoDich; 
-                        if (idSoTien) { 
-                            let soTienSạch = soTienGiaoDich.replace(/[^\d]/g, ''); 
-                            idSoTien.value = soTienSạch; 
-                            idSoTien.dispatchEvent(new Event('input'));
-                        } 
-                        if (idLoaiGiaoDich) {
-                            idLoaiGiaoDich.value = soTienGiaoDich.includes('+') ? 'thu' : 'chi';
-                            idLoaiGiaoDich.dispatchEvent(new Event('change'));
-                        } 
-                        setTimeout(() => {
-                            if (idDanhMuc) { 
-                                let danhMucSạch = danhMucGiaoDich.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, "").trim(); 
-                                idDanhMuc.value = danhMucSạch || 'Khác';
-                            } 
-                        }, 100);                
-                        let thoiGianSạch = thoiGianGiaoDich.replace('🕒', '').trim(); 
-                        if (thoiGianSạch && thoiGianSạch.includes(' ')) {
-                            const mangPhanTach = thoiGianSạch.split(' '); 
-                            if (inputNgay) inputNgay.value = mangPhanTach[0]; 
-                            if (inputGio) inputGio.value = mangPhanTach[1];
-                        } 
-                        window.idGiaoDichDangSua = idTaiLieu; 
-                        if (idnutsave) idnutsave.innerText = "💾 Cập nhật thay đổi"; 
-                        const tabNhapLieu = document.querySelector('[data-target="add"]');
-                        if (tabNhapLieu) { tabNhapLieu.click(); }
-                    } 
-                    else { noiDung.style.transform = 'translateX(0)'; }
-                    xDiChuyen = 0;
-                };
-                noiDung.addEventListener('touchstart', batDauVuot); noiDung.addEventListener('touchmove', dangKeo); noiDung.addEventListener('touchend', ketThucVuot); 
-                noiDung.addEventListener('mousedown', batDauVuot); window.addEventListener('mousemove', dangKeo); window.addEventListener('mouseup', ketThucVuot); 
-            })
+                }, 100);                
+                let thoiGianSạch = thoiGianGiaoDich.replace('🕒', '').trim(); 
+                if (thoiGianSạch && thoiGianSạch.includes(' ')) {
+                    const mangPhanTach = thoiGianSạch.split(' '); 
+                    if (inputNgay) inputNgay.value = mangPhanTach[0]; 
+                    if (inputGio) inputGio.value = mangPhanTach[1];
+                } 
+                window.idGiaoDichDangSua = idTaiLieu; 
+                if (idnutsave) idnutsave.innerText = "💾 Cập nhật thay đổi"; 
+                const tabNhapLieu = document.querySelector('[data-target="add"]');
+                if (tabNhapLieu) { tabNhapLieu.click(); }
+            } 
+            else { noiDung.style.transform = 'translateX(0)'; }
+            xDiChuyen = 0;
+        };
+
+        // Lắng nghe sự kiện trên điện thoại (Touch) - Giữ nguyên
+        noiDung.addEventListener('touchstart', batDauVuot); 
+        noiDung.addEventListener('touchmove', dangKeo); 
+        noiDung.addEventListener('touchend', ketThucVuot); 
+
+        // Lắng nghe sự kiện trên máy tính (Mouse) - ĐÃ CẬP NHẬT TỐI ƯU CHỐNG LAG
+        noiDung.addEventListener('mousedown', (e) => {
+            batDauVuot(e);
+
+            // Tạo các hàm wrapper tạm thời để có thể remove sau khi dùng xong
+            const xửLýDiChuột = (ev) => dangKeo(ev);
+            const xửLýThảChuột = () => {
+                ketThucVuot();
+                // Dọn dẹp sự kiện ngay khi thả chuột, trả lại bộ nhớ cho window
+                window.removeEventListener('mousemove', xửLýDiChuột);
+                window.removeEventListener('mouseup', xửLýThảChuột);
+            };
+
+            window.addEventListener('mousemove', xửLýDiChuột); 
+            window.addEventListener('mouseup', xửLýThảChuột);
+        }); 
+    });
+}
         
 // C.3 TAB THÊM GIAO DỊCH MỚI
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
