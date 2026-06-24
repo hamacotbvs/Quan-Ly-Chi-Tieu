@@ -715,7 +715,6 @@ function capNhatBieuDoBaoCaoNam(docs) {
         }
     }
 
-    // 🔑 ĐÃ CẬP NHẬT: Thay đổi dấu chấm thành dấu phẩy cho các con số ở thanh thông tin phía trên
     function capNhatThanhThongTinPhiaTren(chiMucThang) {
         const thanhHienThi = document.getElementById('thanhThongTinBieuDo');
         if (!thanhHienThi) return;
@@ -725,7 +724,6 @@ function capNhatBieuDoBaoCaoNam(docs) {
         const ct = mangDaChiThucTe[chiMucThang];
         const cl = mangConLai[chiMucThang];
 
-        // Sử dụng .replace('.', ',') để chuyển đổi định dạng số hiển thị
         const chuoiNs = (ns / 1000000).toFixed(1).replace('.', ',');
         const chuoiCt = (ct / 1000000).toFixed(1).replace('.', ',');
         const chuoiCl = (Math.abs(cl) / 1000000).toFixed(1).replace('.', ',');
@@ -740,7 +738,6 @@ function capNhatBieuDoBaoCaoNam(docs) {
         `;
     }
 
-    // Hiển thị mặc định tháng đang xem
     capNhatThanhThongTinPhiaTren(thangDangXemhienTai);
 
     if (bieuDoInstance) {
@@ -807,9 +804,9 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        // 🔑 ĐÃ CẬP NHẬT: Đổi dấu chấm sang dấu phẩy trên trục đứng Y của biểu đồ
+                        // 🔑 ĐÃ SỬA: Chuyển sang hiển thị số tròn (toFixed(0)) và viết liền chữ tr
                         callback: function(value) { 
-                            return (value / 1000000).toFixed(1).replace('.', ',') + 'tr'; 
+                            return (value / 1000000).toFixed(0) + 'tr'; 
                         }
                     }
                 }
