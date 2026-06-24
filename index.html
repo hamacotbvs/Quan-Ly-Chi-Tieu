@@ -667,7 +667,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
     if (!ctx) return;
 
     const namDangXem = window.thoiGianDangXem.getFullYear();
-    const thangDangXemhienTai = window.thoiGianDangXem.getMonth(); // Tháng đang chọn trên bộ lọc (0-11)
+    const thangDangXemhienTai = window.thoiGianDangXem.getMonth(); 
     
     const txtTieuDeBc = document.getElementById('tieu-de-bieu-do');
     if (txtTieuDeBc) txtTieuDeBc.innerText = `Biểu đồ Ngân sách & Chi tiêu năm ${namDangXem}`;
@@ -715,7 +715,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
         }
     }
 
-    // 🔑 HÀM PHỤ: Cập nhật chữ lên thanh hiển thị phía trên (Định dạng ngắn gọn, dễ nhìn)
+    // 🔑 ĐÃ ĐỔI: Cập nhật chữ "tr" lên thanh hiển thị phía trên
     function capNhatThanhThongTinPhiaTren(chiMucThang) {
         const thanhHienThi = document.getElementById('thanhThongTinBieuDo');
         if (!thanhHienThi) return;
@@ -728,14 +728,14 @@ function capNhatBieuDoBaoCaoNam(docs) {
         thanhHienThi.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 6px 10px; border-radius: 8px; font-size: 12px; border: 1px dashed #ddd;">
                 <span style="font-weight: bold; color: #333;">Tháng ${chiMucThang + 1}:</span>
-                <span style="color: #3498db;">NS: <b>${(ns/1000000).toFixed(1)}M</b></span>
-                <span style="color: #e74c3c;">Chi: <b>${(ct/1000000).toFixed(1)}M</b></span>
-                <span style="color: ${cl >= 0 ? '#2ecc71' : '#e74c3c'};">Còn: <b>${cl >= 0 ? '' : '-'}${(Math.abs(cl)/1000000).toFixed(1)}M</b></span>
+                <span style="color: #3498db;">NS: <b>${(ns/1000000).toFixed(1)} tr</b></span>
+                <span style="color: #e74c3c;">Chi: <b>${(ct/1000000).toFixed(1)} tr</b></span>
+                <span style="color: ${cl >= 0 ? '#2ecc71' : '#e74c3c'};">Còn: <b>${cl >= 0 ? '' : '-'}${(Math.abs(cl)/1000000).toFixed(1)} tr</b></span>
             </div>
         `;
     }
 
-    // Mặc định vừa lên biểu đồ thì hiển thị luôn số liệu của Tháng đang chọn trên bộ lọc
+    // Hiển thị mặc định tháng đang xem
     capNhatThanhThongTinPhiaTren(thangDangXemhienTai);
 
     if (bieuDoInstance) {
@@ -753,7 +753,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
                     data: mangConLai,
                     borderColor: '#f1c40f',    
                     backgroundColor: '#f1c40f',
-                    borderWidth: 1, // Đường siêu mảnh như bạn muốn
+                    borderWidth: 1, 
                     tension: 0.2, 
                     pointRadius: 0,            
                     pointHoverRadius: 0,       
@@ -786,25 +786,24 @@ function capNhatBieuDoBaoCaoNam(docs) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // 🔑 XỬ LÝ SỰ KIỆN CLICK VÀO CỘT HOẶC KHU VỰC THÁNG
             onClick: function(event, elements) {
-                // Nhờ cấu hình tương tác, ta lấy được phần tử được nhấn trúng
                 const points = bieuDoInstance.getElementsAtEventForMode(event, 'index', { intersect: false }, true);
                 if (points && points.length > 0) {
-                    const thangDuocClick = points[0].index; // Trả về số từ 0 -> 11 tương ứng T1 -> T12
+                    const thangDuocClick = points[0].index; 
                     capNhatThanhThongTinPhiaTren(thangDuocClick);
                 }
             },
             plugins: {
                 legend: { display: false }, 
-                tooltip: { enabled: false } // 🔑 TẮT HẲN hộp đen bay lung tung che khuất biểu đồ
+                tooltip: { enabled: false } 
             },
             scales: {
                 x: { stacked: false },
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        callback: function(value) { return (value / 1000000).toFixed(1) + 'M'; }
+                        // 🔑 ĐÃ ĐỔI: Đổi chữ "M" thành "tr" trên trục đứng Y của biểu đồ
+                        callback: function(value) { return (value / 1000000).toFixed(1) + ' tr'; }
                     }
                 }
             }
