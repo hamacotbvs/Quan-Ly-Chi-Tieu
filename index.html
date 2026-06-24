@@ -206,7 +206,13 @@
             <div class="han-muc-hang-duoi"> <div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div> <span id="chi-tieu-tren-han-muc">0 / Chưa nhập hạn mức</span> </div> </div>
         <div class="khung-bieu-do-nam">
             <h3 id="tieu-de-bieu-do">Biểu đồ Ngân sách & Chi tiêu năm 2026</h3>
-            <div class="vung-canvas-bieu-do"> <canvas id="bieuDoNganSach"></canvas> </div> </div>
+            <div class="vung-canvas-bieu-do"> 
+                <div id="tieu-de-bieu-do" style="text-align: center; font-weight: bold; margin-bottom: 10px;"></div>
+                <div id="thanhThongTinBieuDo" style="min-height: 35px; margin-bottom: 5px;"></div>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="bieuDoNganSach"></canvas>
+                </div>
+                <canvas id="bieuDoNganSach"></canvas> </div> </div>
     </div>
 
     <div id="tab-lich-su" class="tab-menu-duoi">
@@ -660,26 +666,21 @@ function capNhatBieuDoBaoCaoNam(docs) {
     const ctx = document.getElementById('bieuDoNganSach');
     if (!ctx) return;
 
-    // Lấy năm hiện tại dựa trên ô chọn tháng đang xem
     const namDangXem = window.thoiGianDangXem.getFullYear();
+    const thangDangXemhienTai = window.thoiGianDangXem.getMonth(); // Tháng đang chọn trên bộ lọc (0-11)
     
-    // Đổi chữ tiêu đề theo năm đang hiển thị
     const txtTieuDeBc = document.getElementById('tieu-de-bieu-do');
     if (txtTieuDeBc) txtTieuDeBc.innerText = `Biểu đồ Ngân sách & Chi tiêu năm ${namDangXem}`;
 
-    // Mảng lưu tổng chi tiêu thực tế gốc của 12 tháng chu kỳ
     const mangDaChiThucTe = Array(12).fill(0);
     
-    // Duyệt qua từng giao dịch để phân loại vào THÁNG CHU KỲ
     docs.forEach(docItem => {
         const data = docItem.data();
         if (data.loai === 'chi' && data.thoiGian) {
             const thoiGianMoc = parseChuoiThoiGian(data.thoiGian);
-            
             for (let m = 0; m < 12; m++) {
                 const ngayDaiDienThang = new Date(namDangXem, m, 1);
                 const chuKyMoc = layRangeChuKy(ngayDaiDienThang);
-                
                 if (thoiGianMoc >= chuKyMoc.tuNgay && thoiGianMoc <= chuKyMoc.denNgay) {
                     mangDaChiThucTe[m] += parseFloat(data.soTien) || 0;
                     break; 
@@ -688,14 +689,11 @@ function capNhatBieuDoBaoCaoNam(docs) {
         }
     });
 
-    // Tạo các mảng động cấu trúc biểu đồ lồng nhau và mảng còn lại
     const mangMax = Array(12).fill(0);       
     const mangMin = Array(12).fill(0);       
     const mangConLai = Array(12).fill(0); 
     const mangMauMax = Array(12).fill('');   
     const mangMauMin = Array(12).fill('');   
-    const mangLoaiMax = Array(12).fill('');  
-    const mangLoaiMin = Array(12).fill('');
 
     for (let m = 0; m < 12; m++) {
         const chuoiThangNam = `${namDangXem}-${String(m + 1).padStart(2, '0')}`;
@@ -709,17 +707,36 @@ function capNhatBieuDoBaoCaoNam(docs) {
             mangMin[m] = daChi;
             mangMauMax[m] = '#3498db'; 
             mangMauMin[m] = '#e74c3c'; 
-            mangLoaiMax[m] = 'Ngân sách';
-            mangLoaiMin[m] = 'Thực tế chi';
         } else {
             mangMax[m] = daChi;
             mangMin[m] = hanMuc;
             mangMauMax[m] = '#e74c3c'; 
             mangMauMin[m] = '#3498db'; 
-            mangLoaiMax[m] = 'Thực tế chi';
-            mangLoaiMin[m] = 'Ngân sách';
         }
     }
+
+    // 🔑 HÀM PHỤ: Cập nhật chữ lên thanh hiển thị phía trên (Định dạng ngắn gọn, dễ nhìn)
+    function capNhatThanhThongTinPhiaTren(chiMucThang) {
+        const thanhHienThi = document.getElementById('thanhThongTinBieuDo');
+        if (!thanhHienThi) return;
+
+        const chuoiThangNam = `${namDangXem}-${String(chiMucThang + 1).padStart(2, '0')}`;
+        const ns = window.boSuoTapHanMuc[chuoiThangNam] || 0;
+        const ct = mangDaChiThucTe[chiMucThang];
+        const cl = mangConLai[chiMucThang];
+
+        thanhHienThi.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 6px 10px; border-radius: 8px; font-size: 12px; border: 1px dashed #ddd;">
+                <span style="font-weight: bold; color: #333;">Tháng ${chiMucThang + 1}:</span>
+                <span style="color: #3498db;">NS: <b>${(ns/1000000).toFixed(1)}M</b></span>
+                <span style="color: #e74c3c;">Chi: <b>${(ct/1000000).toFixed(1)}M</b></span>
+                <span style="color: ${cl >= 0 ? '#2ecc71' : '#e74c3c'};">Còn: <b>${cl >= 0 ? '' : '-'}${(Math.abs(cl)/1000000).toFixed(1)}M</b></span>
+            </div>
+        `;
+    }
+
+    // Mặc định vừa lên biểu đồ thì hiển thị luôn số liệu của Tháng đang chọn trên bộ lọc
+    capNhatThanhThongTinPhiaTren(thangDangXemhienTai);
 
     if (bieuDoInstance) {
         bieuDoInstance.destroy();
@@ -731,16 +748,15 @@ function capNhatBieuDoBaoCaoNam(docs) {
             labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
             datasets: [
                 {
-                    // 🔑 ĐƯỜNG SỐ TIỀN CÒN LẠI (ĐÃ CẬP NHẬT)
                     type: 'line', 
                     label: 'Còn lại',
                     data: mangConLai,
-                    borderColor: '#f1c40f',    // Đổi sang màu vàng rực (Flat UI Yellow) giúp nổi bật trên nền trắng/xanh/đỏ
+                    borderColor: '#f1c40f',    
                     backgroundColor: '#f1c40f',
-                    borderWidth: 1,
+                    borderWidth: 1, // Đường siêu mảnh như bạn muốn
                     tension: 0.2, 
-                    pointRadius: 0,            // 🔑 Đặt bằng 0 để ẩn hoàn toàn các dấu chấm tròn mặc định
-                    pointHoverRadius: 0,       // 🔑 Đặt bằng 0 để khi rê chuột vào cũng không hiện chấm tròn
+                    pointRadius: 0,            
+                    pointHoverRadius: 0,       
                     fill: false,
                     grouped: false,
                     order: 1 
@@ -770,29 +786,18 @@ function capNhatBieuDoBaoCaoNam(docs) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            // 🔑 XỬ LÝ SỰ KIỆN CLICK VÀO CỘT HOẶC KHU VỰC THÁNG
+            onClick: function(event, elements) {
+                // Nhờ cấu hình tương tác, ta lấy được phần tử được nhấn trúng
+                const points = bieuDoInstance.getElementsAtEventForMode(event, 'index', { intersect: false }, true);
+                if (points && points.length > 0) {
+                    const thangDuocClick = points[0].index; // Trả về số từ 0 -> 11 tương ứng T1 -> T12
+                    capNhatThanhThongTinPhiaTren(thangDuocClick);
+                }
+            },
             plugins: {
                 legend: { display: false }, 
-                tooltip: {
-                    mode: 'index', // 🔑 Giúp kích hoạt tooltip dễ dàng khi rê chuột vào vùng cột mà không cần chạm đúng đường line
-                    intersect: false,
-                    callbacks: {
-                        label: function(context) {
-                            const m = context.dataIndex;
-                            const val = context.raw;
-                            let loai = '';
-                            
-                            if (context.datasetIndex === 0) {
-                                loai = 'Còn lại';
-                            } else if (context.datasetIndex === 1) {
-                                loai = mangLoaiMin[m];
-                            } else {
-                                loai = mangLoaiMax[m];
-                            }
-                            
-                            return loai + ': ' + val.toLocaleString('vi-VN') + ' đ';
-                        }
-                    }
-                }
+                tooltip: { enabled: false } // 🔑 TẮT HẲN hộp đen bay lung tung che khuất biểu đồ
             },
             scales: {
                 x: { stacked: false },
