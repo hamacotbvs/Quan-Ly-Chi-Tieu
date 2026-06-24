@@ -655,7 +655,7 @@
     const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Trang phục": "🛍️", "Mỹ phẩm": "🛍️", "Hóa đơn": "💵", "Nhà cửa": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Thu nhập khác": "💸", "Khác": "✨"};
 
 // BIỂU ĐỒ NGÂN SÁCH THU CHI 12 THÁNG
-// Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ chuẩn và vẽ biểu đồ đè lồng nhau
+// Hàm xử lý gom dữ liệu 12 tháng và vẽ biểu đồ Chart.js
 function capNhatBieuDoBaoCaoNam(docs) {
     const ctx = document.getElementById('bieuDoNganSach');
     if (!ctx) return;
@@ -667,129 +667,79 @@ function capNhatBieuDoBaoCaoNam(docs) {
     const txtTieuDeBc = document.getElementById('tieu-de-bieu-do');
     if (txtTieuDeBc) txtTieuDeBc.innerText = `Biểu đồ Ngân sách & Chi tiêu năm ${namDangXem}`;
 
-    // Mảng lưu tổng chi tiêu thực tế gốc của 12 tháng chu kỳ
-    const mangDaChiThucTe = Array(12).fill(0);
-    
-    // 🔑 MẸO THÔNG MINH: Lấy ngày chốt chu kỳ thực tế đang chạy trong hệ thống để đối chiếu
-    const chuKyChuanHienTai = layRangeChuKy(window.thoiGianDangXem);
-    const ngayChotHeThong = chuKyChuanHienTai ? chuKyChuanHienTai.tuNgay.getDate() : 1;
+    // Tạo mảng trống cho 12 tháng
+    const mangHanMuc = Array(12).fill(0);
+    const mangDaChi = Array(12).fill(0);
 
-    // Duyệt qua từng giao dịch để phân loại vào đúng THÁNG CHU KỲ bằng toán học
+    // 1. Đổ dữ liệu Hạn mức từ Firebase (đã lưu ở window.boSuoTapHanMuc) vào mảng
+    for (let m = 0; m < 12; m++) {
+        const chuoiThangNam = `${namDangXem}-${String(m + 1).padStart(2, '0')}`;
+        mangHanMuc[m] = window.boSuoTapHanMuc[chuoiThangNam] || 0;
+    }
+
+    // 2. Tính toán số tiền thực tế Đã Chi của từng tháng trong năm đó
     docs.forEach(docItem => {
         const data = docItem.data();
         if (data.loai === 'chi' && data.thoiGian) {
             const thoiGianMoc = parseChuoiThoiGian(data.thoiGian);
-            
             if (thoiGianMoc.getFullYear() === namDangXem) {
-                let thangIndex = thoiGianMoc.getMonth(); // Tháng dương lịch gốc (0 = T1, 5 = T6, 6 = T7...)
-                const ngayGiaoDich = thoiGianMoc.getDate();
-                
-                // Nếu ngày giao dịch vượt qua hoặc bằng ngày chốt, nó tính cho chu kỳ tháng sau
-                if (ngayGiaoDich >= ngayChotHeThong && ngayChotHeThong > 1) {
-                    thangIndex = thangIndex + 1;
-                }
-                
-                // Cộng dồn vào mảng nếu hợp lệ trong phạm vi 12 tháng công thức
-                if (thangIndex <= 11) {
-                    mangDaChiThucTe[thangIndex] += parseFloat(data.soTien) || 0;
-                }
+                const thangIndex = thoiGianMoc.getMonth(); // Trả về giá trị từ 0 -> 11
+                mangDaChi[thangIndex] += parseFloat(data.soTien) || 0;
             }
         }
     });
 
-    // Tạo các mảng động cấu trúc biểu đồ lồng nhau
-    const mangMax = Array(12).fill(0);       
-    const mangMin = Array(12).fill(0);       
-    const mangMauMax = Array(12).fill('');   
-    const mangMauMin = Array(12).fill('');   
-    const mangLoaiMax = Array(12).fill('');  
-    const mangLoaiMin = Array(12).fill('');
-
-    // So sánh từng tháng để quyết định thứ tự trước/sau và màu sắc cột
-    for (let m = 0; m < 12; m++) {
-        const chuoiThangNam = `${namDangXem}-${String(m + 1).padStart(2, '0')}`;
-        const hanMuc = window.boSuoTapHanMuc[chuoiThangNam] || 0;
-        const daChi = mangDaChiThucTe[m];
-
-        if (hanMuc >= daChi) {
-            // Trường hợp AN TOÀN: Ngân sách lớn làm nền (Xanh), Chi tiêu nhỏ nằm trước (Đỏ)
-            mangMax[m] = hanMuc;
-            mangMin[m] = daChi;
-            mangMauMax[m] = '#3498db'; 
-            mangMauMin[m] = '#e74c3c'; 
-            mangLoaiMax[m] = 'Ngân sách';
-            mangLoaiMin[m] = 'Thực tế chi';
-        } else {
-            // Trường hợp VƯỢT MỨC: Chi tiêu vượt vọt lên làm nền (Đỏ), Ngân sách thu gọn ở trước (Xanh)
-            mangMax[m] = daChi;
-            mangMin[m] = hanMuc;
-            mangMauMax[m] = '#e74c3c'; 
-            mangMauMin[m] = '#3498db'; 
-            mangLoaiMax[m] = 'Thực tế chi';
-            mangLoaiMin[m] = 'Ngân sách';
-        }
-    }
-
-    // Nếu đã có thực thể biểu đồ cũ, hủy hoàn toàn để làm sạch bộ nhớ layout cột
+    // 3. Tiến hành dựng biểu đồ cột bằng Chart.js
     if (bieuDoInstance) {
-        bieuDoInstance.destroy();
-    }
-
-    // Khởi tạo mới hoàn toàn biểu đồ với cấu hình ép đè lồng bắt buộc từng cụm data
-    bieuDoInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
-            datasets: [
-                {
-                    label: 'Thanh Sau',
-                    data: mangMax,
-                    backgroundColor: mangMauMax,
-                    barPercentage: 0.85, 
-                    categoryPercentage: 0.8, 
-                    borderRadius: 4,
-                    grouped: false // 🔑 Cưỡng chế không tách cột
+        // Nếu biểu đồ đã tồn tại, chỉ cần nạp lại data mới và update giao diện
+        bieuDoInstance.data.datasets[0].data = mangHanMuc;
+        bieuDoInstance.data.datasets[1].data = mangDaChi;
+        bieuDoInstance.update();
+    } else {
+        // Nếu mở lần đầu, khởi tạo mới hoàn toàn
+        bieuDoInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+                datasets: [
+                    {
+                        label: 'Ngân sách',
+                        data: mangHanMuc,
+                        backgroundColor: '#3498db', // Màu xanh dương cho cột ngân sách
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Thực tế chi',
+                        data: mangDaChi,
+                        backgroundColor: '#e74c3c', // Màu đỏ cho cột thực tế chi
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw.toLocaleString('vi-VN') + ' đ';
+                            }
+                        }
+                    }
                 },
-                {
-                    label: 'Thanh Trước',
-                    data: mangMin,
-                    backgroundColor: mangMauMin,
-                    barPercentage: 0.55, // Thu nhỏ lõi trước để tạo hiệu ứng lồng viền chuyên nghiệp
-                    categoryPercentage: 0.8,
-                    borderRadius: 4,
-                    grouped: false // 🔑 Ép nhảy chung vào tâm của thanh sau
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }, 
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const m = context.dataIndex;
-                            const val = context.raw;
-                            const loai = context.datasetIndex === 0 ? mangLoaiMax[m] : mangLoaiMin[m];
-                            return loai + ': ' + val.toLocaleString('vi-VN') + ' đ';
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { return (value / 1000000).toFixed(1) + 'M'; } // Viết tắt triệu đồng (M) cho gọn màn hình điện thoại
                         }
                     }
                 }
-            },
-            scales: {
-                x: {
-                    stacked: false // Đảm bảo các cột đè lấp lên nhau chứ không chồng nối đuôi nhau lên trời
-                },
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) { return (value / 1000000).toFixed(1) + 'M'; }
-                    }
-                }
             }
-        }
-    });
+        });
+    }
 }
     // CÁC DỮ LIỆU
     function kichHoatHeThongDuLieuRealtime(user) {
