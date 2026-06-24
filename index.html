@@ -279,42 +279,43 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, deleteDoc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    // Nhập thêm các hàm bảo mật từ thư viện Firebase Auth
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-// HỖ TRỢ CHỌN NGÀY ĐẦU THÁNG
-    // Tạo danh sách từ ngày 1 đến ngày 31 cho thẻ select
+
+    // HỖ TRỢ CHỌN NGÀY ĐẦU THÁNG
     const selectChuKy = document.getElementById('chon-ngay-chu-ky');
     if (selectChuKy) {
         for (let i = 1; i <= 31; i++) {
             const opt = document.createElement('option');
             opt.value = i;
             opt.innerText = `Ngày ${i} hàng tháng`;
-            selectChuKy.appendChild(opt);} }
-    // Hàm tính toán mốc thời gian Chu kỳ (Xử lý mượt mà cả các tháng thiếu ngày như tháng 2)
+            selectChuKy.appendChild(opt);
+        } 
+    }
+
+    // Hàm tính toán mốc thời gian Chu kỳ
     function layRangeChuKy(anchorDate, ngayBatDau) {
         const y = anchorDate.getFullYear();
-        const m = anchorDate.getMonth(); // 0 - 11
-    
+        const m = anchorDate.getMonth(); 
         const maxNgayThangNay = new Date(y, m + 1, 0).getDate();
         const dStart = Math.min(ngayBatDau, maxNgayThangNay);
         const tuNgay = new Date(y, m, dStart, 0, 0, 0, 0);
-    
         const maxNgayThangSau = new Date(y, m + 2, 0).getDate();
         const dEnd = Math.min(ngayBatDau, maxNgayThangSau);
         const denNgay = new Date(y, m + 1, dEnd, 0, 0, 0, 0);
-        denNgay.setMilliseconds(-1); // Lùi lại 1ms để lấy sát giờ cuối ngày hôm trước
-    
-        return { tuNgay, denNgay };}
+        denNgay.setMilliseconds(-1); 
+        return { tuNgay, denNgay };
+    }
 
-    // Hàm chuyển đổi chuỗi định dạng "YYYY-MM-DD HH:mm" của bạn thành đối tượng Date để so sánh
+    // Hàm chuyển đổi chuỗi định dạng "YYYY-MM-DD HH:mm" thành Date
     function parseChuoiThoiGian(chuoi) {
         if (!chuoi) return new Date(0);
         const [ngayPart, gioPart] = chuoi.split(' ');
         const [nam, thang, ngay] = ngayPart.split('-').map(Number);
         const [gio, phut] = gioPart ? gioPart.split(':').map(Number) : [0, 0];
-        return new Date(nam, thang - 1, ngay, gio, phut);}
-// A. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU ĐÁM MÂY Firebase
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        return new Date(nam, thang - 1, ngay, gio, phut);
+    }
+
+    // A. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyAbIbeVqEht5hsIYE6IXFrRJaOq2oyMMKw", 
         authDomain: "quanlychitieu-af553.firebaseapp.com",
@@ -325,15 +326,13 @@
     };        
     const app = initializeApp(firebaseConfig); 
     const db = getFirestore(app);
-    const auth = getAuth(app); // Khởi tạo trình quản lý đăng nhập bảo mật
+    const auth = getAuth(app); 
     const datathuchi = collection(db, "giao_dich_business");
     
-    // Biến toàn cục để lưu hàm hủy lắng nghe dữ liệu khi user đăng xuất
+    // Biến toàn cục duy nhất để quản lý hủy theo dõi dữ liệu realtime
     let huyTheoDoiThuChi = null;
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------    
-// B. THAO TÁC CHUNG & QUẢN LÝ TÀI KHOẢN (AUTH)
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // Định danh các phần tử giao diện của Hệ thống Auth
+
+    // B. THAO TÁC CHUNG & QUẢN LÝ TÀI KHOẢN (AUTH)
     const manHinhAuth = document.getElementById('man-hinh-auth');
     const khungAppChinh = document.getElementById('khung-chua-app-chinh');
     const authTieuDe = document.getElementById('auth-tieu-de');
@@ -345,40 +344,57 @@
     const nutHanhDongAuth = document.getElementById('nut-hanh-dong-auth');
     const linkQuenMk = document.getElementById('link-quen-mk');
     const linkChuyenTrang = document.getElementById('link-chuyen-trang');
-    let isLoginMode = true; // Thừa hành trạng thái: Đăng nhập (true) hoặc Đăng ký (false)
-    // Lắng nghe trạng thái đăng nhập hệ thống (Bảo mật thời gian thực)
+    let isLoginMode = true; 
+
+    // Lắng nghe trạng thái đăng nhập hệ thống
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            // Trường hợp: Đã đăng nhập thành công
             if (manHinhAuth) manHinhAuth.style.display = 'none';
             if (khungAppChinh) khungAppChinh.style.display = 'block';
-            // Cập nhật thông tin lên Tab Tài Khoản
+            
             const txtTenUser = document.getElementById('ten-user-hien-thi');
             const txtEmailUser = document.getElementById('email-user-hien-thi');
             if (txtTenUser) txtTenUser.innerText = user.displayName || user.email.split('@')[0];
             if (txtEmailUser) txtEmailUser.innerText = user.email;
-            // --- ĐOẠN BỔ SUNG: Tải ngày cấu hình chu kỳ từ Firebase ---
-            window.ngayBatDauChuKy = 1; // Mặc định ban đầu là ngày 1
+            
+            window.ngayBatDauChuKy = 1; 
             try {
                 const docRef = doc(db, "cau_hinh_user", user.uid);
                 const docSnap = await getDoc(docRef);
-                if (docSnap.exists() && docSnap.data().ngayBatDau) {window.ngayBatDauChuKy = parseInt(docSnap.data().ngayBatDau); if (selectChuKy) selectChuKy.value = window.ngayBatDauChuKy;} } catch (err) {console.error("Lỗi tải cấu hình chu kỳ:", err);}
-            tichHopNutDangXuat(); // Thêm nút Đăng xuất vào Tab Tài Khoản nếu chưa có
-            kichHoatHeThongDuLieuRealtime(user); // Kích hoạt lắng nghe luồng dữ liệu thu chi độc lập của riêng User này
+                if (docSnap.exists() && docSnap.data().ngayBatDau) {
+                    window.ngayBatDauChuKy = parseInt(docSnap.data().ngayBatDau); 
+                    if (selectChuKy) selectChuKy.value = window.ngayBatDauChuKy;
+                } 
+            } catch (err) {
+                console.error("Lỗi tải cấu hình chu kỳ:", err);
+            }
+            tichHopNutDangXuat(); 
+            kichHoatHeThongDuLieuRealtime(user); 
         } else {
-            // Trường hợp: Chưa đăng nhập hoặc vừa đăng xuất
             if (manHinhAuth) manHinhAuth.style.display = 'flex';
             if (khungAppChinh) khungAppChinh.style.display = 'none';
-            // Hủy theo dõi dữ liệu cũ để tránh lộ thông tin hoặc tốn tài nguyên tải ngầm
-            if (huyTheoDoiThuChi) { huyTheoDoiThuChi(); huyTheoDoiThuChi = null; } } });
-    // Xử lý sự kiện bấm nút "Lưu cấu hình" ngày chu kỳ lên Firebase đám mây
+            if (huyTheoDoiThuChi) { huyTheoDoiThuChi(); huyTheoDoiThuChi = null; } 
+        } 
+    });
+
+    // Lưu cấu hình chu kỳ
     document.getElementById('nut-luu-chu-ky')?.addEventListener('click', async () => {
         if (!auth.currentUser) return alert("Phiên đăng nhập đã hết hạn!");
         const ngayChon = parseInt(document.getElementById('chon-ngay-chu-ky').value);
-        try {await setDoc(doc(db, "cau_hinh_user", auth.currentUser.uid), {ngayBatDau: ngayChon}, { merge: true }); window.ngayBatDauChuKy = ngayChon; alert("Đã lưu ngày bắt đầu chu kỳ tính toán mới thành công!");
-        // Yêu cầu ứng dụng tính toán lại giao diện ngay lập tức dựa trên dữ liệu đã cache
-        if (window.duLieuSnapshotQuocTe) {capNhatToanBoGiaoDien(window.duLieuSnapshotQuocTe);} } catch (err) {alert("Không thể lưu cấu hình: " + err.message);} });
-    // Chuyển đổi qua lại giữa giao diện Đăng Nhập / Đăng Ký
+        try {
+            await setDoc(doc(db, "cau_hinh_user", auth.currentUser.uid), {ngayBatDau: ngayChon}, { merge: true }); 
+            window.ngayBatDauChuKy = ngayChon; 
+            alert("Đã lưu ngày bắt đầu chu kỳ tính toán mới thành công!");
+            if (window.duLieuSnapshotQuocTe) {
+                capNhatToanBoGiaoDien(window.duLieuSnapshotQuocTe);
+                capNhatThanhHanMuc(window.duLieuSnapshotQuocTe);
+            } 
+        } catch (err) {
+            alert("Không thể lưu cấu hình: " + err.message);
+        } 
+    });
+
+    // Chuyển đổi giao diện Đăng Nhập / Đăng Ký
     if (linkChuyenTrang) {
         linkChuyenTrang.addEventListener('click', (e) => {
             e.preventDefault();
@@ -400,7 +416,8 @@
             }
         });
     }
-    // Xử lý sự kiện bấm nút Đăng Nhập hoặc Đăng Ký
+
+    // Xử lý nút Đăng Nhập hoặc Đăng Ký
     if (nutHanhDongAuth) {
         nutHanhDongAuth.addEventListener('click', async () => {
             const email = inputAuthUsername.value.trim();
@@ -409,17 +426,14 @@
                 alert("Vui lòng điền đầy đủ Email và Mật khẩu!");
                 return;
             }
-            // Lưu ý: Firebase Auth yêu cầu định dạng Email (ví dụ: tenban@gmail.com) làm tài khoản đăng nhập
             if (!email.includes('@')) {
-                alert("Tài khoản phải đúng định dạng Email (Ví dụ: vidu@gmail.com) để sử dụng tính năng đám mây bảo mật!");
+                alert("Tài khoản phải đúng định dạng Email (Ví dụ: vidu@gmail.com)!");
                 return;
             }
             try {
                 if (isLoginMode) {
-                    // Xử lý ĐĂNG NHẬP
                     await signInWithEmailAndPassword(auth, email, password);
                 } else {
-                    // Xử lý ĐĂNG KÝ
                     const rePassword = inputAuthRePassword.value;
                     if (password !== rePassword) {
                         alert("Mật khẩu nhập lại không trùng khớp!");
@@ -430,7 +444,6 @@
                         return;
                     }
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    // Đặt tên hiển thị mặc định lấy từ phần trước ký tự @ của Email
                     await updateProfile(userCredential.user, { displayName: email.split('@')[0] });
                     alert("Đăng ký tài khoản thành công!");
                 }
@@ -446,7 +459,8 @@
             }
         });
     }
-    // Xử lý sự kiện bấm nút "Quên mật khẩu" đám mây
+
+    // Xử lý nút "Quên mật khẩu"
     if (linkQuenMk) {
         linkQuenMk.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -457,12 +471,13 @@
             }
             try {
                 await sendPasswordResetEmail(auth, email);
-                alert(`Hệ thống đã gửi một liên kết đặt lại mật khẩu mới vào hòm thư: ${email}. Vui lòng kiểm tra hộp thư đến (hoặc thư rác) của bạn!`);
+                alert(`Hệ thống đã gửi một liên kết đặt lại mật khẩu mới vào hòm thư: ${email}. Vui lòng kiểm tra hộp thư!`);
             } catch (error) {
                 alert("Không thể gửi email đặt lại mật khẩu: " + error.message);
             }
         });
     }
+
     // Hàm tạo nút đăng xuất tự động ở tab Tài Khoản
     function tichHopNutDangXuat() {
         const vungThongTin = document.querySelector('#tab-tai-khoan > div');
@@ -481,20 +496,41 @@
             vungThongTin.appendChild(nutDangXuat);
         }
     }
+
     // I. NÚT LÀM MỚI ỨNG DỤNG
     const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP');
-    if (idNutLamMoi) {idNutLamMoi.addEventListener('click', () => {const iconSvg = idNutLamMoi.querySelector('svg'); if (iconSvg) {iconSvg.style.transform = 'rotate(360deg)';iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';}setTimeout(() => {window.location.reload();}, 350);});}
+    if (idNutLamMoi) {
+        idNutLamMoi.addEventListener('click', () => {
+            const iconSvg = idNutLamMoi.querySelector('svg'); 
+            if (iconSvg) {
+                iconSvg.style.transform = 'rotate(360deg)';
+                iconSvg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            }
+            setTimeout(() => { window.location.reload(); }, 350);
+        });
+    }
+
     // II. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
     const cacNutTab = document.querySelectorAll('.nut-tab');
-    cacNutTab.forEach(nut => {nut.addEventListener('click', () => {const mucTieu = nut.getAttribute('data-target'); cacNutTab.forEach(b => b.classList.remove('active'));nut.classList.add('active'); const cacVungNoiDung = document.querySelectorAll('.tab-menu-duoi');                
-        cacVungNoiDung.forEach(content => content.classList.remove('active'));const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`); if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active'); }); });
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// C. SCRIPT CAC TRANG TAB
-// C.I TAB HOME
+    cacNutTab.forEach(nut => {
+        nut.addEventListener('click', () => {
+            const mucTieu = nut.getAttribute('data-target'); 
+            cacNutTab.forEach(b => b.classList.remove('active'));
+            nut.classList.add('active'); 
+            const cacVungNoiDung = document.querySelectorAll('.tab-menu-duoi');                
+            cacVungNoiDung.forEach(content => content.classList.remove('active'));
+            const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`); 
+            if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active'); 
+        }); 
+    });
+
+    // C. SCRIPT CAC TRANG TAB
+    // C.I TAB HOME (QUẢN LÝ HẠN MỨC)
     const txtChu = document.getElementById('chi-tieu-tren-han-muc');
     const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
     const txtGoiY = document.getElementById('goi-y-han-muc');
     let boSuoTapHanMuc = JSON.parse(localStorage.getItem('bo_suo_tap_han_muc')) || {};
+
     if (typeof thoiGianDangXem === 'undefined') {
         window.thoiGianDangXem = new Date();
         window.layChuoiThangNam = function(dateObj) {
@@ -511,6 +547,7 @@
             }
         }
     }
+
     document.getElementById('vung-han-muc-chi-tieu')?.addEventListener('click', () => {
         let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
         let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0; 
@@ -534,16 +571,20 @@
             if (window.duLieuSnapshotQuocTe) { capNhatThanhHanMuc(window.duLieuSnapshotQuocTe); }
         }
     });
-    document.getElementById('cum-chuyen-thang')?.addEventListener('click', (e) => { e.stopPropagation(); });
-    document.getElementById('nut-thang-truoc')?.addEventListener('click', (e) => { e.stopPropagation(); window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() - 1); chayLaiHeThongGiaoDien(); });
-    document.getElementById('nut-thang-sau')?.addEventListener('click', (e) => { e.stopPropagation(); window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() + 1); chayLaiHeThongGiaoDien(); }); 
 
-    function chayLaiHeThongGiaoDien() {
+    document.getElementById('cum-chuyen-thang')?.addEventListener('click', (e) => { e.stopPropagation(); });
+    document.getElementById('nut-thang-truoc')?.addEventListener('click', (e) => { e.stopPropagation(); window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() - 1); hayLaiHeThongGiaoDienYeuCau(); });
+    document.getElementById('nut-thang-sau')?.addEventListener('click', (e) => { e.stopPropagation(); window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() + 1); hayLaiHeThongGiaoDienYeuCau(); }); 
+
+    // Hàm duy nhất để chạy lại hệ thống đồng bộ 2 tab khi click chuyển đổi tháng
+    function hayLaiHeThongGiaoDienYeuCau() {
         window.capNhatChuHienThiThang(); 
         if (window.duLieuSnapshotQuocTe) {
             capNhatThanhHanMuc(window.duLieuSnapshotQuocTe); 
+            capNhatToanBoGiaoDien(window.duLieuSnapshotQuocTe);
         }
     } 
+
     function capNhatThanhHanMuc(docs) {
         window.duLieuSnapshotQuocTe = docs; 
         let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
@@ -579,9 +620,8 @@
         }
     }
     window.capNhatChuHienThiThang();
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// C.2 TAB LỊCH SỬ & ĐỔ DỮ LIỆU REALTIME THEO TỪNG USER
-//====================================================================================================================================================================================================================================================================
+
+    // C.2 TAB LỊCH SỬ & ĐỔ DỮ LIỆU REALTIME THEO TỪNG USER
     const idHienThiSoDu = document.getElementById('so-du');
     const idVungLichSu = document.getElementById('lich-su-giao-dich');
     const idBcThu = document.getElementById('bao-cao-thu');
@@ -589,244 +629,192 @@
     const idThanhThu = document.getElementById('thanh-thu-ti-le');
     const idThanhChi = document.getElementById('thanh-chi-ti-le');
     const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Mua sắm": "🛍️", "Hóa đơn": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Thu nhập khác": "💸", "Khác": "✨"};
-// 1. Định nghĩa lại hàm kích hoạt luồng dữ liệu thời gian thực
-// Thêm let/const hoặc đảm bảo biến này được khai báo rõ ràng
-let huyTheoDoiThuChi = null; 
 
-function kichHoatHeThongDuLieuRealtime(user) {
-    const truyVanDocLapUser = query(datathuchi, where("userId", "==", user.uid)); 
-    huyTheoDoiThuChi = onSnapshot(truyVanDocLapUser, (snapshot) => {
-        capNhatToanBoGiaoDien(snapshot.docs);
-    });
-}
-
-// 2. Viết lại hàm Chạy Lại Hệ Thống khi người dùng nhấn nút bấm chuyển tháng
-function chayLaiHeThongGiaoDien() {
-    window.capNhatChuHienThiThang(); 
-    if (window.duLieuSnapshotQuocTe) {
-        capNhatToanBoGiaoDien(window.duLieuSnapshotQuocTe); 
-    }
-} 
-
-// 3. Hàm cốt lõi chịu trách nhiệm tổng hợp dữ liệu báo cáo theo chu kỳ tùy chỉnh
-function capNhatToanBoGiaoDien(docs) {
-    window.duLieuSnapshotQuocTe = docs;
-    if (!idVungLichSu) return;
-    idVungLichSu.innerHTML = ''; 
-
-    let tongSoDu = 0;    
-    let tongThuNhap = 0; 
-    let tongChiTieu = 0; 
-
-    const chuKy = layRangeChuKy(window.thoiGianDangXem, window.ngayBatDauChuKy || 1);
-    const tuNgay = chuKy.tuNgay;
-    const denNgay = chuKy.denNgay;
-
-    if (!docs || docs.length === 0) {
-        idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chưa có giao dịch nào!</div>'; 
-        if (idHienThiSoDu) idHienThiSoDu.innerText = "0 đ";
-        if (idBcThu) idBcThu.innerText = "0 đ";
-        if (idBcChi) idBcChi.innerText = "0 đ";
-        if (idThanhThu) idThanhThu.style.width = "0%";
-        if (idThanhChi) idThanhChi.style.width = "0%";
-        if (txtChu) txtChu.innerText = "0 đ / Chưa đặt";
-        if (thanhPhanTram) thanhPhanTram.style.width = '0%';
-        return;
+    function kichHoatHeThongDuLieuRealtime(user) {
+        const truyVanDocLapUser = query(datathuchi, where("userId", "==", user.uid)); 
+        huyTheoDoiThuChi = onSnapshot(truyVanDocLapUser, (snapshot) => {
+            capNhatToanBoGiaoDien(snapshot.docs);
+            capNhatThanhHanMuc(snapshot.docs); // Cập nhật luôn cả thanh hạn mức ở Home
+        });
     }
 
-    const mangSapXep = [...docs].sort((a, b) => {
-        return (b.data().thoiGian || '').localeCompare(a.data().thoiGian || '');
-    });
+    function capNhatToanBoGiaoDien(docs) {
+        window.duLieuSnapshotQuocTe = docs;
+        if (!idVungLichSu) return;
+        idVungLichSu.innerHTML = ''; 
+        let tongSoDu = 0;    
+        let tongThuNhap = 0; 
+        let tongChiTieu = 0; 
 
-    mangSapXep.forEach((docItem) => {
-        const giaoDich = docItem.data();
-        const docId = docItem.id;
-        const soTienGiaoDich = parseFloat(giaoDich.soTien) || 0;
-        const thoiGianMoc = parseChuoiThoiGian(giaoDich.thoiGian);
+        const chuKy = layRangeChuKy(window.thoiGianDangXem, window.ngayBatDauChuKy || 1);
+        const tuNgay = chuKy.tuNgay;
+        const denNgay = chuKy.denNgay;
 
-        if (giaoDich.loai === 'thu') {
-            tongSoDu += soTienGiaoDich;
-        } else {
-            tongSoDu -= soTienGiaoDich;
+        if (!docs || docs.length === 0) {
+            idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chưa có giao dịch nào!</div>'; 
+            if (idHienThiSoDu) idHienThiSoDu.innerText = "0 đ";
+            if (idBcThu) idBcThu.innerText = "0 đ";
+            if (idBcChi) idBcChi.innerText = "0 đ";
+            if (idThanhThu) idThanhThu.style.width = "0%";
+            if (idThanhChi) idThanhChi.style.width = "0%";
+            return;
         }
 
-        if (thoiGianMoc >= tuNgay && thoiGianMoc <= denNgay) {
+        const mangSapXep = [...docs].sort((a, b) => {
+            return (b.data().thoiGian || '').localeCompare(a.data().thoiGian || '');
+        });
+
+        mangSapXep.forEach((docItem) => {
+            const giaoDich = docItem.data();
+            const docId = docItem.id;
+            const soTienGiaoDich = parseFloat(giaoDich.soTien) || 0;
+            const thoiGianMoc = parseChuoiThoiGian(giaoDich.thoiGian);
+
             if (giaoDich.loai === 'thu') {
-                tongThuNhap += soTienGiaoDich;
+                tongSoDu += soTienGiaoDich;
             } else {
-                tongChiTieu += soTienGiaoDich;
+                tongSoDu -= soTienGiaoDich;
             }
 
-            const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
-            const iconPhuHop = danhSachIcon[hienThiDanhMuc] || "📂";
-            const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
+            if (thoiGianMoc >= tuNgay && thoiGianMoc <= denNgay) {
+                if (giaoDich.loai === 'thu') {
+                    tongThuNhap += soTienGiaoDich;
+                } else {
+                    tongChiTieu += soTienGiaoDich;
+                }
 
-            let kyTuDau = giaoDich.loai === 'thu' ? '+' : '-';
-            let lopMauSac = giaoDich.loai === 'thu' ? 'mau-thu' : 'mau-chi';
+                const hienThiDanhMuc = giaoDich.danhMuc ? giaoDich.danhMuc : "Khác";
+                const iconPhuHop = danhSachIcon[hienThiDanhMuc] || "📂";
+                const hienThiThoiGian = giaoDich.thoiGian ? giaoDich.thoiGian : "--/--/---- --:--";
 
-            const dongMoi = document.createElement('div');
-            dongMoi.classList.add('dong-giao-dich');
-            dongMoi.innerHTML = `
-                <div class="nen-hanh-dong">
-                    <div class="hanh-dong-sua">✏️ Sửa</div>
-                    <div class="hanh-dong-xoa">🗑️ Xóa</div>
-                </div>
-                <div class="giao-dich-noi-dung" data-id="${docId}">
-                    <div class="giao-dich-trai"> <span class="giao-dich-muc">${iconPhuHop} ${hienThiDanhMuc}</span> <span class="giao-dich-ten">${giaoDich.ten}</span> </div>
-                    <div class="giao-dich-phai-cum"> <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span> <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${soTienGiaoDich.toLocaleString('vi-VN')} đ</span> </div>
-                </div>
-            `;
-            idVungLichSu.appendChild(dongMoi);
+                let kyTuDau = giaoDich.loai === 'thu' ? '+' : '-';
+                let lopMauSac = giaoDich.loai === 'thu' ? 'mau-thu' : 'mau-chi';
+
+                const dongMoi = document.createElement('div');
+                dongMoi.classList.add('dong-giao-dich');
+                dongMoi.innerHTML = `
+                    <div class="nen-hanh-dong">
+                        <div class="hanh-dong-sua">✏️ Sửa</div>
+                        <div class="hanh-dong-xoa">🗑️ Xóa</div>
+                    </div>
+                    <div class="giao-dich-noi-dung" data-id="${docId}">
+                        <div class="giao-dich-trai"> <span class="giao-dich-muc">${iconPhuHop} ${hienThiDanhMuc}</span> <span class="giao-dich-ten">${giaoDich.ten}</span> </div>
+                        <div class="giao-dich-phai-cum"> <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span> <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${soTienGiaoDich.toLocaleString('vi-VN')} đ</span> </div>
+                    </div>
+                `;
+                idVungLichSu.appendChild(dongMoi);
+            }
+        });
+
+        if (idVungLichSu.innerHTML === '') {
+            idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chu kỳ này không phát sinh giao dịch nào!</div>';
         }
-    });
 
-    if (idVungLichSu.innerHTML === '') {
-        idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chu kỳ này không phát sinh giao dịch nào!</div>';
-    }
+        if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN') + " đ"; 
+        if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ"; 
+        if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
 
-    if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN') + " đ"; 
-    if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ"; 
-    if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
-    
-    const maxTong = Math.max(tongThuNhap, tongChiTieu);
-    if (maxTong > 0) {
-        if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`; 
-        if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
-    } else {
-        if (idThanhThu) idThanhThu.style.width = "0%";
-        if (idThanhChi) idThanhChi.style.width = "0%";
-    }
-
-    let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
-    let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
-    
-    if (txtChu && thanhPhanTram) {
-        if (hanMucThangDangXem === 0) {
-            txtChu.innerText = `${tongChiTieu.toLocaleString('vi-VN')} đ / Chưa đặt`; 
-            thanhPhanTram.style.width = '0%'; 
-            thanhPhanTram.style.backgroundColor = '#e0e0e0'; 
-            if (txtGoiY) { txtGoiY.innerText = "💡 Bấm vào đây để cài đặt hạn mức"; txtGoiY.style.color = '#999999'; }
+        const maxTong = Math.max(tongThuNhap, tongChiTieu);
+        if (maxTong > 0) {
+            if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`; 
+            if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
         } else {
-            let phanTram = (tongChiTieu / hanMucThangDangXem) * 100; 
-            let phanTramHienThi = phanTram > 100 ? 100 : phanTram; 
-            txtChu.innerText = `${tongChiTieu.toLocaleString('vi-VN')}/${hanMucThangDangXem.toLocaleString('vi-VN')}đ`; 
-            thanhPhanTram.style.width = `${phanTramHienThi}%`;
-            if (phanTram >= 100) {
-                thanhPhanTram.style.backgroundColor = '#e74c3c'; 
-                if (txtGoiY) { txtGoiY.innerText = `⚠️ Bạn đã tiêu vượt quá hạn mức ${(phanTram - 100).toFixed(0)}%!`; txtGoiY.style.color = '#e74c3c'; }
-            } else if (phanTram >= 75) {
-                thanhPhanTram.style.backgroundColor = '#f1c40f'; 
-                if (txtGoiY) { txtGoiY.innerText = `🔔 Cẩn thận, đã tiêu hết ${phanTram.toFixed(0)}% hạn mức!`; txtGoiY.style.color = '#f1c40f'; }
-            } else {
-                thanhPhanTram.style.backgroundColor = '#2ecc71'; 
-                if (txtGoiY) { txtGoiY.innerText = `✅ Còn ${(hanMucThangDangXem - tongChiTieu).toLocaleString('vi-VN')}đ chi tiêu`; txtGoiY.style.color = '#999999'; }
-            }
+            if (idThanhThu) idThanhThu.style.width = "0%";
+            if (idThanhChi) idThanhChi.style.width = "0%";
         }
-    }
 
-    // ================= SỬA LỖI VUỐT CHẠM TẠI ĐÂY =================
-    document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
-        let xBatDau = 0; let xDiChuyen = 0; let dangVuot = false;
+        // --- CODE XỬ LÝ VUỐT CHẠM CỦA CÁC ITEM DÒNG LỊCH SỬ ---
+        document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
+            let xBatDau = 0; let xDiChuyen = 0; let dangVuot = false;
+            const batDauVuot = (e) => { 
+                dangVuot = true; 
+                xBatDau = e.touches ? e.touches[0].clientX : e.clientX; 
+            };
+            const dangKeo = (e) => { 
+                if (!dangVuot) return; 
+                const xHienTai = e.touches ? e.touches[0].clientX : e.clientX; 
+                xDiChuyen = xHienTai - xBatDau; 
+                if (xDiChuyen > 100) xDiChuyen = 100;
+                if (xDiChuyen < -100) xDiChuyen = -100; 
+                noiDung.style.transform = `translateX(${xDiChuyen}px)`; 
+                noiDung.style.transition = 'none';
+            };
+            const ketThucVuot = async () => { 
+                if (!dangVuot) return; 
+                dangVuot = false; 
+                noiDung.style.transition = 'transform 0.2s ease-out';
+                const idTaiLieu = noiDung.getAttribute('data-id');
+                const tenGiaoDich = noiDung.querySelector('.giao-dich-ten')?.innerText || '';
+                const danhMucGiaoDich = noiDung.querySelector('.giao-dich-muc')?.innerText || '';
+                const thoiGianGiaoDich = noiDung.querySelector('.giao-dich-thoi-gian')?.innerText || '';
+                const soTienGiaoDich = noiDung.querySelector('.giao-dich-phai')?.innerText || '';
 
-        const batDauVuot = (e) => { 
-            dangVuot = true; 
-            xBatDau = e.touches ? e.touches[0].clientX : e.clientX; 
-        };
-
-        const dangKeo = (e) => { 
-            if (!dangVuot) return; 
-            const xHienTai = e.touches ? e.touches[0].clientX : e.clientX; 
-            xDiChuyen = xHienTai - xBatDau; 
-            if (xDiChuyen > 100) xDiChuyen = 100;
-            if (xDiChuyen < -100) xDiChuyen = -100; 
-            noiDung.style.transform = `translateX(${xDiChuyen}px)`; 
-            noiDung.style.transition = 'none';
-        };
-
-        const ketThucVuot = async () => { 
-            if (!dangVuot) return; 
-            dangVuot = false; 
-            noiDung.style.transition = 'transform 0.2s ease-out';
-            const idTaiLieu = noiDung.getAttribute('data-id');
-            const tenGiaoDich = noiDung.querySelector('.giao-dich-ten')?.innerText || '';
-            const danhMucGiaoDich = noiDung.querySelector('.giao-dich-muc')?.innerText || '';
-            const thoiGianGiaoDich = noiDung.querySelector('.giao-dich-thoi-gian')?.innerText || '';
-            const soTienGiaoDich = noiDung.querySelector('.giao-dich-phai')?.innerText || '';
-
-            if (xDiChuyen < -60) {
-                noiDung.style.transform = 'translateX(-50%)'; 
-                setTimeout(async () => {
-                    if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
-                        try {
-                            const taiLieuRef = doc(db, "giao_dich_business", idTaiLieu); 
-                            await deleteDoc(taiLieuRef);
-                        } catch (error) {
-                            console.error("Lỗi xóa:", error); 
-                            alert("Không thể xóa giao dịch!"); 
-                            noiDung.style.transform = 'translateX(0)';
-                        }
-                    } else { noiDung.style.transform = 'translateX(0)'; }
-                }, 200);
-            } 
-            else if (xDiChuyen > 60) {
-                noiDung.style.transform = 'translateX(0)';
-                if (idTen) idTen.value = tenGiaoDich; 
-                if (idSoTien) { 
-                    let soTienSạch = soTienGiaoDich.replace(/[^\d]/g, ''); 
-                    idSoTien.value = soTienSạch; 
-                    idSoTien.dispatchEvent(new Event('input'));
+                if (xDiChuyen < -60) {
+                    noiDung.style.transform = 'translateX(-50%)'; 
+                    setTimeout(async () => {
+                        if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
+                            try {
+                                const taiLieuRef = doc(db, "giao_dich_business", idTaiLieu); 
+                                await deleteDoc(taiLieuRef);
+                            } catch (error) {
+                                console.error("Lỗi xóa:", error); 
+                                alert("Không thể xóa giao dịch!"); 
+                                noiDung.style.transform = 'translateX(0)';
+                            }
+                        } else { noiDung.style.transform = 'translateX(0)'; }
+                    }, 200);
                 } 
-                if (idLoaiGiaoDich) {
-                    idLoaiGiaoDich.value = soTienGiaoDich.includes('+') ? 'thu' : 'chi';
-                    idLoaiGiaoDich.dispatchEvent(new Event('change'));
-                } 
-                setTimeout(() => {
-                    if (idDanhMuc) { 
-                        let danhMucSạch = danhMucGiaoDich.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, "").trim(); 
-                        idDanhMuc.value = danhMucSạch || 'Khác';
+                else if (xDiChuyen > 60) {
+                    noiDung.style.transform = 'translateX(0)';
+                    if (idTen) idTen.value = tenGiaoDich; 
+                    if (idSoTien) { 
+                        let soTienSạch = soTienGiaoDich.replace(/[^\d]/g, ''); 
+                        idSoTien.value = soTienSạch; 
+                        idSoTien.dispatchEvent(new Event('input'));
                     } 
-                }, 100);                
-                let thoiGianSạch = thoiGianGiaoDich.replace('🕒', '').trim(); 
-                if (thoiGianSạch && thoiGianSạch.includes(' ')) {
-                    const mangPhanTach = thoiGianSạch.split(' '); 
-                    if (inputNgay) inputNgay.value = mangPhanTach[0]; 
-                    if (inputGio) inputGio.value = mangPhanTach[1];
+                    if (idLoaiGiaoDich) {
+                        idLoaiGiaoDich.value = soTienGiaoDich.includes('+') ? 'thu' : 'chi';
+                        idLoaiGiaoDich.dispatchEvent(new Event('change'));
+                    } 
+                    setTimeout(() => {
+                        if (idDanhMuc) { 
+                            let danhMucSạch = danhMucGiaoDich.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, "").trim(); 
+                            idDanhMuc.value = danhMucSạch || 'Khác';
+                        } 
+                    }, 100);                        
+                    let thoiGianSạch = thoiGianGiaoDich.replace('🕒', '').trim(); 
+                    if (thoiGianSạch && thoiGianSạch.includes(' ')) {
+                        const mangPhanTach = thoiGianSạch.split(' '); 
+                        if (inputNgay) inputNgay.value = mangPhanTach[0]; 
+                        if (inputGio) inputGio.value = mangPhanTach[1];
+                    } 
+                    window.idGiaoDichDangSua = idTaiLieu; 
+                    if (idnutsave) idnutsave.innerText = "💾 Cập nhật thay đổi"; 
+                    const tabNhapLieu = document.querySelector('[data-target="add"]');
+                    if (tabNhapLieu) { tabNhapLieu.click(); }
                 } 
-                window.idGiaoDichDangSua = idTaiLieu; 
-                if (idnutsave) idnutsave.innerText = "💾 Cập nhật thay đổi"; 
-                const tabNhapLieu = document.querySelector('[data-target="add"]');
-                if (tabNhapLieu) { tabNhapLieu.click(); }
-            } 
-            else { noiDung.style.transform = 'translateX(0)'; }
-            xDiChuyen = 0;
-        };
-
-        // Lắng nghe sự kiện trên điện thoại (Touch) - Giữ nguyên
-        noiDung.addEventListener('touchstart', batDauVuot); 
-        noiDung.addEventListener('touchmove', dangKeo); 
-        noiDung.addEventListener('touchend', ketThucVuot); 
-
-        // Lắng nghe sự kiện trên máy tính (Mouse) - ĐÃ CẬP NHẬT TỐI ƯU CHỐNG LAG
-        noiDung.addEventListener('mousedown', (e) => {
-            batDauVuot(e);
-
-            // Tạo các hàm wrapper tạm thời để có thể remove sau khi dùng xong
-            const xửLýDiChuột = (ev) => dangKeo(ev);
-            const xửLýThảChuột = () => {
-                ketThucVuot();
-                // Dọn dẹp sự kiện ngay khi thả chuột, trả lại bộ nhớ cho window
-                window.removeEventListener('mousemove', xửLýDiChuột);
-                window.removeEventListener('mouseup', xửLýThảChuột);
+                else { noiDung.style.transform = 'translateX(0)'; }
+                xDiChuyen = 0;
             };
 
-            window.addEventListener('mousemove', xửLýDiChuột); 
-            window.addEventListener('mouseup', xửLýThảChuột);
-        }); 
-    });
-}
-        
-// C.3 TAB THÊM GIAO DỊCH MỚI
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            noiDung.addEventListener('touchstart', batDauVuot); 
+            noiDung.addEventListener('touchmove', dangKeo); 
+            noiDung.addEventListener('touchend', ketThucVuot); 
+            noiDung.addEventListener('mousedown', (e) => {
+                batDauVuot(e);
+                const xửLýDiChuột = (ev) => dangKeo(ev);
+                const xửLýThảChuột = () => {
+                    ketThucVuot();
+                    window.removeEventListener('mousemove', xửLýDiChuột);
+                    window.removeEventListener('mouseup', xửLýThảChuột);
+                };
+                window.addEventListener('mousemove', xửLýDiChuột); 
+                window.addEventListener('mouseup', xửLýThảChuột);
+            }); 
+        });
+    }
+
+    // C.3 TAB THÊM GIAO DỊCH MỚI
     const idnutsave = document.getElementById('nut-save');
     const idLoaiGiaoDich = document.getElementById('loai-dong-tien');
     const idDanhMuc = document.getElementById('phan-nhom-thu-chi');
@@ -836,16 +824,13 @@ function capNhatToanBoGiaoDien(docs) {
     const inputNgay = document.getElementById('ngay-giao-dich'); 
     const inputGio = document.getElementById('gio-giao-dich'); 
     const nutHome = document.querySelector('[data-target="home"]');
+
     const bayGio = new Date(); 
-    const nam = bayGio.getFullYear();
-    const thang = String(bayGio.getMonth() + 1).padStart(2, '0');
-    const ngay = String(bayGio.getDate()).padStart(2, '0');
-    const gio = String(bayGio.getHours()).padStart(2, '0');
-    const phut = String(bayGio.getMinutes()).padStart(2, '0');
     if (inputNgay && inputGio) {
-        inputNgay.value = `${nam}-${thang}-${ngay}`; 
-        inputGio.value = `${gio}:${phut}`;
+        inputNgay.value = `${bayGio.getFullYear()}-${String(bayGio.getMonth() + 1).padStart(2, '0')}-${String(bayGio.getDate()).padStart(2, '0')}`; 
+        inputGio.value = `${String(bayGio.getHours()).padStart(2, '0')}:${String(bayGio.getMinutes()).padStart(2, '0')}`;
     }
+
     if (idLoaiGiaoDich && idDanhMuc) {
         idLoaiGiaoDich.addEventListener('change', () => {
             idDanhMuc.innerHTML = '';
@@ -856,6 +841,7 @@ function capNhatToanBoGiaoDien(docs) {
             }
         });
     }
+
     if (idSoTien && labelSoTien) {
         idSoTien.addEventListener('input', function () {
             let value = this.value.replace(/\D/g, ''); 
@@ -865,9 +851,9 @@ function capNhatToanBoGiaoDien(docs) {
             labelSoTien.innerText = `Số tiền: ${soDaPhanCach}đ`;
         });
     }
+
     if (idnutsave) {
         idnutsave.addEventListener('click', async () => {
-            // Kiểm tra bảo mật xem có User nào đang đăng nhập không
             if (!auth.currentUser) {
                 alert("Phiên đăng nhập đã hết hạn, vui lòng tải lại trang để đăng nhập lại!");
                 return;
@@ -886,28 +872,12 @@ function capNhatToanBoGiaoDien(docs) {
             }
             try {
                 if (window.idGiaoDichDangSua) {
-                    // Chế độ SỬA: Cập nhật tài liệu nhưng vẫn giữ nguyên nhãn định danh User cũ
                     const GiaoDichThuChiDangSua = doc(db, "giao_dich_business", window.idGiaoDichDangSua);
-                    await updateDoc(GiaoDichThuChiDangSua, {
-                        ten: ten,
-                        soTien: soTien,
-                        loai: loai,
-                        danhMuc: danhMuc,
-                        thoiGian: chuoiThoiGianGop,
-                        userId: auth.currentUser.uid // Đảm bảo luôn định danh đúng chủ sở hữu
-                    }); 
+                    await updateDoc(GiaoDichThuChiDangSua, {ten: ten, soTien: soTien, loai: loai, danhMuc: danhMuc, thoiGian: chuoiThoiGianGop, userId: auth.currentUser.uid}); 
                     window.idGiaoDichDangSua = null; 
                     idnutsave.innerText = "Ghi đè / Thêm mới";
                 } else {
-                    // Chế độ THÊM MỚI: Đóng dấu vân tay mã định danh cá nhân `userId` vào giao dịch
-                    await addDoc(datathuchi, {
-                        ten: ten,
-                        soTien: soTien,
-                        loai: loai,
-                        danhMuc: danhMuc,
-                        thoiGian: chuoiThoiGianGop,
-                        userId: auth.currentUser.uid // Lưu ID duy nhất của User này lên DB đám mây
-                    });
+                    await addDoc(datathuchi, {ten: ten, soTien: soTien, loai: loai, danhMuc: danhMuc, thoiGian: chuoiThoiGianGop, userId: auth.currentUser.uid});
                 }
                 if (idTen) idTen.value = ''; 
                 if (idSoTien) idSoTien.value = ''; 
@@ -919,10 +889,9 @@ function capNhatToanBoGiaoDien(docs) {
             } catch (loi) {
                 console.error("Lỗi kết nối Firebase: ", loi); 
                 alert("Không thể ghi nhận giao dịch lên đám mây!");
-            }
+            } 
         });
     }
-
 </script>
 
 </div>
