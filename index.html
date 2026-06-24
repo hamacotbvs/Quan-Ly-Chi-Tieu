@@ -655,7 +655,7 @@
     const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Trang phục": "🛍️", "Mỹ phẩm": "🛍️", "Hóa đơn": "💵", "Nhà cửa": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Thu nhập khác": "💸", "Khác": "✨"};
 
 // BIỂU ĐỒ NGÂN SÁCH THU CHI 12 THÁNG
-// Hàm xử lý gom dữ liệu 12 tháng và vẽ biểu đồ đè lồng nhau (Cao ở sau, ngắn ở trước)
+// Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ và vẽ biểu đồ đè lồng nhau
 function capNhatBieuDoBaoCaoNam(docs) {
     const ctx = document.getElementById('bieuDoNganSach');
     if (!ctx) return;
@@ -667,47 +667,57 @@ function capNhatBieuDoBaoCaoNam(docs) {
     const txtTieuDeBc = document.getElementById('tieu-de-bieu-do');
     if (txtTieuDeBc) txtTieuDeBc.innerText = `Biểu đồ Ngân sách & Chi tiêu năm ${namDangXem}`;
 
-    // Mảng lưu tổng chi tiêu thực tế gốc của 12 tháng
+    // Mảng lưu tổng chi tiêu thực tế gốc của 12 tháng chu kỳ
     const mangDaChiThucTe = Array(12).fill(0);
+    
+    // 🔥 SỬA LOGIC: Duyệt qua từng giao dịch, phân loại vào THÁNG CHU KỲ (không dùng tháng dương lịch)
     docs.forEach(docItem => {
         const data = docItem.data();
         if (data.loai === 'chi' && data.thoiGian) {
             const thoiGianMoc = parseChuoiThoiGian(data.thoiGian);
-            if (thoiGianMoc.getFullYear() === namDangXem) {
-                const thangIndex = thoiGianMoc.getMonth();
-                mangDaChiThucTe[thangIndex] += parseFloat(data.soTien) || 0;
+            
+            // Chạy thử từ tháng 1 đến tháng 12 để tìm xem giao dịch thuộc chu kỳ nào
+            for (let m = 0; m < 12; m++) {
+                const ngayDaiDienThang = new Date(namDangXem, m, 1);
+                const chuKyMoc = layRangeChuKy(ngayDaiDienThang);
+                
+                // Nếu thời gian giao dịch nằm trọn trong chu kỳ tháng m
+                if (thoiGianMoc >= chuKyMoc.tuNgay && thoiGianMoc <= chuKyMoc.denNgay) {
+                    mangDaChiThucTe[m] += parseFloat(data.soTien) || 0;
+                    break; // Khớp chu kỳ rồi thì dừng vòng lặp
+                }
             }
         }
     });
 
     // Tạo các mảng động cấu trúc biểu đồ lồng nhau
-    const mangMax = Array(12).fill(0);       // Thanh cao hơn (Nằm sau)
-    const mangMin = Array(12).fill(0);       // Thanh ngắn hơn (Nằm trước)
-    const mangMauMax = Array(12).fill('');   // Màu thanh sau
-    const mangMauMin = Array(12).fill('');   // Màu thanh trước
-    const mangLoaiMax = Array(12).fill('');  // Nhãn chữ để hiển thị Tooltip chuẩn xác
+    const mangMax = Array(12).fill(0);       
+    const mangMin = Array(12).fill(0);       
+    const mangMauMax = Array(12).fill('');   
+    const mangMauMin = Array(12).fill('');   
+    const mangLoaiMax = Array(12).fill('');  
     const mangLoaiMin = Array(12).fill('');
 
-    // Thuật toán phân loại: So sánh từng tháng để quyết định thứ tự trước/sau và màu sắc
+    // So sánh từng tháng để quyết định thứ tự trước/sau và màu sắc
     for (let m = 0; m < 12; m++) {
         const chuoiThangNam = `${namDangXem}-${String(m + 1).padStart(2, '0')}`;
         const hanMuc = window.boSuoTapHanMuc[chuoiThangNam] || 0;
         const daChi = mangDaChiThucTe[m];
 
         if (hanMuc >= daChi) {
-            // Trường hợp AN TOÀN: Ngân sách lớn hơn hoặc bằng Thực tế chi
+            // Trường hợp AN TOÀN: Ngân sách (Xanh) to làm nền ở sau, Thực tế chi (Đỏ) ngắn nằm trước
             mangMax[m] = hanMuc;
             mangMin[m] = daChi;
-            mangMauMax[m] = '#3498db'; // Ngân sách cao hơn -> Màu Xanh nằm sau
-            mangMauMin[m] = '#e74c3c'; // Chi tiêu ít hơn -> Màu Đỏ nằm trước
+            mangMauMax[m] = '#3498db'; 
+            mangMauMin[m] = '#e74c3c'; 
             mangLoaiMax[m] = 'Ngân sách';
             mangLoaiMin[m] = 'Thực tế chi';
         } else {
-            // Trường hợp VƯỢT MỨC: Thực tế chi đã vượt quá Ngân sách tháng
+            // Trường hợp VƯỢT MỨC: Thực tế chi (Đỏ) vọt cao làm nền ở sau, Ngân sách (Xanh) nằm thu gọn ở trước
             mangMax[m] = daChi;
             mangMin[m] = hanMuc;
-            mangMauMax[m] = '#e74c3c'; // Thực tế chi cao vượt trội -> Màu Đỏ biến thành nền ở sau
-            mangMauMin[m] = '#3498db'; // Ngân sách thấp vế -> Màu Xanh co lại nằm ở trước
+            mangMauMax[m] = '#e74c3c'; 
+            mangMauMin[m] = '#3498db'; 
             mangLoaiMax[m] = 'Thực tế chi';
             mangLoaiMin[m] = 'Ngân sách';
         }
@@ -715,13 +725,11 @@ function capNhatBieuDoBaoCaoNam(docs) {
 
     // Tiến hành dựng hoặc cập nhật biểu đồ cột bằng Chart.js
     if (bieuDoInstance) {
-        // Nếu biểu đồ đã tồn tại, nạp mảng dữ liệu động mới vào để update mượt mà
         bieuDoInstance.data.datasets[0].data = mangMax;
         bieuDoInstance.data.datasets[0].backgroundColor = mangMauMax;
         bieuDoInstance.data.datasets[1].data = mangMin;
         bieuDoInstance.data.datasets[1].backgroundColor = mangMauMin;
         
-        // Cập nhật lại bộ logic đọc tên nhãn Tooltip động
         bieuDoInstance.options.plugins.tooltip.callbacks.label = function(context) {
             const m = context.dataIndex;
             const val = context.raw;
@@ -730,24 +738,23 @@ function capNhatBieuDoBaoCaoNam(docs) {
         };
         bieuDoInstance.update();
     } else {
-        // Khởi tạo biểu đồ lồng nhau lần đầu tiên
         bieuDoInstance = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
                 datasets: [
                     {
-                        label: 'Thanh Nền (Cao hơn)',
+                        label: 'Thanh Sau',
                         data: mangMax,
                         backgroundColor: mangMauMax,
-                        barPercentage: 0.85, // Thiết lập thanh sau to, rộng hơn một chút
+                        barPercentage: 0.85, 
                         borderRadius: 4
                     },
                     {
-                        label: 'Thanh Tiền Tuyến (Ngắn hơn)',
+                        label: 'Thanh Trước',
                         data: mangMin,
                         backgroundColor: mangMauMin,
-                        barPercentage: 0.55, // Thu nhỏ độ rộng thanh trước lại để tạo hiệu ứng lồng lõi cực đẹp
+                        barPercentage: 0.55, // Nhỏ lõi bên trong để tạo cảm giác lồng nhau chuyên nghiệp
                         borderRadius: 4
                     }
                 ]
@@ -756,10 +763,9 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }, // Ẩn thanh chú thích Legend gốc vì màu sắc và vị trí đảo động liên tục
+                    legend: { display: false }, 
                     tooltip: {
                         callbacks: {
-                            // Hàm dịch ngược dữ liệu giúp Tooltip hiển thị chuẩn chữ "Ngân sách"/"Thực tế chi" khi rà chuột/chạm tay
                             label: function(context) {
                                 const m = context.dataIndex;
                                 const val = context.raw;
@@ -771,7 +777,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 },
                 scales: {
                     x: {
-                        grouped: false // 🔑 Mấu chốt: Tắt nhóm hàng ngang để các cột ép chung vào một tâm dòng, đè lên nhau
+                        grouped: false // 🔑 Ép 2 cột dính chung vào một trục giữa để đè lồng lên nhau
                     },
                     y: {
                         beginAtZero: true,
