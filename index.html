@@ -288,16 +288,20 @@
     // Biến toàn cục lưu ngày chốt chu kỳ (Mặc định là ngày 25 nếu chưa tải xong từ DB)
     window.ngayChotChuKy = 25; 
 
+// Biến toàn cục lưu ngày chốt chu kỳ (Mặc định ban đầu là ngày 25 nếu chưa tải xong từ DB)
+    window.ngayChotChuKy = 25; 
+    let checkKhoiTaoLanDau = true; // Cờ kiểm tra để tự động nhảy tháng lúc mới mở app
+
     // Hàm tính toán mốc thời gian: Ngày chọn đóng vai trò là NGÀY KẾT THÚC CHU KỲ
     function layRangeChuKy(anchorDate) {
         const y = anchorDate.getFullYear();
         const m = anchorDate.getMonth(); 
         const ngayChot = window.ngayChotChuKy || 25;
 
-        // 1. Ngày KẾT THÚC chu kỳ của tháng đang xem (ví dụ: ngày 25 lúc 23:59:59)
+        // 1. Ngày KẾT THÚC chu kỳ của tháng đang xem (Ví dụ: ngày 24 lúc 23:59:59)
         const denNgay = new Date(y, m, ngayChot, 23, 59, 59, 999);
         
-        // 2. Ngày BẮT ĐẦU chu kỳ (là ngày tiếp theo ngay sau ngày chốt của tháng trước)
+        // 2. Ngày BẮT ĐẦU chu kỳ (Là ngày tiếp theo ngay sau ngày chốt của tháng trước)
         // Tháng trước là m - 1. Ngày bắt đầu sẽ là ngàyChot + 1 lúc 00:00:00
         const tuNgay = new Date(y, m - 1, ngayChot + 1, 0, 0, 0, 0);
         
@@ -367,6 +371,16 @@
                     if (selectNgay) selectNgay.value = window.ngayChotChuKy;
                 }
                 
+                // 🔥 TỰ ĐỘNG NHẢY SANG CHU KỲ THÁNG TIẾP THEO NẾU NGÀY HÔM NAY ĐÃ VƯỢT QUA NGÀY CHỐT
+                if (checkKhoiTaoLanDau) {
+                    const homNay = new Date();
+                    if (homNay.getDate() > window.ngayChotChuKy) {
+                        window.thoiGianDangXem.setMonth(homNay.getMonth() + 1);
+                    }
+                    window.capNhatChuHienThiThang(); // Cập nhật lại chữ hiển thị "Tháng XX/YYYY" trên tiêu đề
+                    checkKhoiTaoLanDau = false; 
+                }
+
                 // Sau khi có ngày chốt, tiến hành đồng bộ dữ liệu thu chi realtime
                 if (!huyTheoDoiThuChi) {
                     kichHoatHeThongDuLieuRealtime(user); 
