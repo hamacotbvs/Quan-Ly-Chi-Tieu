@@ -715,7 +715,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
         }
     }
 
-    // 🔑 ĐÃ ĐỔI: Cập nhật chữ "tr" lên thanh hiển thị phía trên
+    // 🔑 ĐÃ CẬP NHẬT: Thay đổi dấu chấm thành dấu phẩy cho các con số ở thanh thông tin phía trên
     function capNhatThanhThongTinPhiaTren(chiMucThang) {
         const thanhHienThi = document.getElementById('thanhThongTinBieuDo');
         if (!thanhHienThi) return;
@@ -725,12 +725,17 @@ function capNhatBieuDoBaoCaoNam(docs) {
         const ct = mangDaChiThucTe[chiMucThang];
         const cl = mangConLai[chiMucThang];
 
+        // Sử dụng .replace('.', ',') để chuyển đổi định dạng số hiển thị
+        const chuoiNs = (ns / 1000000).toFixed(1).replace('.', ',');
+        const chuoiCt = (ct / 1000000).toFixed(1).replace('.', ',');
+        const chuoiCl = (Math.abs(cl) / 1000000).toFixed(1).replace('.', ',');
+
         thanhHienThi.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 6px 10px; border-radius: 8px; font-size: 12px; border: 1px dashed #ddd;">
                 <span style="font-weight: bold; color: #333;">Tháng ${chiMucThang + 1}:</span>
-                <span style="color: #3498db;">NS: <b>${(ns/1000000).toFixed(1)} tr</b></span>
-                <span style="color: #e74c3c;">Chi: <b>${(ct/1000000).toFixed(1)} tr</b></span>
-                <span style="color: ${cl >= 0 ? '#2ecc71' : '#e74c3c'};">Còn: <b>${cl >= 0 ? '' : '-'}${(Math.abs(cl)/1000000).toFixed(1)} tr</b></span>
+                <span style="color: #3498db;">NS: <b>${chuoiNs}tr</b></span>
+                <span style="color: #e74c3c;">Chi: <b>${chuoiCt}tr</b></span>
+                <span style="color: ${cl >= 0 ? '#2ecc71' : '#e74c3c'};">Còn: <b>${cl >= 0 ? '' : '-'}${chuoiCl}tr</b></span>
             </div>
         `;
     }
@@ -802,8 +807,10 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        // 🔑 ĐÃ ĐỔI: Đổi chữ "M" thành "tr" trên trục đứng Y của biểu đồ
-                        callback: function(value) { return (value / 1000000).toFixed(1) + ' tr'; }
+                        // 🔑 ĐÃ CẬP NHẬT: Đổi dấu chấm sang dấu phẩy trên trục đứng Y của biểu đồ
+                        callback: function(value) { 
+                            return (value / 1000000).toFixed(1).replace('.', ',') + ' tr'; 
+                        }
                     }
                 }
             }
