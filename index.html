@@ -1,3 +1,660 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ứng dụng Quản lý Chi Tiêu</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+    /* A. PHẦN CSS - ĐỊNH DẠNG*/
+    /* A.1 ĐỊNH DẠNG KHUNG APP
+        /* ==========================================================================
+        I. NÚT RESET PHONG CÁCH MỚI
+        ========================================================================== */
+            .nut-reset-treo {position: absolute; top: 15px; right: 15px; z-index: 1000;
+                background-color: #ffffff; border: 1px solid #edf2f4; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Đổ bóng mịn màng */transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s; padding: 0; -webkit-tap-highlight-color: transparent;}
+            /* Định cấu hình màu sắc cho icon SVG bên trong */
+            .nut-reset-treo svg {width: 20px; height: 20px; fill: none; stroke: #0082C8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s ease;}
+            .nut-reset-treo:active {transform: scale(0.92); /* Hiệu ứng lún nút khi nhấn */background-color: #f8fafc; /* Nền xám nhẹ khi chạm ngón tay */box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);}
+        /* ==========================================================================
+        II. CẤU HÌNH CHUNG & LAYOUT ỨNG DỤNG
+        ========================================================================== */
+            /* 2.1 Cấu hình nền và căn giữa ứng dụng */
+            body {font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f7f9fa; /* Màu nền xám nhạt toàn màn hình máy tính */
+                color: #333; /* Màu chữ mặc định (đen xám) */ margin: 0; padding: 0;/* Xóa bỏ khoảng cách thừa ở rìa màn hình */ display: flex; justify-content: center;/* Đưa toàn bộ ứng dụng ra chính giữa màn hình */}        
+            /* 2.2 Khung mô phỏng ứng dụng điện thoại tiện lợi */
+            .KHUNG-CHUA-APP {background-color: #f7f9fa;/* Nền APP là màu xám */width: 100%;max-width: 450px;/* Chiều rộng tối đa 450px (chuẩn điện thoại) */min-height: 100vh;/* Chiều cao tối thiểu 100% màn hình thiết bị */
+                box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ */position: relative;padding-bottom: 75px;/* Đẩy nội dung lên 75px để không bị thanh menu đáy đè lên */box-sizing: border-box;}
+            /* 2.3 Quản lý ẩn/hiện các Tab nội dung */
+            .tab-menu-duoi {display: none; /* Ẩn mặc định:các tab(Home, Báo cáo...) */padding: 20px; /* Tạo khoảng cách từ rìa ứng dụng vào nội dung cho dễ nhìn */}
+            .tab-menu-duoi.active {display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */}
+    /* A.2 ĐỊNH DẠNG TỪNG TRANG */
+        /* ==========================================================================
+        I. TAB 1: HOME
+        ========================================================================== */
+            /* 1.1 THANH HẠN MỨC CHI TIÊU TRONG THÁNG */
+                /* Khung bọc bên ngoài của vùng hạn mức */
+                .khung-han-muc-chi-tieu {margin-top: 15px;padding: 15px;background-color: #ffffff;border-radius: 12px;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);cursor: pointer;user-select: none;}
+                /* Hàng tiêu đề trên cùng: Đẩy tiêu đề sang trái, cụm tháng sang phải */
+                .han-muc-hang-dau {display: flex;justify-content: space-between;align-items: center;margin-bottom: 12px;}
+                .han-muc-tieu-de {font-weight: bold;font-size: 14px;color: #333333;}
+                /* Kén chứa 2 nút mũi tên thu nhỏ lại để vừa vặn góc phải */
+                .noi-chon-thang {display: flex;align-items: center;background-color: #f1f2f6;border-radius: 15px;padding: 1px 4px;}
+                .nut-mui-ten {background: none;border: none;font-size: 11px;color: #57606f;padding: 4px 8px;cursor: pointer;}
+                .nut-mui-ten:active {transform: scale(0.85);}
+                #hien-thi-thang-nam-han-muc {font-size: 12px;font-weight: 600;color: #2f3542;min-width: 85px;text-align: center;}
+                /* Thanh nền tiến trình */
+                .han-muc-thanh-nen {width: 100%;height: 10px;background-color: #e0e0e0;border-radius: 5px;overflow: hidden;margin-bottom: 8px;}
+                #thanh-phat-trien-han-muc {width: 0%;height: 100%;background-color: #2ecc71;transition: width 0.3s ease, background-color: 0.3s ease;}
+                /* Hàng thông tin dưới đáy thanh tiến trình */
+                .han-muc-hang-duoi {display: flex;justify-content: space-between;align-items: center;}
+                #goi-y-han-muc {font-size: 11px;color: #999999;}
+                #chi-tieu-tren-han-muc {font-size: 12px;font-weight: 600;color: #444444;}
+            /* 1.2 Giao diện khung biểu đồ năm */
+                .khung-bieu-do-nam {background: #ffffff; border-radius: 12px; padding: 16px; margin: 20px 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);}
+                #tieu-de-bieu-do {font-size: 15px; font-weight: 600; color: #2c3e50; margin-top: 0; margin-bottom: 15px; text-align: center;}
+                .vung-canvas-bieu-do {position: relative; height: 260px; width: 100%;}
+        /* ==========================================================================
+        II. TAB 2: LỊCH SỬ
+        ========================================================================== */        
+             /* 1.1 KHUNG HIỂN THỊ SỐ DƯ HIỆN TẠI */
+            .khung-so-du-hien-tai {background-color: #0082C8;color: white;padding: 20px;border-radius: 12px;text-align: center;margin-top: 10px; margin-bottom: 25px;box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2);}
+            .khung-so-du-hien-tai .nhan {font-size: 14px;opacity: 0.9;margin-bottom: 5px;}
+            .khung-so-du-hien-tai .so-tien-du-hien-tai {font-size: 28px;font-weight: 700;}
+            /* 2.1 định dạng khung lịch sử */
+            .danh-sach-lich-su {margin-top: 20px;background-color: #ffffff;border-radius: 14px;padding: 16px;box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);border: 1px solid #edf2f4;}
+            /* 2.2 định dạng phần tiêu đề lịch sử */
+            .tieu-de-khung {font-size: 16px;color: #7f8c8d;border-bottom: 1px solid #edf2f4;padding-bottom: 10px;margin-bottom: 5px;font-weight: 600;}      
+            /* 2.3 Định dạng từng dòng lịch sử (Cấu trúc Vuốt Chạm Swipe-to-Action) */
+            .dong-giao-dich {position: relative;overflow: hidden;background-color: #ffffff;border-bottom: 1px solid #f8fafc;user-select: none; /* Tránh bôi đen chữ khi vuốt bằng chuột trên PC */}
+            .dong-giao-dich:last-child {border-bottom: none;}
+                /* Màu sắc phân biệt Thu nhập (+) và Chi tiêu (-) */
+                .mau-thu { color: #0082C8; }          /* Nếu là tiền THU NHẬP (khoản vào), số tiền hiển thị màu XANH HOÀNG GIA */
+                .mau-chi { color: #e74c3c; }          /* Nếu là tiền CHI TIÊU (khoản ra), số tiền hiển thị màu ĐỎ cảnh báo */
+                /* Phần nội dung chính nằm đè phía trên */
+                .giao-dich-noi-dung {display: flex;justify-content: space-between;/* tên lề trái, số tiền lề phải */align-items: center;padding: 14px 10px;background-color: #ffffff;position: relative;
+                    z-index: 2;transition: transform 0.2s ease-out; /* Tạo hiệu ứng trượt mượt mà */cursor: grab;}
+                .giao-dich-noi-dung:active {cursor: grabbing;}
+                .dong-giao-dich:last-child {border-bottom: none;/* Xóa đường kẻ ngang ở dòng giao dịch cuối cùng cho đẹp */}
+                /* Cụm bên trái: Danh mục & Tên */
+                .giao-dich-trai {display: flex;flex-direction: column;text-align: left;}
+                .giao-dich-muc {font-size: 13px;color: #718096;margin-bottom: 2px;}  
+                .giao-dich-ten {font-size: 15px;font-weight: 500;color: #2d3748;}
+                /* Cụm bên phải: Ngày giờ & Số tiền */
+                .giao-dich-phai-cum {display: flex;flex-direction: column;align-items: flex-end;text-align: right;}
+                .giao-dich-thoi-gian {font-size: 12px;color: #a0aec0;margin-bottom: 2px;}
+                .giao-dich-phai {font-weight: 600;font-size: 15px;}      
+                /* LỚP NỀN ẨN PHÍA SAU KHI VUỐT */
+                .nen-hanh-dong {position: absolute;top: 0;bottom: 0;left: 0;right: 0;z-index: 1;display: flex;align-items: center;justify-content: space-between;font-weight: 600;font-size: 14px;color: white;}
+                .hanh-dong-sua {background-color: #3498db;height: 100%;width: 50%;display: flex;align-items: center;padding-left: 20px;justify-content: flex-start;}
+                .hanh-dong-xoa {background-color: #e74c3c;height: 100%;width: 50%;display: flex;align-items: center;padding-right: 20px;justify-content: flex-end;}
+        /* ==========================================================================
+        III. TAB 3: NHẬP LIỆU (+)
+        ========================================================================== */
+            .ten-va-o-nhap { margin-bottom: 18px; }
+            .ten-va-o-nhap label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #555; }
+            .ten-va-o-nhap input, .ten-va-o-nhap select {width: 100%;padding: 12px;border: 1px solid #cbd5e1;border-radius: 8px;box-sizing: border-box;font-size: 15px;background-color: #fff;transition: border 0.2s;}
+            .ten-va-o-nhap input:focus, .ten-va-o-nhap select:focus { border-color: #3498db; outline: none; }        
+            /* Nút Lưu giao dịch */
+            .nut-bam-save {width: 100%;padding: 14px;background-color: #3498db;color: white;border: none;border-radius: 8px;font-size: 16px;cursor: pointer;font-weight: bold;margin-top: 10px;box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);}
+            .nut-bam-save:hover { background-color: #2980b9; }
+        /* ==========================================================================
+        IV. TAB 4: BÁO CÁO
+        ========================================================================== */
+            .khung-bao-cao-thanh-ngang {background: white;border-radius: 12px;padding: 15px;margin-bottom: 15px;box-shadow: 0 2px 8px rgba(0,0,0,0.02);border: 1px solid #edf2f4;}
+            .noi-dung-bao-cao-thanh-ngang { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
+            .thong-ke-so { font-weight: bold; }        
+            /* Thanh đồ họa tiến trình (Progress Bar) so sánh trực quan */
+            .khung-thanh-mau-tien-do { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
+            .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
+            .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
+    /* A.3 ĐỊNH DẠNG THANH MENU DƯỚI */    
+            /* định dạng khung nền menu */
+            .menu-day-app {position: fixed;bottom: 15px;left: 50%;transform: translateX(-50%);width: calc(100% - 30px);max-width: 420px;height: 65px;background-color: #0082C8;border-radius: 999px;display: flex;
+                justify-content: space-around;align-items: center;z-index: 100;padding: 0 15px;box-sizing: border-box;
+                /* tạo vùng nền phía dưới và xung quanh menu */
+                box-shadow:0 10px 28px rgba(0, 130, 200, 0.25), /* Bóng xanh mờ của menu */0 25px 0 20px #ffffff,/* Tạo một lớp nền trắng phía dưới */0 15px 30px 25px rgba(255, 255, 255, 0.95); /* Tạo vùng chuyển mờ trắng (Blur) che nội dung khi cuộn */}
+            /* Định dạng chữ, icon */
+            .nut-tab {display: flex;flex-direction: column;align-items: center;justify-content: center;background: none;border: none;color: rgba(255, 255, 255, 0.65);cursor: pointer;flex: 1;/* phân bổ khoảng trống thông minh */                      
+                height: 100%;font-size: 11px;font-weight: 500;transition: color 0.2s, transform 0.2s;-webkit-tap-highlight-color: transparent;}        
+            /* Trạng thái mặc định (Không chọn): Icon chỉ có đường viền mờ, ruột rỗng */
+            .nut-tab .icon svg {fill: none;stroke: currentColor;transition: fill 0.2s, transform 0.2s;}
+            /* KHI ĐƯỢC CHỌN (ACTIVE) - ẨN HIỆN GIỮA 2 ICON MENU VIỀN/MÀU */        
+            /* Định dạng chung cho cả 2 ảnh icon ngôi nhà */
+            .nut-tab .img-icon-2d {width: 18px !important;height: 18px !important;object-fit: contain;margin-bottom: 5px;}
+            /* 1. Mặc định khi KHÔNG CHỌN (Không có class active) */
+            .nut-tab .icon-active {display: none; /* Ẩn ảnh viền đi */}
+            .nut-tab .icon-inactive {display: block; /* Hiện ảnh màu (homemau.png) lên */}
+            /* 2. Khi ĐƯỢC CHỌN (Có class active) */
+            .nut-tab.active .icon-active {display: block; /* Hiện ảnh viền (homevien.png) lên */}
+            .nut-tab.active .icon-inactive {display: none; /* Ẩn ảnh màu đi */}      
+            /* 3. Màu chữ mặc định cho tất cả các menu khi KHÔNG CHỌN */
+            .nut-tab .chu-menu {font-size: 11px;color: #b3dbf2;opacity: 0.7;transition: all 0.2s ease;}
+            /* 4. Khi ĐƯỢC CHỌN (có class active) - Chữ sẽ trắng tinh và đậm lên */
+            .nut-tab.active .chu-menu {color: #ffffff !important;opacity: 1 !important;font-weight: bold;}
+            /* NÚT THÊM (+) TRUNG TÂM PHONG CÁCH MỚI - ĐÃ CĂN CHỈNH GIỮA */
+            .nut-tab-them-trung-tam .icon {font-size: 26px;background-color: #ffffff;/* Quả bóng TRẮNG tinh */color: #0082C8;/* +màu xanh */width: 46px;height: 46px;border-radius: 50%;display: flex;align-items: center;
+                justify-content: center;box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);margin-bottom: 0;transition: transform 0.2s, background-color 0.2s, color 0.2s;}
+            /* Khi người dùng đang nhấn giữ hoặc đang ở tab Nhập số (+) */
+            .nut-tab-them-trung-tam.active .icon {background-color: #2c3e50;/* Quả bóng xám */color: #ffffff;/* + trắng */transform: scale(1.08);}
+            /* Dòng trạng thái trống */
+            .trang-thai-trong {text-align: center;color: #94a3b8;font-style: italic;padding: 30px 0;font-size: 14px;}
+    /* A.4 GIAO DIỆN HỆ THỐNG AUTH (ĐĂNG NHẬP / ĐĂNG KÝ) */
+            .man-hinh-auth-wrapper {position: fixed; top: 0; left: 0; width: 100%;height: 100%; background: #ffffff; display: flex; justify-content: center; align-items: center; z-index: 9999;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 30px; box-sizing: border-box;} /* Giao diện nền phủ toàn màn hình khóa Auth */
+            .the-auth-giao-dien {width: 100%; max-width: 400px; text-align: center; animation: hieuUngHienThi 0.35s ease-out;} /* Thẻ chứa Form đăng nhập */
+            @keyframes hieuUngHienThi {from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; }}
+            /* Khu vực hiển thị Logo ảnh */
+            .vung-chua-logo {margin-bottom: 20px;}
+            .auth-logo-app {width: 75px; height: 75px; object-fit: contain;}
+            .the-auth-giao-dien h2 {margin: 0 0 5px 0; color: #2c3e50; font-size: 22px;}
+            .the-auth-giao-dien p {margin: 0 0 25px 0; color: #7f8c8d; font-size: 14px;}
+            /* Các cụm nhập liệu */
+            .nhom-nhap-lieu {text-align: left; margin-bottom: 15px;}
+            .nhom-nhap-lieu label {display: block; font-size: 13px; font-weight: 600; color: #34495e; margin-bottom: 6px;}
+            .nhom-nhap-lieu input {width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 8px; font-size: 15px; outline: none; transition: border-color 0.2s; box-sizing: border-box;}
+            .nhom-nhap-lieu input:focus {border-color: #3498db; box-shadow: 0 0 5px rgba(52, 152, 219, 0.2);}
+            .vung-link-quen-mk {display: flex; justify-content: flex-end; margin: 10px 0 20px 0;} /* Khung chứa Quên mật khẩu - Căn phải */
+            #link-quen-mk {color: #5ac4f7; text-decoration: none; font-size: 14px; font-family: sans-serif;} /* Định dạng riêng chữ Quên mật khẩu (Màu xanh dương nhạt như hình) */
+            .vung-link-chuyen-trang {display: flex; justify-content: center; margin: 20px 0 10px 0;} /* Khung chứa dòng Đăng ký - Căn giữa */
+            #link-chuyen-trang {color: #7f8c8d; text-decoration: none; font-size: 14px; font-family: sans-serif;} /* Chữ "Chưa có tài khoản?" mặc định màu xám mờ nhẹ */
+            #link-chuyen-trang .chu-dang-ky {color: #5ac4f7; margin-left: 4px;} /* Chữ "Đăng ký" điểm nhấn màu xanh dương nhạt */
+            #link-quen-mk:hover, #link-chuyen-trang:hover .chu-dang-ky {opacity: 0.8;} /* Hiệu ứng mờ nhẹ khi rê chuột vào các link cho tự nhiên */
+            .nut-bam-auth {width: 100%; padding: 12px; background-color: #0082C8; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s, transform 0.1s;} /* Nút bấm Đăng nhập / Đăng ký chính */
+            .nut-bam-auth:hover {background-color: #27ae60;}
+            .nut-bam-auth:active {transform: scale(0.98);}
+            /* Thẻ hiển thị thông tin User trong App chính */
+            .the-thong-tin-user {background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin: 15px; font-family: inherit;}
+            .the-thong-tin-user h3 {margin-top: 0; color: #2c3e50;}
+            .the-thong-tin-user hr {border: 0; height: 1px; background: #eceff1; margin: 15px 0;}
+            .the-thong-tin-user p {font-size: 15px; color: #555; margin: 10px 0;}
+
+    </style>
+</head>
+
+<body>
+<div id="man-hinh-auth" class="man-hinh-auth-wrapper">
+    <div class="the-auth-giao-dien">
+        <div class="vung-chua-logo"> <img src="logo.png" class="auth-logo-app" alt="Logo App"> </div>
+        <h2 id="auth-tieu-de">Đăng nhập tài khoản</h2> <p id="auth-ghi-chu">Ứng dụng quản lý thu chi cá nhân</p>
+        <div class="nhom-nhap-lieu"> <input type="email" id="auth-username" placeholder="Gmail" required> </div>
+        <div class="nhom-nhap-lieu"> <input type="password" id="auth-password" placeholder="Mật khẩu" required> </div>
+        <div class="nhom-nhap-lieu" id="vung-nhap-lai-mat-khau" style="display: none;"> <input type="password" id="auth-re-password" placeholder="Xác nhận lại mật khẩu"> </div>
+        <div class="vung-link-quen-mk"> <a href="#" id="link-quen-mk">Quên mật khẩu</a> </div>
+        <button id="nut-hanh-dong-auth" class="nut-bam-auth">Đăng Nhập</button>
+        <div class="vung-link-chuyen-trang"> <a href="#" id="link-chuyen-trang"> Chưa có tài khoản? <span class="chu-dang-ky"> Đăng ký </span></a> </div>
+    </div>
+</div>
+
+<div class="KHUNG-CHUA-APP" id="khung-chua-app-chinh" style="display: none;"> 
+    
+    <button id="NUT-LAM-MOI-APP" class="nut-reset-treo" title="Tải lại ứng dụng"><svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.67-.19"/></svg></button>
+
+    <div id="tab-home" class="tab-menu-duoi active">
+        <div class="khung-han-muc-chi-tieu" id="vung-han-muc-chi-tieu">
+            <div class="han-muc-hang-dau"><span class="han-muc-tieu-de">🎯 Ngân sách chi tiêu</span>
+                <div class="noi-chon-thang" id="cum-chuyen-thang"><button id="nut-thang-truoc" class="nut-mui-ten">◀</button><span id="hien-thi-thang-nam-han-muc">Tháng --/----</span><button id="nut-thang-sau" class="nut-mui-ten">▶</button></div>
+            </div>    
+            <div class="han-muc-thanh-nen"> <div id="thanh-phat-trien-han-muc"></div></div>    
+            <div class="han-muc-hang-duoi"> <div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div> <span id="chi-tieu-tren-han-muc">0 / Chưa nhập hạn mức</span> </div> </div>
+        <div class="khung-bieu-do-nam">
+            <h3 id="tieu-de-bieu-do">Biểu đồ Ngân sách & Chi tiêu năm 2026</h3>
+            <div class="vung-canvas-bieu-do"> <canvas id="bieuDoNganSach"></canvas> </div> </div>
+    </div>
+
+    <div id="tab-lich-su" class="tab-menu-duoi">
+        <div class="khung-so-du-hien-tai"> 
+            <div class="nhan">Số dư hiện tại</div> 
+            <div class="so-tien-du-hien-tai"> <span id="so-du">0</span> </div> </div>
+        <div class="danh-sach-lich-su"> 
+            <div class="tieu-de-khung">Lịch sử thu chi trong tháng</div><div id="lich-su-giao-dich"><div id="danh-sach-lich-su-toan-bo"><div class="trang-thai-trong">Đang tải...</div></div></div>
+        </div> </div>
+
+    <div id="tab-add" class="tab-menu-duoi">
+        <div class="tieu-de-khung" style="margin-top: 10px;">Thêm giao dịch mới</div>
+        <div class="ten-va-o-nhap"> <label>Loại dòng tiền:</label>
+            <select id="loai-dong-tien">
+                <option value="chi">💸 Chi tiêu (Khoản ra)</option>
+                <option value="thu">💰 Thu nhập (Khoản vào)</option>
+            </select> </div>
+        <div class="ten-va-o-nhap"> <label>Phân nhóm:</label>
+            <select id="phan-nhom-thu-chi">
+                <option value="Ăn uống">🍔 Ăn uống</option>
+                <option value="Di chuyển">🚗 Di chuyển</option>
+                <option value="Trang phục">🛍️ Trang phục</option>
+                <option value="Mỹ phẩm">🛍️ Mỹ phẩm</option>
+                <option value="Hóa đơn">💵 Hóa đơn</option>
+                <option value="Nhà cửa">💵 Nhà cửa</option>
+                <option value="Giải trí">🎬 Giải trí & Cà phê</option>
+                <option value="Khác">✨ Khác</option>
+            </select> </div>
+        <div class="ten-va-o-nhap"> <label>Tên khoản thu/chi:</label> <input type="text" id="ten-khoan-thu-chi" placeholder="Ví dụ: Ăn trưa, Đi chợ, Lương tháng..."> </div>
+        <div class="ten-va-o-nhap"> <label id="label-so-tien">Số tiền (đ):</label> <input type="number" id="so-tien" placeholder="Ví dụ: 50000"> </div>
+        <div class="ten-va-o-nhap-2-o-1-hang" style="display: flex; gap: 10px;"> 
+            <div class="ten-va-o-nhap" style="flex: 1;"> <label>Ngày tháng:</label> <input type="date" id="ngay-giao-dich"> </div> 
+            <div class="ten-va-o-nhap" style="flex: 1;"> <label>Thời gian:</label> <input type="time" id="gio-giao-dich"> </div> </div>            
+        <button id="nut-save" class="nut-bam-save">Cập nhật ví</button> </div>
+
+    <div id="tab-report" class="tab-menu-duoi">
+        <div class="tieu-de-khung" style="margin-top: 10px;">Tổng quan tài chính cá nhân</div>
+        <div class="khung-bao-cao-thanh-ngang"> <div class="noi-dung-bao-cao-thanh-ngang"> <span>Tổng thu nhập (vào):</span> <span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span> </div> <div class="khung-thanh-mau-tien-do"> <div id="thanh-thu-ti-le" class="thanh-tien-vao"></div></div></div>
+        <div class="khung-bao-cao-thanh-ngang"> <div class="noi-dung-bao-cao-thanh-ngang"> <span>Tổng chi tiêu (ra):</span> <span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span> </div> <div class="khung-thanh-mau-tien-do"> <div id="thanh-chi-ti-le" class="thanh-tien-ra"></div></div></div>
+    </div>
+
+    <div id="tab-tai-khoan" class="tab-menu-duoi">
+        <div class="tieu-de-khung" style="margin-top: 10px;">Thông tin cá nhân</div>
+        <div style="padding: 20px; text-align: center; background: white; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div style="font-size: 45px; margin-bottom: 10px;">👤</div>
+            <h3 style="margin: 5px 0;" id="ten-user-hien-thi">Đang tải...</h3>
+            <p style="color: #777; font-size: 13px; margin: 5px 0;" id="email-user-hien-thi">Chưa đăng nhập</p></div> 
+<div id="vung-cau-hinh-chu-ky" style="margin-top: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 12px; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+    <label style="font-weight: 600; display: block; margin-bottom: 6px; color: #2c3e50; font-size: 14px;">📅 Ngày kết thúc chu kỳ tính toán:</label>
+    <div style="display: flex; gap: 10px;">
+        <select id="select-ngay-chu-ky" style="padding: 10px; border-radius: 8px; border: 1px solid #ccd1d1; flex: 1; font-size: 14px; outline: none; background: #fff;"></select>
+        <button id="nut-luu-chu-ky" style="padding: 10px 18px; background-color: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s;">Save</button>
+    </div>
+    <small style="color: #7f8c8d; display: block; margin-top: 6px; font-size: 12px; line-height: 1.4;">
+        *Ví dụ: Nếu chọn ngày 24, khi xem Tháng 6, hệ thống sẽ gom nhóm tính toán toàn bộ thu/chi từ ngày 25 tháng 5 đến hết ngày 24 tháng 6.*
+    </small> 
+</div>
+    </div>
+
+    <nav class="menu-day-app menu dưới">
+        <button class="nut-tab active" data-target="home">
+            <img src="homemau.png" class="img-icon-2d icon-active" alt="Tổng quan">
+            <img src="homevien.png" class="img-icon-2d icon-inactive" alt="Tổng quan">
+            <span class="chu-menu">HOME</span> </button>
+        <button class="nut-tab" data-target="lich-su">
+            <img src="lichsumau.png" class="img-icon-2d icon-active" alt="Lịch sử">
+            <img src="lichsuvien.png" class="img-icon-2d icon-inactive" alt="Lịch sử">
+            <span class="chu-menu">Lịch sử</span> </button>
+        <button class="nut-tab nut-tab-them-trung-tam" data-target="add">
+            <span class="icon">＋</span> </button>
+        <button class="nut-tab" data-target="report">
+            <img src="baocaomau.png" class="img-icon-2d icon-active" alt="Báo cáo">
+            <img src="baocaovien.png" class="img-icon-2d icon-inactive" alt="Báo cáo">
+            <span class="chu-menu">Báo cáo</span> </button>
+        <button class="nut-tab" data-target="tai-khoan">
+            <img src="taikhoanmau.png" class="img-icon-2d icon-active" alt="Tài khoản">
+            <img src="taikhoanvien.png" class="img-icon-2d icon-inactive" alt="Tài khoản">
+            <span class="chu-menu">Tài khoản</span> </button>
+    </nav>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, deleteDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // Tạo danh sách từ ngày 1 đến ngày 31 cho thẻ select
+    const selectChuKy = document.getElementById('select-ngay-chu-ky');
+    if (selectChuKy) {for (let i = 1; i <= 31; i++) {const opt = document.createElement('option'); opt.value = i; opt.innerText = `Ngày ${i} hàng tháng`; selectChuKy.appendChild(opt);}}
+    // Biến toàn cục lưu ngày chốt chu kỳ (Mặc định là ngày 25 nếu chưa tải xong từ DB)
+    window.ngayChotChuKy = 25; 
+
+// Biến toàn cục hệ thống
+    window.ngayChotChuKy = 25; 
+    window.boSuoTapHanMuc = {}; // Thay vì localStorage, biến này sẽ được đồng bộ từ Firebase
+    let checkKhoiTaoLanDau = true;
+    let bieuDoInstance = null; // Biến giữ trạng thái biểu đồ tránh trùng lặp canvas
+
+    // Hàm tính toán mốc thời gian chu kỳ tính toán
+    function layRangeChuKy(anchorDate) {
+        const y = anchorDate.getFullYear();
+        const m = anchorDate.getMonth(); 
+        const ngayChot = window.ngayChotChuKy || 25;
+
+        const denNgay = new Date(y, m, ngayChot, 23, 59, 59, 999);
+        const tuNgay = new Date(y, m - 1, ngayChot + 1, 0, 0, 0, 0);
+        
+        return { tuNgay, denNgay };
+    }
+
+    // Hàm chuyển đổi chuỗi định dạng "YYYY-MM-DD HH:mm" thành Date
+    function parseChuoiThoiGian(chuoi) {
+        if (!chuoi) return new Date(0);
+        const [ngayPart, gioPart] = chuoi.split(' ');
+        const [nam, thang, ngay] = ngayPart.split('-').map(Number);
+        const [gio, phut] = gioPart ? gioPart.split(':').map(Number) : [0, 0];
+        return new Date(nam, thang - 1, ngay, gio, phut);
+    }
+
+    // A. KẾT NỐI VỚI CƠ SỞ DỮ LIỆU Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyAbIbeVqEht5hsIYE6IXFrRJaOq2oyMMKw", 
+        authDomain: "quanlychitieu-af553.firebaseapp.com",
+        projectId: "quanlychitieu-af553",
+        storageBucket: "quanlychitieu-af553.appspot.com",
+        messagingSenderId: "367355152865",
+        appId: "1:367355152865:web:644a86071ef2817d6928e1"
+    };        
+    const app = initializeApp(firebaseConfig); 
+    const db = getFirestore(app);
+    const auth = getAuth(app); 
+    const datathuchi = collection(db, "giao_dich_business");
+    
+    let huyTheoDoiThuChi = null;
+    let huyTheoDoiCauHinh = null;
+
+    // B. THAO TÁC CHUNG & QUẢN LÝ TÀI KHOẢN (AUTH)
+    const manHinhAuth = document.getElementById('man-hinh-auth');
+    const khungAppChinh = document.getElementById('khung-chua-app-chinh');
+    const authTieuDe = document.getElementById('auth-tieu-de');
+    const authGhiChu = document.getElementById('auth-ghi-chu');
+    const inputAuthUsername = document.getElementById('auth-username');
+    const inputAuthPassword = document.getElementById('auth-password');
+    const vungNhapLaiMatKhau = document.getElementById('vung-nhap-lai-mat-khau');
+    const inputAuthRePassword = document.getElementById('auth-re-password');
+    const nutHanhDongAuth = document.getElementById('nut-hanh-dong-auth');
+    const linkQuenMk = document.getElementById('link-quen-mk');
+    const linkChuyenTrang = document.getElementById('link-chuyen-trang');
+    let isLoginMode = true; 
+
+    // Lắng nghe trạng thái đăng nhập hệ thống
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            if (manHinhAuth) manHinhAuth.style.display = 'none';
+            if (khungAppChinh) khungAppChinh.style.display = 'block';
+            
+            const txtTenUser = document.getElementById('ten-user-hien-thi');
+            const txtEmailUser = document.getElementById('email-user-hien-thi');
+            if (txtTenUser) txtTenUser.innerText = user.displayName || user.email.split('@')[0];
+            if (txtEmailUser) txtEmailUser.innerText = user.email;
+            
+            tichHopNutDangXuat(); 
+            
+            // Tải cấu hình ngày chốt và HẠN MỨC từ bảng cau_hinh_user realtime
+            const docRefCauHinh = doc(db, "cau_hinh_user", user.uid);
+            huyTheoDoiCauHinh = onSnapshot(docRefCauHinh, (docSnap) => {
+                if (docSnap.exists()) {
+                    const dataCH = docSnap.data();
+                    window.ngayChotChuKy = dataCH.ngayChot || 25;
+                    // 🔥 Lấy hạn mức từ Firebase đổ vào biến toàn cục
+                    window.boSuoTapHanMuc = dataCH.hanMucThang || {};
+                    
+                    const selectNgay = document.getElementById('select-ngay-chu-ky');
+                    if (selectNgay) selectNgay.value = window.ngayChotChuKy;
+                }
+                
+                // Tự động nhảy sang chu kỳ tháng tiếp theo nếu vượt quá ngày chốt
+                if (checkKhoiTaoLanDau) {
+                    const homNay = new Date();
+                    if (homNay.getDate() > window.ngayChotChuKy) {
+                        window.thoiGianDangXem.setMonth(homNay.getMonth() + 1);
+                    }
+                    window.capNhatChuHienThiThang(); 
+                    checkKhoiTaoLanDau = false; 
+                }
+
+                // Cập nhật lại giao diện hạn mức ngay khi dữ liệu cấu hình từ Firebase trả về
+                if (window.duLieuSnapshotQuocTe) {
+                    capNhatThanhHanMuc(window.duLieuSnapshotQuocTe);
+                }
+
+                if (!huyTheoDoiThuChi) {
+                    kichHoatHeThongDuLieuRealtime(user); 
+                } else {
+                    hayLaiHeThongGiaoDienYeuCau();
+                }
+            });
+
+        } else {
+            if (manHinhAuth) manHinhAuth.style.display = 'flex';
+            if (khungAppChinh) khungAppChinh.style.display = 'none';
+            if (huyTheoDoiThuChi) { huyTheoDoiThuChi(); huyTheoDoiThuChi = null; } 
+            if (huyTheoDoiCauHinh) { huyTheoDoiCauHinh(); huyTheoDoiCauHinh = null; } 
+        } 
+    });
+
+    // Lưu ngày chốt chu kỳ
+    const selectNgayChuKy = document.getElementById('select-ngay-chu-ky');
+    const nutLuuChuKy = document.getElementById('nut-luu-chu-ky');
+    if (nutLuuChuKy && selectNgayChuKy) {
+        nutLuuChuKy.addEventListener('click', async () => {
+            if (!auth.currentUser) { alert("Phiên đăng nhập đã hết hạn!"); return; }
+            const ngayChon = parseInt(selectNgayChuKy.value);
+            try {
+                await setDoc(doc(db, "cau_hinh_user", auth.currentUser.uid), {
+                    ngayChot: ngayChon
+                }, { merge: true });
+                alert("Đã cập nhật ngày kết thúc chu kỳ thành công!");
+            } catch (error) {
+                alert("Không thể lưu cấu hình: " + error.message);
+            }
+        });
+    }
+
+    // Chuyển đổi giao diện Đăng Nhập / Đăng Ký
+    if (linkChuyenTrang) {
+        linkChuyenTrang.addEventListener('click', (e) => {
+            e.preventDefault();
+            isLoginMode = !isLoginMode;
+            if (isLoginMode) {
+                authTieuDe.innerText = "Đăng nhập tài khoản";
+                authGhiChu.innerText = "Sử dụng Gmail để đăng ký";
+                vungNhapLaiMatKhau.style.display = "none";
+                nutHanhDongAuth.innerText = "Đăng Nhập";
+                linkQuenMk.style.display = "inline";
+                linkChuyenTrang.innerText = "Chưa có tài khoản? Đăng ký";
+            } else {
+                authTieuDe.innerText = "Đăng ký tài khoản";
+                authGhiChu.innerText = "Ứng dụng quản lý thu chi cá nhân";
+                vungNhapLaiMatKhau.style.display = "block";
+                nutHanhDongAuth.innerText = "Đăng Ký Ngay";
+                linkQuenMk.style.display = "none";
+                linkChuyenTrang.innerText = "Đã có tài khoản? Đăng nhập";
+            }
+        });
+    }
+
+    // Xử lý nút Đăng Nhập hoặc Đăng Ký
+    if (nutHanhDongAuth) {
+        nutHanhDongAuth.addEventListener('click', async () => {
+            const email = inputAuthUsername.value.trim();
+            const password = inputAuthPassword.value;
+            if (!email || !password) {
+                alert("Vui lòng điền đầy đủ Email và Mật khẩu!");
+                return;
+            }
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    const rePassword = inputAuthRePassword.value;
+                    if (password !== rePassword) {
+                        alert("Mật khẩu nhập lại không trùng khớp!");
+                        return;
+                    }
+                    if (password.length < 3) {
+                        alert("Mật khẩu bảo mật phải từ 3 ký tự trở lên!");
+                        return;
+                    }
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    await updateProfile(userCredential.user, { displayName: email.split('@')[0] });
+                    alert("Đăng ký tài khoản thành công!");
+                }
+            } catch (error) {
+                if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                    alert("Tài khoản hoặc mật khẩu không chính xác!");
+                } else {
+                    alert("Thao tác thất bại: " + error.message);
+                }
+            }
+        });
+    }
+
+    // Xử lý nút "Quên mật khẩu"
+    if (linkQuenMk) {
+        linkQuenMk.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = inputAuthUsername.value.trim();
+            if (!email || !email.includes('@')) {
+                alert("Vui lòng nhập chính xác Email của bạn vào ô 'Tài khoản'!");
+                return;
+            }
+            try {
+                await sendPasswordResetEmail(auth, email);
+                alert(`Hệ thống đã gửi liên kết đặt lại mật khẩu vào hòm thư: ${email}`);
+            } catch (error) {
+                alert("Không thể gửi email: " + error.message);
+            }
+        });
+    }
+
+    function tichHopNutDangXuat() {
+        const vungThongTin = document.querySelector('#tab-tai-khoan > div');
+        if (vungThongTin && !document.getElementById('nut-dang-xuat-app')) {
+            const nutDangXuat = document.createElement('button');
+            nutDangXuat.id = 'nut-dang-xuat-app';
+            nutDangXuat.className = 'nut-bam-save';
+            nutDangXuat.style.backgroundColor = '#e74c3c';
+            nutDangXuat.style.marginTop = '20px';
+            nutDangXuat.innerText = '🔒 Đăng xuất';
+            nutDangXuat.addEventListener('click', () => {
+                if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) signOut(auth);
+            });
+            vungThongTin.appendChild(nutDangXuat);
+        }
+    }
+
+    // I. NÚT LÀM MỚI ỨNG DỤNG
+    const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP');
+    if (idNutLamMoi) {
+        idNutLamMoi.addEventListener('click', () => {
+            const iconSvg = idNutLamMoi.querySelector('svg'); 
+            if (iconSvg) {
+                iconSvg.style.transform = 'rotate(360deg)';
+                iconSvg.style.transition = 'transform 0.4s ease';
+            }
+            setTimeout(() => { window.location.reload(); }, 350);
+        });
+    }
+
+    // II. CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB
+    const cacNutTab = document.querySelectorAll('.nut-tab');
+    cacNutTab.forEach(nut => {
+        nut.addEventListener('click', () => {
+            const mucTieu = nut.getAttribute('data-target'); 
+            cacNutTab.forEach(b => b.classList.remove('active'));
+            nut.classList.add('active'); 
+            const cacVungNoiDung = document.querySelectorAll('.tab-menu-duoi');                
+            cacVungNoiDung.forEach(content => content.classList.remove('active'));
+            const vungNoiDungMucTieu = document.getElementById(`tab-${mucTieu}`); 
+            if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active'); 
+        }); 
+    });
+
+    // C.I TAB HOME (QUẢN LÝ HẠN MỨC)
+    const txtChu = document.getElementById('chi-tieu-tren-han-muc');
+    const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
+    const txtGoiY = document.getElementById('goi-y-han-muc');
+
+    if (typeof thoiGianDangXem === 'undefined') {
+        window.thoiGianDangXem = new Date();
+        window.layChuoiThangNam = function(dateObj) {
+            return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
+        }
+        window.capNhatChuHienThiThang = function() {
+            const txtThangNam = document.getElementById('hien-thi-thang-nam-han-muc'); 
+            if (txtThangNam) {
+                txtThangNam.innerText = `Tháng ${String(window.thoiGianDangXem.getMonth() + 1).padStart(2, '0')}/${window.thoiGianDangXem.getFullYear()}`;
+            }
+        }
+    }
+
+    // 🔥 XỬ LÝ SỰ KIỆN NHẬP HẠN MỨC - LƯU THẲNG LÊN FIREBASE
+    document.getElementById('vung-han-muc-chi-tieu')?.addEventListener('click', async () => {
+        if (!auth.currentUser) { alert("Phiên đăng nhập đã hết hạn!"); return; }
+        
+        let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
+        let hanMucThangDangXem = window.boSuoTapHanMuc[thangDangXem] || 0; 
+        const [nam, thg] = thangDangXem.split('-'); 
+        let loiNhac = hanMucThangDangXem > 0
+            ? `Hạn mức tháng ${thg}/${nam} hiện tại là ${hanMucThangDangXem.toLocaleString('vi-VN')} đ.\nNhập hạn mức mới (đ):`
+            : `Nhập hạn mức chi tiêu cho tháng ${thg}/${nam} (đ):`;        
+        
+        let nhapVao = prompt(loiNhac, hanMucThangDangXem > 0 ? hanMucThangDangXem : "");    
+        if (nhapVao !== null) {
+            let soTienMoi = parseFloat(nhapVao.toString().replace(/[^0-9]/g, '')); 
+            if (!isNaN(soTienMoi) && soTienMoi > 0) {
+                window.boSuoTapHanMuc[thangDangXem] = soTienMoi;
+            } else {
+                delete window.boSuoTapHanMuc[thangDangXem];
+            }
+            
+            // Tiến hành update đẩy object map lên Firebase dữ liệu cấu hình user
+            try {
+                await setDoc(doc(db, "cau_hinh_user", auth.currentUser.uid), {
+                    hanMucThang: window.boSuoTapHanMuc
+                }, { merge: true });
+                
+                if (window.duLieuSnapshotQuocTe) { capNhatThanhHanMuc(window.duLieuSnapshotQuocTe); }
+            } catch (error) {
+                alert("Lỗi không thể lưu hạn mức lên đám mây: " + error.message);
+            }
+        }
+    });
+
+    document.getElementById('cum-chuyen-thang')?.addEventListener('click', (e) => { e.stopPropagation(); });
+    document.getElementById('nut-thang-truoc')?.addEventListener('click', (e) => { e.stopPropagation(); window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() - 1); hayLaiHeThongGiaoDienYeuCau(); });
+    document.getElementById('nut-thang-sau')?.addEventListener('click', (e) => { e.stopPropagation(); window.thoiGianDangXem.setMonth(window.thoiGianDangXem.getMonth() + 1); hayLaiHeThongGiaoDienYeuCau(); }); 
+
+    function hayLaiHeThongGiaoDienYeuCau() {
+        window.capNhatChuHienThiThang(); 
+        if (window.duLieuSnapshotQuocTe) {
+            capNhatThanhHanMuc(window.duLieuSnapshotQuocTe); 
+            capNhatToanBoGiaoDien(window.duLieuSnapshotQuocTe);
+        }
+    } 
+
+    function capNhatThanhHanMuc(docs) {
+        window.duLieuSnapshotQuocTe = docs; 
+        let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
+        let tongDaChi = 0; 
+        const chuKyMoc = layRangeChuKy(window.thoiGianDangXem);
+        docs.forEach(docItem => {
+            const data = docItem.data(); 
+            const thoiGianMoc = parseChuoiThoiGian(data.thoiGian);
+            if (thoiGianMoc >= chuKyMoc.tuNgay && thoiGianMoc <= chuKyMoc.denNgay && data.loai === 'chi') {tongDaChi += parseFloat(data.soTien) || 0;}}); 
+        // 🔥 Đọc dữ liệu từ map cấu hình lấy về từ Firebase
+        let hanMucThangDangXem = window.boSuoTapHanMuc[thangDangXem] || 0;
+        if (!txtChu || !thanhPhanTram) return;
+        if (hanMucThangDangXem === 0) {
+            txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')} đ / Chưa đặt`; 
+            thanhPhanTram.style.width = '0%'; 
+            if (txtGoiY) { txtGoiY.innerText = "💡 Bấm vào đây để cài đặt hạn mức tháng"; txtGoiY.style.color = '#999999'; }
+            return;
+        }
+        let phanTram = (tongDaChi / hanMucThangDangXem) * 100; 
+        txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')}/${hanMucThangDangXem.toLocaleString('vi-VN')}đ`; 
+        thanhPhanTram.style.width = `${phanTram > 100 ? 100 : phanTram}%`;
+        if (phanTram >= 100) {
+            thanhPhanTram.style.backgroundColor = '#e74c3c'; 
+            if (txtGoiY) { txtGoiY.innerText = `⚠️ Vượt quá hạn mức ${(phanTram - 100).toFixed(0)}%!`; txtGoiY.style.color = '#e74c3c'; }
+        } else {
+            thanhPhanTram.style.backgroundColor = '#2ecc71'; 
+            if (txtGoiY) { txtGoiY.innerText = `✅ Còn ${(hanMucThangDangXem - tongDaChi).toLocaleString('vi-VN')}đ chi tiêu`; txtGoiY.style.color = '#999999'; } }
+        capNhatBieuDoBaoCaoNam(docs); // 🔥 CHÈN DÒNG NÀY VÀO ĐÂY: Để cứ có thay đổi hoặc chuyển tháng/năm là biểu đồ tự làm mới
+    }
+    window.capNhatChuHienThiThang();
+
+    // C.2 TAB LỊCH SỬ & ĐỔ DỮ LIỆU REALTIME
+    const idHienThiSoDu = document.getElementById('so-du');
+    const idVungLichSu = document.getElementById('lich-su-giao-dich');
+    const idBcThu = document.getElementById('bao-cao-thu');
+    const idBcChi = document.getElementById('bao-cao-chi');
+    const idThanhThu = document.getElementById('thanh-thu-ti-le');
+    const idThanhChi = document.getElementById('thanh-chi-ti-le');
+    const danhSachIcon = {"Ăn uống": "🍔", "Di chuyển": "🚗", "Trang phục": "🛍️", "Mỹ phẩm": "🛍️", "Hóa đơn": "💵", "Nhà cửa": "💵", "Giải trí": "🎬", "Thu nhập từ lương": "💰", "Thu nhập khác": "💸", "Khác": "✨"};
+
+// BIỂU ĐỒ NGÂN SÁCH THU CHI 12 THÁNG
 // Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ và vẽ biểu đồ đè lồng nhau (Đã sửa lỗi cache)
 function capNhatBieuDoBaoCaoNam(docs) {
     const ctx = document.getElementById('bieuDoNganSach');
@@ -125,3 +782,207 @@ function capNhatBieuDoBaoCaoNam(docs) {
         }
     });
 }
+    // CÁC DỮ LIỆU
+    function kichHoatHeThongDuLieuRealtime(user) {
+        const truyVanDocLapUser = query(datathuchi, where("userId", "==", user.uid)); 
+        huyTheoDoiThuChi = onSnapshot(truyVanDocLapUser, (snapshot) => {
+            capNhatToanBoGiaoDien(snapshot.docs);
+            capNhatThanhHanMuc(snapshot.docs);
+        });
+    }
+
+    function capNhatToanBoGiaoDien(docs) {
+        window.duLieuSnapshotQuocTe = docs;
+        if (!idVungLichSu) return;
+        idVungLichSu.innerHTML = ''; 
+        let tongSoDu = 0;    
+        let tongThuNhap = 0; 
+        let tongChiTieu = 0; 
+
+        const chuKy = layRangeChuKy(window.thoiGianDangXem);
+
+        if (!docs || docs.length === 0) {
+            idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chưa có giao dịch nào!</div>'; 
+            if (idHienThiSoDu) idHienThiSoDu.innerText = "0 đ";
+            if (idBcThu) idBcThu.innerText = "0 đ";
+            if (idBcChi) idBcChi.innerText = "0 đ";
+            return;
+        }
+
+        const mangSapXep = [...docs].sort((a, b) => (b.data().thoiGian || '').localeCompare(a.data().thoiGian || ''));
+
+        mangSapXep.forEach((docItem) => {
+            const giaoDich = docItem.data();
+            const docId = docItem.id;
+            const soTienGiaoDich = parseFloat(giaoDich.soTien) || 0;
+            const thoiGianMoc = parseChuoiThoiGian(giaoDich.thoiGian);
+
+            if (giaoDich.loai === 'thu') { tongSoDu += soTienGiaoDich; } else { tongSoDu -= soTienGiaoDich; }
+
+            if (thoiGianMoc >= chuKy.tuNgay && thoiGianMoc <= chuKy.denNgay) {
+                if (giaoDich.loai === 'thu') { tongThuNhap += soTienGiaoDich; } else { tongChiTieu += soTienGiaoDich; }
+
+                const hienThiDanhMuc = giaoDich.danhMuc || "Khác";
+                const iconPhuHop = danhSachIcon[hienThiDanhMuc] || "📂";
+                const hienThiThoiGian = giaoDich.thoiGian || "--/--/---- --:--";
+
+                let kyTuDau = giaoDich.loai === 'thu' ? '+' : '-';
+                let lopMauSac = giaoDich.loai === 'thu' ? 'mau-thu' : 'mau-chi';
+
+                const dongMoi = document.createElement('div');
+                dongMoi.classList.add('dong-giao-dich');
+                dongMoi.innerHTML = `
+                    <div class="nen-hanh-dong"><div class="hanh-dong-sua">✏️ Sửa</div><div class="hanh-dong-xoa">🗑️ Xóa</div></div>
+                    <div class="giao-dich-noi-dung" data-id="${docId}">
+                        <div class="giao-dich-trai"> <span class="giao-dich-muc">${iconPhuHop} ${hienThiDanhMuc}</span> <span class="giao-dich-ten">${giaoDich.ten}</span> </div>
+                        <div class="giao-dich-phai-cum"> <span class="giao-dich-thoi-gian">🕒 ${hienThiThoiGian}</span> <span class="giao-dich-phai ${lopMauSac}">${kyTuDau}${soTienGiaoDich.toLocaleString('vi-VN')} đ</span> </div>
+                    </div>
+                `;
+                idVungLichSu.appendChild(dongMoi);
+            }
+        });
+
+        if (idVungLichSu.innerHTML === '') {
+            idVungLichSu.innerHTML = '<div class="trang-thai-trong">Chu kỳ tháng này không phát sinh giao dịch!</div>';
+        }
+
+        if (idHienThiSoDu) idHienThiSoDu.innerText = tongSoDu.toLocaleString('vi-VN') + " đ"; 
+        if (idBcThu) idBcThu.innerText = tongThuNhap.toLocaleString('vi-VN') + " đ"; 
+        if (idBcChi) idBcChi.innerText = tongChiTieu.toLocaleString('vi-VN') + " đ";
+
+        const maxTong = Math.max(tongThuNhap, tongChiTieu);
+        if (maxTong > 0) {
+            if (idThanhThu) idThanhThu.style.width = `${(tongThuNhap / maxTong) * 100}%`; 
+            if (idThanhChi) idThanhChi.style.width = `${(tongChiTieu / maxTong) * 100}%`;
+        } else {
+            if (idThanhThu) idThanhThu.style.width = "0%"; if (idThanhChi) idThanhChi.style.width = "0%";
+        }
+
+        // ĐOẠN XỬ LÝ VUỐT CHẠM (SWIPE TO EDIT/DELETE)
+        document.querySelectorAll('.giao-dich-noi-dung').forEach(noiDung => {
+            let xBatDau = 0; let xDiChuyen = 0; let dangVuot = false;
+            const batDauVuot = (e) => { dangVuot = true; xBatDau = e.touches ? e.touches[0].clientX : e.clientX; };
+            const dangKeo = (e) => { 
+                if (!dangVuot) return; 
+                const xHienTai = e.touches ? e.touches[0].clientX : e.clientX; 
+                xDiChuyen = xHienTai - xBatDau; 
+                if (xDiChuyen > 100) xDiChuyen = 100; if (xDiChuyen < -100) xDiChuyen = -100; 
+                noiDung.style.transform = `translateX(${xDiChuyen}px)`; noiDung.style.transition = 'none';
+            };
+            const ketThucVuot = async () => { 
+                if (!dangVuot) return; dangVuot = false; 
+                noiDung.style.transition = 'transform 0.2s ease-out';
+                const idTaiLieu = noiDung.getAttribute('data-id');
+                const tenGiaoDich = noiDung.querySelector('.giao-dich-ten')?.innerText || '';
+                const danhMucGiaoDich = noiDung.querySelector('.giao-dich-muc')?.innerText || '';
+                const thoiGianGiaoDich = noiDung.querySelector('.giao-dich-thoi-gian')?.innerText || '';
+                const soTienGiaoDich = noiDung.querySelector('.giao-dich-phai')?.innerText || '';
+
+                if (xDiChuyen < -60) {
+                    noiDung.style.transform = 'translateX(-50%)'; 
+                    setTimeout(async () => {
+                        if (confirm(`Bạn có chắc chắn muốn xóa giao dịch "${tenGiaoDich}" không?`)) {
+                            try { await deleteDoc(doc(db, "giao_dich_business", idTaiLieu)); } catch (err) { noiDung.style.transform = 'translateX(0)'; }
+                        } else { noiDung.style.transform = 'translateX(0)'; }
+                    }, 200);
+                } 
+                else if (xDiChuyen > 60) {
+                    noiDung.style.transform = 'translateX(0)';
+                    if (idTen) idTen.value = tenGiaoDich; 
+                    if (idSoTien) { idSoTien.value = soTienGiaoDich.replace(/[^\d]/g, ''); idSoTien.dispatchEvent(new Event('input')); } 
+                    if (idLoaiGiaoDich) { idLoaiGiaoDich.value = soTienGiaoDich.includes('+') ? 'thu' : 'chi'; idLoaiGiaoDich.dispatchEvent(new Event('change')); } 
+                    setTimeout(() => { if (idDanhMuc) idDanhMuc.value = danhMucGiaoDich.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, "").trim() || 'Khác'; }, 100);                        
+                    let thoiGianSạch = thoiGianGiaoDich.replace('🕒', '').trim(); 
+                    if (thoiGianSạch && thoiGianSạch.includes(' ')) {
+                        const mangPhanTach = thoiGianSạch.split(' '); 
+                        if (inputNgay) inputNgay.value = mangPhanTach[0]; if (inputGio) inputGio.value = mangPhanTach[1];
+                    } 
+                    window.idGiaoDichDangSua = idTaiLieu; 
+                    if (idnutsave) idnutsave.innerText = "💾 Cập nhật thay đổi"; 
+                    document.querySelector('[data-target="add"]')?.click();
+                } 
+                else { noiDung.style.transform = 'translateX(0)'; }
+                xDiChuyen = 0;
+            };
+
+            noiDung.addEventListener('touchstart', batDauVuot); noiDung.addEventListener('touchmove', dangKeo); noiDung.addEventListener('touchend', ketThucVuot); 
+            noiDung.addEventListener('mousedown', (e) => {
+                batDauVuot(e);
+                const xửLýDiChuột = (ev) => dangKeo(ev);
+                const xửLýThảChuột = () => { ketThucVuot(); window.removeEventListener('mousemove', xửLýDiChuột); window.removeEventListener('mouseup', xửLýThảChuột); };
+                window.addEventListener('mousemove', xửLýDiChuột); window.addEventListener('mouseup', xửLýThảChuột);
+            }); 
+        });
+    }
+
+    // C.3 TAB THÊM GIAO DỊCH MỚI
+    const idnutsave = document.getElementById('nut-save');
+    const idLoaiGiaoDich = document.getElementById('loai-dong-tien');
+    const idDanhMuc = document.getElementById('phan-nhom-thu-chi');
+    const idTen = document.getElementById('ten-khoan-thu-chi');
+    const idSoTien = document.getElementById('so-tien');
+    const labelSoTien = document.getElementById('label-so-tien');
+    const inputNgay = document.getElementById('ngay-giao-dich'); 
+    const inputGio = document.getElementById('gio-giao-dich'); 
+    const nutHome = document.querySelector('[data-target="home"]');
+
+    const bayGio = new Date(); 
+    if (inputNgay && inputGio) {
+        inputNgay.value = `${bayGio.getFullYear()}-${String(bayGio.getMonth() + 1).padStart(2, '0')}-${String(bayGio.getDate()).padStart(2, '0')}`; 
+        inputGio.value = `${String(bayGio.getHours()).padStart(2, '0')}:${String(bayGio.getMinutes()).padStart(2, '0')}`;
+    }
+
+    if (idLoaiGiaoDich && idDanhMuc) {
+        idLoaiGiaoDich.addEventListener('change', () => {
+            idDanhMuc.innerHTML = '';
+            if (idLoaiGiaoDich.value === 'chi') {
+                idDanhMuc.innerHTML = `<option value="Ăn uống">🍔 Ăn uống</option> <option value="Di chuyển">🚗 Di chuyển</option> <option value="Trang phục">🛍️ Trang phục</option> <option value="Mỹ phẩm">🛍️ Mỹ phẩm</option> <option value="Hóa đơn">💵 Hóa đơn </option> <option value="Nhà cửa">💵 Nhà cửa </option> <option value="Giải trí">🎬 Giải trí & Cà phê</option> <option value="Khác">✨ Khác</option> `;
+            } else if (idLoaiGiaoDich.value === 'thu') {
+                idDanhMuc.innerHTML = `<option value="Thu nhập từ lương">💵 Thu nhập từ lương</option> <option value="Thu nhập khác">💰 Thu nhập khác</option>`;
+            }
+        });
+    }
+
+    if (idSoTien && labelSoTien) {
+        idSoTien.addEventListener('input', function () {
+            let value = this.value.replace(/\D/g, ''); this.value = value;
+            if (!value) { labelSoTien.innerText = 'Số tiền (đ):'; return; } 
+            labelSoTien.innerText = `Số tiền: ${Number(value).toLocaleString('vi-VN')}đ`;
+        });
+    }
+
+    if (idnutsave) {
+        idnutsave.addEventListener('click', async () => {
+            if (!auth.currentUser) { alert("Phiên đăng nhập đã hết hạn!"); return; }
+            const ngayNhap = inputNgay ? inputNgay.value : ""; 
+            const gioNhap = inputGio ? inputGio.value : ""; 
+            const loai = idLoaiGiaoDich ? idLoaiGiaoDich.value : "chi";
+            const ten = idTen ? idTen.value.trim() : "";
+            const danhMuc = idDanhMuc ? idDanhMuc.value : "Khác";
+            const soTien = idSoTien ? parseInt(idSoTien.value) : 0;
+            const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
+
+            if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
+                alert('Vui lòng kiểm tra lại thông tin hợp lệ!'); return;
+            }
+            try {
+                if (window.idGiaoDichDangSua) {
+                    await updateDoc(doc(db, "giao_dich_business", window.idGiaoDichDangSua), {ten: ten, soTien: soTien, loai: loai, danhMuc: danhMuc, thoiGian: chuoiThoiGianGop, userId: auth.currentUser.uid}); 
+                    window.idGiaoDichDangSua = null; idnutsave.innerText = "Ghi đè / Thêm mới";
+                } else {
+                    await addDoc(datathuchi, {ten: ten, soTien: soTien, loai: loai, danhMuc: danhMuc, thoiGian: chuoiThoiGianGop, userId: auth.currentUser.uid});
+                }
+                if (idTen) idTen.value = ''; if (idSoTien) idSoTien.value = ''; 
+                if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):'; 
+                const bayGioSauLuu = new Date();
+                if (inputNgay) inputNgay.value = `${bayGioSauLuu.getFullYear()}-${String(bayGioSauLuu.getMonth() + 1).padStart(2, '0')}-${String(bayGioSauLuu.getDate()).padStart(2, '0')}`;
+                if (inputGio) inputGio.value = `${String(bayGioSauLuu.getHours()).padStart(2, '0')}:${String(bayGioSauLuu.getMinutes()).padStart(2, '0')}`;
+                if (nutHome) nutHome.click();
+            } catch (loi) { alert("Không thể ghi nhận giao dịch!"); } 
+        });
+    }
+</script>
+
+</div>
+</body>
+</html>
