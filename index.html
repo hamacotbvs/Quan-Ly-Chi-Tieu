@@ -461,12 +461,30 @@
     } 
     function capNhatThanhHanMuc(docs) {
         window.duLieuSnapshotQuocTe = docs; 
-        let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
+        let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem);
+        const [namHienTai, thangHienTai] = thangDangXem.split('-').map(Number);
+    // --- LOGIC TÍNH TOÁN KHOẢNG THỜI GIAN CHU KỲ CHÍNH XÁC ---
+    let ngayBatDauChuKy, ngayKetThucChuKy;
+    if (ngayDauThangCauHinh === 1) {
+        // Chu kỳ bình thường từ ngày 1 đến hết tháng
+        ngayBatDauChuKy = new Date(namHienTai, thangHienTai - 1, 1, 0, 0, 0);
+        ngayKetThucChuKy = new Date(namHienTai, thangHienTai, 0, 23, 59, 59);
+    } else {
+        // Chu kỳ lệch (Ví dụ lấy ngày 5 hàng tháng làm mốc)
+        // Ngày bắt đầu: ngày X của tháng trước đó (hoặc tháng hiện tại tùy mốc xem)
+        ngayBatDauChuKy = new Date(namHienTai, thangHienTai - 1, ngayDauThangCauHinh, 0, 0, 0);
+        // Ngày kết thúc: ngày (X - 1) của tháng tiếp theo
+        ngayKetThucChuKy = new Date(namHienTai, thangHienTai, ngayDauThangCauHinh - 1, 23, 59, 59);
+    }
+
         let tongDaChi = 0; 
         docs.forEach(docItem => {
             const data = docItem.data(); 
-            if (data.thoiGian && data.thoiGian.startsWith(thangDangXem) && data.loai === 'chi') {
+            if (data.thoiGian && data.loai === 'chi') {
+                const thoiGianGiaoDich = new Date(data.thoiGian.replace(' ', 'T'));
+                if (!isNaN(thoiGianGiaoDich) && thoiGianGiaoDich >= ngayBatDauChuKy && thoiGianGiaoDich <= ngayKetThucChuKy) {
                 tongDaChi += parseFloat(data.soTien) || 0;
+                }
             }
         }); 
         let hanMucThangDangXem = boSuoTapHanMuc[thangDangXem] || 0;
