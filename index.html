@@ -318,8 +318,8 @@
     onAuthStateChanged(auth, (user) => {
         if (user) {
             // Trường hợp: Đã đăng nhập thành công
-            if (manHinhAuth) manHinhAuth.style.display = 'none';
             if (khungAppChinh) khungAppChinh.style.display = 'block';
+            if (manHinhAuth) manHinhAuth.style.display = 'none'; 
             // Cập nhật thông tin lên Tab Tài Khoản
             const txtTenUser = document.getElementById('ten-user-hien-thi');
             const txtEmailUser = document.getElementById('email-user-hien-thi');
@@ -454,6 +454,11 @@
     const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
     const txtGoiY = document.getElementById('goi-y-han-muc');
     let boSuoTapHanMuc = JSON.parse(localStorage.getItem('bo_suo_tap_han_muc')) || {};
+
+
+
+
+    
     if (typeof thoiGianDangXem === 'undefined') {
         window.thoiGianDangXem = new Date();
         window.layChuoiThangNam = function(dateObj) {
@@ -748,7 +753,6 @@
             const danhMuc = idDanhMuc ? idDanhMuc.value : "Khác";
             const soTien = idSoTien ? parseInt(idSoTien.value) : 0;
             const chuoiThoiGianGop = `${ngayNhap} ${gioNhap}`;
-
             if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
                 alert('Vui lòng kiểm tra lại và điền đầy đủ thông tin hợp lệ!');
                 return;
