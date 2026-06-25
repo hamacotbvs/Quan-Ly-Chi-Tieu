@@ -522,19 +522,18 @@
     }
 
     function tichHopNutDangXuat() {
-        const vungThongTin = document.querySelector('#tab-tai-khoan > div');
-        if (vungThongTin && !document.getElementById('nut-dang-xuat-app')) {
-            const nutDangXuat = document.createElement('button');
-            nutDangXuat.id = 'nut-dang-xuat-app';
-            nutDangXuat.className = 'nut-bam-save';
-            nutDangXuat.style.backgroundColor = '#e74c3c';
-            nutDangXuat.style.marginTop = '20px';
-            nutDangXuat.innerText = '🔒 Đăng xuất';
-            nutDangXuat.addEventListener('click', () => {
-                if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) signOut(auth);
-            });
-            vungThongTin.appendChild(nutDangXuat);
-        }
+    const nutDangXuat = document.getElementById('nut-dang-xuat-app');
+    
+    // Nếu nút tồn tại và chưa được gán sự kiện click
+    if (nutDangXuat && !nutDangXuat.dataset.hasListener) {
+        nutDangXuat.addEventListener('click', () => {
+            if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+                signOut(auth);
+            }
+        });
+        // Đánh dấu để tránh gán trùng lặp sự kiện nếu hàm bị gọi lại nhiều lần
+        nutDangXuat.dataset.hasListener = "true";
+    }
     }
 
     // I. NÚT LÀM MỚI ỨNG DỤNG
