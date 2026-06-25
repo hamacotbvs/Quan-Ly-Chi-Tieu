@@ -443,6 +443,14 @@
                 alert("Không thể lưu cấu hình: " + error.message);
             }
         });
+    // ➕ THÊM ĐOẠN NÀY VÀO NGAY ĐÂY:
+    selectNgayChuKy.addEventListener('change', (e) => {
+        const ngayDuocChon = e.target.value;
+        const thangHienTai = window.thoiGianDangXem.getMonth() + 1;
+        const namHienTai = window.thoiGianDangXem.getFullYear();
+        // Gọi hàm để cập nhật lại dòng chữ thông báo chu kỳ dưới chân
+        capNhatHienThiGhiChuChuKy(ngayDuocChon, thangHienTai, namHienTai);
+    });
     }
 
     // Chuyển đổi giao diện Đăng Nhập / Đăng Ký
@@ -625,6 +633,14 @@
             capNhatThanhHanMuc(window.duLieuSnapshotQuocTe); 
             capNhatToanBoGiaoDien(window.duLieuSnapshotQuocTe);
         }
+        // ➕ THÊM ĐOẠN NÀY VÀO CUỐI HÀM:
+    const oChonNgay = document.getElementById('select-ngay-chu-ky');
+    if (oChonNgay) {
+        const ngayHienTai = oChonNgay.value;
+        const thangMoi = window.thoiGianDangXem.getMonth() + 1;
+        const namMoi = window.thoiGianDangXem.getFullYear();
+        capNhatHienThiGhiChuChuKy(ngayHienTai, thangMoi, namMoi);
+    }
     } 
 
     function capNhatThanhHanMuc(docs) {
