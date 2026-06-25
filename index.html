@@ -272,8 +272,9 @@
             <select id="select-ngay-chu-ky" style="padding: 10px; border-radius: 8px; border: 1px solid #ccd1d1; flex: 1; font-size: 14px; outline: none; background: #fff;"></select>
             <button id="nut-luu-chu-ky" style="padding: 10px 18px; background-color: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s;">Save</button>
         </div>
-        <small style="color: #7f8c8d; display: block; margin-top: 8px; font-size: 12px; line-height: 1.4;">
-        *Ví dụ: Nếu chọn ngày 24, khi xem Tháng 6, hệ thống sẽ gom nhóm tính toán toàn bộ thu/chi từ ngày 25 tháng 5 đến hết ngày 24 tháng 6.*
+    
+        <small id="ghi-chu-pham-vi-chu-ky" style="color: #2ecc71; font-weight: 500; display: block; margin-top: 8px; font-size: 12px; line-height: 1.4;">
+            *Đang tính toán phạm vi...*
         </small> 
     </div>
 </div>
@@ -310,6 +311,13 @@
     if (selectChuKy) {for (let i = 1; i <= 31; i++) {const opt = document.createElement('option'); opt.value = i; opt.innerText = `Ngày ${i} hàng tháng`; selectChuKy.appendChild(opt);}}
     // Biến toàn cục lưu ngày chốt chu kỳ (Mặc định là ngày 25 nếu chưa tải xong từ DB)
     window.ngayChotChuKy = 25; 
+
+    document.getElementById('select-ngay-chu-ky').addEventListener('change', (e) => {
+    const ngayDuocChon = e.target.value;
+    
+    // Thay 'bienThangHienTai' và 'bienNamHienTai' bằng biến toàn cục chứa tháng/năm bạn đang render trên màn hình app (ví dụ: 7 và 2026)
+    capNhatHienThiGhiChuChuKy(ngayDuocChon, bienThangHienTai, bienNamHienTai);
+    }); 
 
 // Biến toàn cục hệ thống
     window.ngayChotChuKy = 25; 
@@ -443,6 +451,37 @@
             }
         });
     }
+    function capNhatHienThiGhiChuChuKy(ngayChuKy, thangDangXem, namDangXem) {
+    // Ép kiểu về số nguyên cho chắc chắn
+    const day = parseInt(ngayChuKy);
+    const month = parseInt(thangDangXem);
+    const year = parseInt(namDangXem);
+
+    if (isNaN(day) || isNaN(month) || isNaN(year)) return;
+
+    // 1. Ngày kết thúc: Ngày 'day' của tháng hiện tại đang xem
+    const denNgay = new Date(year, month - 1, day);
+
+    // 2. Ngày bắt đầu: Ngày 'day + 1' của tháng trước đó (month - 2 trong JS Date)
+    const tuNgay = new Date(year, month - 2, day + 1);
+
+    // Hàm phụ để định dạng ngày thành chuỗi dạng DD/MM/YYYY
+    const dinhDang = (d) => {
+        const dateStr = String(d.getDate()).padStart(2, '0');
+        const monthStr = String(d.getMonth() + 1).padStart(2, '0');
+        const yearStr = d.getFullYear();
+        return `${dateStr}/${monthStr}/${yearStr}`;
+    };
+
+    // Tạo câu thông báo động hoàn chỉnh
+    const thongBao = `*Phạm vi tính toán tháng này: Từ ngày ${dinhDang(tuNgay)} đến hết ngày ${dinhDang(denNgay)}.*`;
+
+    // Cập nhật lên giao diện
+    const txtGhiChu = document.getElementById('ghi-chu-pham-vi-chu-ky');
+    if (txtGhiChu) {
+        txtGhiChu.innerText = thongBao;
+    }
+}
 
     // Chuyển đổi giao diện Đăng Nhập / Đăng Ký
     if (linkChuyenTrang) {
@@ -657,6 +696,9 @@
         capNhatBieuDoTabBaoCaoTaiChinh(docs); // Khi dữ liệu tải xong: Vẽ biểu đồ Thu nhập
     }
     window.capNhatChuHienThiThang();
+    // Gọi lại để cập nhật lại ngày bắt đầu/kết thúc cho đúng với tháng mới vừa chuyển đến
+const ngayHienTai = document.getElementById('select-ngay-chu-ky').value;
+capNhatHienThiGhiChuChuKy(ngayHienTai, bienThangMoi, bienNamMoi);
 // BIỂU ĐỒ NGÂN SÁCH THU CHI 12 THÁNG
 // Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ, vẽ biểu đồ đè lồng nhau và đường CÒN LẠI (Màu vàng, không chấm)
 function capNhatBieuDoBaoCaoNam(docs) {
