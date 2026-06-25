@@ -782,7 +782,85 @@ function capNhatBieuDoBaoCaoNam(docs) {
             responsive: true,
             maintainAspectRatio: false,
             onClick: function(event, elements) {
-                const points = bieu
+                const points = bieuDoInstance.getElementsAtEventForMode(event, 'index', { intersect: false }, true);
+                if (points && points.length > 0) {
+                    const thangDuocClick = points[0].index; 
+                    capNhatThanhThongTinPhiaTren(thangDuocClick);
+                }
+            },
+            plugins: {
+                legend: { display: false }, 
+                tooltip: { enabled: false } 
+            },
+            scales: {
+                x: { 
+                    stacked: false,
+                    ticks: {
+                        maxRotation: 0,
+                        minRotation: 0,
+                        autoSkip: false 
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    // 🔑 ĐÃ THÊM: Tạo thêm 35% khoảng trống phía trên đỉnh để chữ không bị che khuất
+                    grace: '15%', 
+                    ticks: {
+                        callback: function(value) { 
+                            return (value / 1000000).toFixed(0) + 'tr'; 
+                        }
+                    }
+                }
+            }
+        },
+        // 🔑 ĐÃ THÊM: Plugin tự động tính toán vị trí và vẽ 3 dòng chữ lên đầu cột dữ liệu
+        plugins: [{
+            id: 'hienChuDauCot',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 9px sans-serif';
+                
+                // Sử dụng tọa độ của dataset "Thanh Sau" để làm điểm mốc căn giữa cột
+                const meta = chart.getDatasetMeta(2);
+                
+                for (let i = 0; i < 12; i++) {
+                    const ns = window.boSuoTapHanMuc[`${namDangXem}-${String(i + 1).padStart(2, '0')}`] || 0;
+                    const ct = mangDaChiThucTe[i];
+                    const cl = mangConLai[i];
+                    
+                    // Chỉ vẽ khi tháng đó có dữ liệu ngân sách hoặc chi tiêu thực tế
+                    if (ns === 0 && ct === 0) continue;
+                    
+                    const bar = meta.data[i];
+                    if (!bar) continue;
+                    
+                    const xPos = bar.x;
+                    let yPos = bar.y - 6; // Điểm xuất phát cách đỉnh cột cao nhất 6px
+                    
+                    const chuoiNs = (ns / 1000000).toFixed(1).replace('.', ',') + 'tr';
+                    const chuoiCt = (ct / 1000000).toFixed(1).replace('.', ',') + 'tr';
+                    const chuoiCl = (Math.abs(cl) / 1000000).toFixed(1).replace('.', ',') + 'tr';
+                    const dauCl = cl >= 0 ? '' : '-';
+                    
+                    // Vẽ dòng 3: Còn lại (Vàng) - nằm sát đầu cột nhất
+                    ctx.fillStyle = '#f1c40f';
+                    ctx.fillText(dauCl + chuoiCl, xPos, yPos);
+                    
+                    // Vẽ dòng 2: Chi tiêu (Đỏ) - nằm ở giữa
+                    ctx.fillStyle = '#e74c3c';
+                    ctx.fillText(chuoiCt, xPos, yPos - 11);
+                    
+                    // Vẽ dòng 1: Ngân sách (Xanh) - nằm trên cùng cao nhất
+                    ctx.fillStyle = '#3498db';
+                    ctx.fillText(chuoiNs, xPos, yPos - 22);
+                }
+                ctx.restore();
+            }
+        }]
+    });
+}
     // CÁC DỮ LIỆU
     function kichHoatHeThongDuLieuRealtime(user) {
         const truyVanDocLapUser = query(datathuchi, where("userId", "==", user.uid)); 
