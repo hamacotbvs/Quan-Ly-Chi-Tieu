@@ -442,7 +442,10 @@
                 alert("Không thể lưu cấu hình: " + error.message);
             }
         });
-    }
+        // ➕ THÊM ĐOẠN NÀY VÀO NGAY DƯỚI: Để khi thay đổi ô select là cập nhật ghi chú ngay
+        selectNgayChuKy.addEventListener('change', (e) => {
+            window.ngayChotChuKy = parseInt(e.target.value) || 25;
+            if (window.duLieuSnapshotQuocTe) {capNhatThanhHanMuc(window.duLieuSnapshotQuocTe);} }); }
 
     // Chuyển đổi giao diện Đăng Nhập / Đăng Ký
     if (linkChuyenTrang) {
@@ -631,6 +634,10 @@
         let thangDangXem = window.layChuoiThangNam(window.thoiGianDangXem); 
         let tongDaChi = 0; 
         const chuKyMoc = layRangeChuKy(window.thoiGianDangXem);
+        // ➕ THÊM 4 DÒNG NÀY VÀO ĐÂY ĐỂ ĐỔI THÁNG LÀ TỰ NHẢY CHỮ gợi ý chu kỳ tính toán
+        const fMat = d => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        const txtGhiChu = document.getElementById('ghi-chu-pham-vi-chu-ky');
+        if (txtGhiChu) {txtGhiChu.innerText = `*Phạm vi tính toán: Từ ngày ${fMat(chuKyMoc.tuNgay)} đến hết ngày ${fMat(chuKyMoc.denNgay)}.*`;}
         docs.forEach(docItem => {
             const data = docItem.data(); 
             const thoiGianMoc = parseChuoiThoiGian(data.thoiGian);
