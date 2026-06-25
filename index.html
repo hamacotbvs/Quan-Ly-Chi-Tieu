@@ -115,6 +115,10 @@
             .khung-thanh-mau-tien-do { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
             .thanh-tien-vao { background: #2ecc71; height: 100%; width: 0%; transition: width 0.5s; }
             .thanh-tien-ra { background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s; }
+            /* 1.2 Giao diện khung biểu đồ năm */
+            .khung-bieu-do-nam {background: #ffffff; border-radius: 12px; padding: 15px; margin: 20px 0px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);}
+            #tieu-de-bieu-do {font-size: 15px; font-weight: 600; color: #2c3e50; margin-top: 0; margin-bottom: 15px; text-align: center;}
+            .vung-canvas-bieu-do {position: relative; height: 260px; width: 100%;}
     /* A.3 ĐỊNH DẠNG THANH MENU DƯỚI */    
             /* định dạng khung nền menu */
             .menu-day-app {position: fixed;bottom: 15px;left: 50%;transform: translateX(-50%);width: calc(100% - 30px);max-width: 420px;height: 65px;background-color: #0082C8;border-radius: 999px;display: flex;
@@ -245,7 +249,8 @@
         <div class="tieu-de-khung" style="margin-top: 10px;">Tổng quan tài chính cá nhân</div>
         <div class="khung-bao-cao-thanh-ngang"> <div class="noi-dung-bao-cao-thanh-ngang"> <span>Tổng thu nhập (vào):</span> <span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span> </div> <div class="khung-thanh-mau-tien-do"> <div id="thanh-thu-ti-le" class="thanh-tien-vao"></div></div></div>
         <div class="khung-bao-cao-thanh-ngang"> <div class="noi-dung-bao-cao-thanh-ngang"> <span>Tổng chi tiêu (ra):</span> <span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span> </div> <div class="khung-thanh-mau-tien-do"> <div id="thanh-chi-ti-le" class="thanh-tien-ra"></div></div></div>
-        <div class="khung-bieu-do-nam"> <h3 id="tieu-de-bieu-do-bao-cao">Biểu đồ Thu nhập, Chi tiêu & Tích lũy năm 2026</h3>
+        <div class="khung-bieu-do-nam"> 
+            <div id="tieu-de-bieu-do-bao-cao" style="font-size: 15px; font-weight: bold; text-align: center; margin-bottom: 12px; color: #1e293b;">Biểu đồ Thu nhập, Chi tiêu & Tích lũy năm 2026</div>
             <div class="vung-canvas-bieu-do"> <canvas id="bieuDoBaoCaoTaiChinh"></canvas> </div> </div>
     </div>
 
