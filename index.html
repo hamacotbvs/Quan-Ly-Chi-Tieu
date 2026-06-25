@@ -781,6 +781,12 @@ function capNhatBieuDoBaoCaoNam(docs) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            // 🔑 ĐÃ THÊM: Tạo khoảng trống cố định 35px phía trên grid để chứa text an toàn
+            layout: {
+                padding: {
+                    top: 35
+                }
+            },
             onClick: function(event, elements) {
                 const points = bieuDoInstance.getElementsAtEventForMode(event, 'index', { intersect: false }, true);
                 if (points && points.length > 0) {
@@ -803,7 +809,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 },
                 y: {
                     beginAtZero: true,
-                    grace: '25%', 
+                    // 🔑 ĐÃ XÓA: Bỏ hoàn toàn thuộc tính grace tỷ lệ % để trục Y tự làm tròn số nguyên đẹp (6tr, 7tr)
                     ticks: {
                         callback: function(value) { 
                             return (value / 1000000).toFixed(0) + 'tr'; 
@@ -835,7 +841,6 @@ function capNhatBieuDoBaoCaoNam(docs) {
                     const xPos = bar.x;
                     let yPos = bar.y - 6; 
                     
-                    // 🔑 ĐÃ SỬA: Loại bỏ đuôi + 'tr' để chỉ hiển thị số nguyên bản dạng X,X gọn gàng
                     const chuoiNs = (ns / 1000000).toFixed(1).replace('.', ',');
                     const chuoiCt = (ct / 1000000).toFixed(1).replace('.', ',');
                     const chuoiCl = (Math.abs(cl) / 1000000).toFixed(1).replace('.', ',');
