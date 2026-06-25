@@ -637,7 +637,7 @@
         // ➕ THÊM 4 DÒNG NÀY VÀO ĐÂY ĐỂ ĐỔI THÁNG LÀ TỰ NHẢY CHỮ gợi ý chu kỳ tính toán
         const fMat = d => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
         const txtGhiChu = document.getElementById('ghi-chu-pham-vi-chu-ky');
-        if (txtGhiChu) {txtGhiChu.innerText = `*Phạm vi tính toán: Từ ngày ${fMat(chuKyMoc.tuNgay)} đến hết ngày ${fMat(chuKyMoc.denNgay)}.*`;}
+        if (txtGhiChu) {txtGhiChu.innerText = `*Chu kỳ: Từ ngày ${fMat(chuKyMoc.tuNgay)} đến ngày ${fMat(chuKyMoc.denNgay)}.*`;}
         docs.forEach(docItem => {
             const data = docItem.data(); 
             const thoiGianMoc = parseChuoiThoiGian(data.thoiGian);
