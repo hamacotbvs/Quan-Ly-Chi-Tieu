@@ -803,17 +803,15 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 },
                 y: {
                     beginAtZero: true,
-                    // 🔑 ĐÃ THÊM: Tạo thêm 18% khoảng trống phía trên đỉnh để chữ không bị che khuất
                     grace: '18%', 
                     ticks: {
                         callback: function(value) { 
-                            return (value / 1000000).toFixed(0); 
+                            return (value / 1000000).toFixed(0) + 'tr'; 
                         }
                     }
                 }
             }
         },
-        // 🔑 ĐÃ THÊM: Plugin tự động tính toán vị trí và vẽ 3 dòng chữ lên đầu cột dữ liệu
         plugins: [{
             id: 'hienChuDauCot',
             afterDatasetsDraw(chart) {
@@ -822,7 +820,6 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 ctx.textAlign = 'center';
                 ctx.font = 'bold 9px sans-serif';
                 
-                // Sử dụng tọa độ của dataset "Thanh Sau" để làm điểm mốc căn giữa cột
                 const meta = chart.getDatasetMeta(2);
                 
                 for (let i = 0; i < 12; i++) {
@@ -830,29 +827,29 @@ function capNhatBieuDoBaoCaoNam(docs) {
                     const ct = mangDaChiThucTe[i];
                     const cl = mangConLai[i];
                     
-                    // Chỉ vẽ khi tháng đó có dữ liệu ngân sách hoặc chi tiêu thực tế
                     if (ns === 0 && ct === 0) continue;
                     
                     const bar = meta.data[i];
                     if (!bar) continue;
                     
                     const xPos = bar.x;
-                    let yPos = bar.y - 6; // Điểm xuất phát cách đỉnh cột cao nhất 6px
+                    let yPos = bar.y - 6; 
                     
-                    const chuoiNs = (ns / 1000000).toFixed(1).replace('.', ',') + 'tr';
-                    const chuoiCt = (ct / 1000000).toFixed(1).replace('.', ',') + 'tr';
-                    const chuoiCl = (Math.abs(cl) / 1000000).toFixed(1).replace('.', ',') + 'tr';
+                    // 🔑 ĐÃ SỬA: Loại bỏ đuôi + 'tr' để chỉ hiển thị số nguyên bản dạng X,X gọn gàng
+                    const chuoiNs = (ns / 1000000).toFixed(1).replace('.', ',');
+                    const chuoiCt = (ct / 1000000).toFixed(1).replace('.', ',');
+                    const chuoiCl = (Math.abs(cl) / 1000000).toFixed(1).replace('.', ',');
                     const dauCl = cl >= 0 ? '' : '-';
                     
-                    // Vẽ dòng 3: Còn lại (Vàng) - nằm sát đầu cột nhất
+                    // Vẽ dòng 3: Còn lại (Vàng)
                     ctx.fillStyle = '#f1c40f';
                     ctx.fillText(dauCl + chuoiCl, xPos, yPos);
                     
-                    // Vẽ dòng 2: Chi tiêu (Đỏ) - nằm ở giữa
+                    // Vẽ dòng 2: Chi tiêu (Đỏ)
                     ctx.fillStyle = '#e74c3c';
                     ctx.fillText(chuoiCt, xPos, yPos - 11);
                     
-                    // Vẽ dòng 1: Ngân sách (Xanh) - nằm trên cùng cao nhất
+                    // Vẽ dòng 1: Ngân sách (Xanh)
                     ctx.fillStyle = '#3498db';
                     ctx.fillText(chuoiNs, xPos, yPos - 22);
                 }
