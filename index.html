@@ -660,7 +660,6 @@ function capNhatBieuDoBaoCaoNam(docs) {
     if (!ctx) return;
 
     const namDangXem = window.thoiGianDangXem.getFullYear();
-    const thangDangXemhienTai = window.thoiGianDangXem.getMonth(); 
     
     const txtTieuDeBc = document.getElementById('tieu-de-bieu-do');
     if (txtTieuDeBc) txtTieuDeBc.innerText = `Biểu đồ Ngân sách & Chi tiêu năm ${namDangXem}`;
@@ -707,31 +706,6 @@ function capNhatBieuDoBaoCaoNam(docs) {
             mangMauMin[m] = '#3498db'; 
         }
     }
-
-    function capNhatThanhThongTinPhiaTren(chiMucThang) {
-        const thanhHienThi = document.getElementById('thanhThongTinBieuDo');
-        if (!thanhHienThi) return;
-
-        const chuoiThangNam = `${namDangXem}-${String(chiMucThang + 1).padStart(2, '0')}`;
-        const ns = window.boSuoTapHanMuc[chuoiThangNam] || 0;
-        const ct = mangDaChiThucTe[chiMucThang];
-        const cl = mangConLai[chiMucThang];
-
-        const chuoiNs = (ns / 1000000).toFixed(1).replace('.', ',');
-        const chuoiCt = (ct / 1000000).toFixed(1).replace('.', ',');
-        const chuoiCl = (Math.abs(cl) / 1000000).toFixed(1).replace('.', ',');
-
-        thanhHienThi.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 6px 10px; border-radius: 8px; font-size: 12px; border: 1px dashed #ddd;">
-                <span style="font-weight: bold; color: #333;">Tháng ${chiMucThang + 1}:</span>
-                <span style="color: #3498db;">NS: <b>${chuoiNs}tr</b></span>
-                <span style="color: #e74c3c;">Chi: <b>${chuoiCt}tr</b></span>
-                <span style="color: ${cl >= 0 ? '#f1c40f' : '#e74c3c'};">Còn: <b>${cl >= 0 ? '' : '-'}${chuoiCl}tr</b></span>
-            </div>
-        `;
-    }
-
-    capNhatThanhThongTinPhiaTren(thangDangXemhienTai);
 
     if (bieuDoInstance) {
         bieuDoInstance.destroy();
@@ -781,19 +755,12 @@ function capNhatBieuDoBaoCaoNam(docs) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // 🔑 ĐÃ THÊM: Tạo khoảng trống cố định 35px phía trên grid để chứa text an toàn
             layout: {
                 padding: {
-                    top: 35
+                    top: 35 // Chừa khoảng trống phía trên vừa đủ cho 3 dòng chữ
                 }
             },
-            onClick: function(event, elements) {
-                const points = bieuDoInstance.getElementsAtEventForMode(event, 'index', { intersect: false }, true);
-                if (points && points.length > 0) {
-                    const thangDuocClick = points[0].index; 
-                    capNhatThanhThongTinPhiaTren(thangDuocClick);
-                }
-            },
+            // Đã xóa onClick và phần cập nhật thanh thông tin cũ
             plugins: {
                 legend: { display: false }, 
                 tooltip: { enabled: false } 
@@ -809,7 +776,6 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 },
                 y: {
                     beginAtZero: true,
-                    // 🔑 ĐÃ XÓA: Bỏ hoàn toàn thuộc tính grace tỷ lệ % để trục Y tự làm tròn số nguyên đẹp (6tr, 7tr)
                     ticks: {
                         callback: function(value) { 
                             return (value / 1000000).toFixed(0) + 'tr'; 
@@ -821,8 +787,24 @@ function capNhatBieuDoBaoCaoNam(docs) {
         plugins: [{
             id: 'hienChuDauCot',
             afterDatasetsDraw(chart) {
-                const { ctx } = chart;
+                const { ctx, chartArea: { left, top } } = chart;
                 ctx.save();
+                
+                // 🔑 1. VẼ CHÚ THÍCH TRỤC TRÁI (Nằm ngay góc trên cùng bên trái của grid)
+                ctx.textAlign = 'right';
+                ctx.font = 'bold 10px sans-serif';
+                
+                ctx.fillStyle = '#3498db'; // Màu xanh - Ngân sách
+                ctx.fillText('NS', left - 8, top - 24);
+                
+                ctx.fillStyle = '#e74c3c'; // Màu đỏ - Chi tiêu
+                ctx.fillText('Chi', left - 8, top - 13);
+                
+                ctx.fillStyle = '#f1c40f'; // Màu vàng - Còn lại
+                ctx.fillText('Còn', left - 8, top - 2);
+
+                // -------------------------------------------------------------
+                // 2. VẼ CÁC SỐ TRÊN ĐẦU CỘT NHƯ CŨ
                 ctx.textAlign = 'center';
                 ctx.font = 'bold 9px sans-serif';
                 
