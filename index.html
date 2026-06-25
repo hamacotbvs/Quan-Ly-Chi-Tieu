@@ -245,6 +245,8 @@
         <div class="tieu-de-khung" style="margin-top: 10px;">Tổng quan tài chính cá nhân</div>
         <div class="khung-bao-cao-thanh-ngang"> <div class="noi-dung-bao-cao-thanh-ngang"> <span>Tổng thu nhập (vào):</span> <span class="thong-ke-so mau-thu" id="bao-cao-thu">0 đ</span> </div> <div class="khung-thanh-mau-tien-do"> <div id="thanh-thu-ti-le" class="thanh-tien-vao"></div></div></div>
         <div class="khung-bao-cao-thanh-ngang"> <div class="noi-dung-bao-cao-thanh-ngang"> <span>Tổng chi tiêu (ra):</span> <span class="thong-ke-so mau-chi" id="bao-cao-chi">0 đ</span> </div> <div class="khung-thanh-mau-tien-do"> <div id="thanh-chi-ti-le" class="thanh-tien-ra"></div></div></div>
+        <div class="khung-bieu-do-nam"> <h3 id="tieu-de-bieu-do-bao-cao">Biểu đồ Thu nhập, Chi tiêu & Tích lũy năm 2026</h3>
+            <div class="vung-canvas-bieu-do"> <canvas id="bieuDoBaoCaoTaiChinh"></canvas> </div> </div>
     </div>
 
     <div id="tab-tai-khoan" class="tab-menu-duoi">
@@ -1081,6 +1083,237 @@ function capNhatBieuDoBaoCaoNam(docs) {
             } catch (loi) { alert("Không thể ghi nhận giao dịch!"); } 
         });
     }
+    // C.4 TAB BÁO CÁO
+// BIỂU ĐỒ THU NHẬP CHI TIÊU 12 THÁNG
+// Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ, vẽ biểu đồ đè lồng nhau và đường CÒN LẠI (Màu vàng, không chấm)
+capNhatBieuDoTabBaoCaoTaiChinh(dataDocs); // Khi dữ liệu tải xong: Vẽ biểu đồ Thu nhập
+function capNhatBieuDoTabBaoCaoTaiChinh(docs) {
+    const ctx = document.getElementById('bieuDoBaoCaoTaiChinh'); // ID canvas mới
+    if (!ctx) return;
+
+    const namDangXem = window.thoiGianDangXem.getFullYear();
+    
+    const txtTieuDeBc = document.getElementById('tieu-de-bieu-do-bao-cao'); // ID tiêu đề mới
+    if (txtTieuDeBc) txtTieuDeBc.innerText = `Biểu đồ Thu nhập, Chi tiêu & Tích lũy năm ${namDangXem}`;
+
+    // 1. Khởi tạo mảng lưu trữ dữ liệu 12 tháng
+    const mangThuNhapThucTe = Array(12).fill(0);
+    const mangChiTieuThucTe = Array(12).fill(0);
+    
+    // Phân tách dữ liệu thu và chi theo từng tháng
+    docs.forEach(docItem => {
+        const data = docItem.data();
+        if (data.thoiGian) {
+            const thoiGianMoc = parseChuoiThoiGian(data.thoiGian);
+            for (let m = 0; m < 12; m++) {
+                const ngayDaiDienThang = new Date(namDangXem, m, 1);
+                const chuKyMoc = layRangeChuKy(ngayDaiDienThang);
+                if (thoiGianMoc >= chuKyMoc.tuNgay && thoiGianMoc <= chuKyMoc.denNgay) {
+                    if (data.loai === 'thu') {
+                        mangThuNhapThucTe[m] += parseFloat(data.soTien) || 0;
+                    } else if (data.loai === 'chi') {
+                        mangChiTieuThucTe[m] += parseFloat(data.soTien) || 0;
+                    }
+                    break; 
+                }
+            }
+        }
+    });
+
+    // 2. Tính toán mảng Tích lũy và mảng Max/Min để lồng cột đồ thị giống tab Home
+    const mangMax = Array(12).fill(0);       
+    const mangMin = Array(12).fill(0);       
+    const mangTichLuy = Array(12).fill(0); 
+    const mangMauMax = Array(12).fill('');   
+    const mangMauMin = Array(12).fill('');   
+
+    for (let m = 0; m < 12; m++) {
+        const thuNhap = mangThuNhapThucTe[m];
+        const chiTieu = mangChiTieuThucTe[m];
+
+        mangTichLuy[m] = thuNhap - chiTieu; // Tích lũy = Thu nhập - Chi tiêu
+
+        if (thuNhap >= chiTieu) {
+            mangMax[m] = thuNhap;
+            mangMin[m] = chiTieu;
+            mangMauMax[m] = '#3498db'; // Thu nhập cao hơn -> Thanh ngoài màu Xanh
+            mangMauMin[m] = '#e74c3c'; // Chi tiêu thấp hơn -> Thanh trong màu Đỏ
+        } else {
+            mangMax[m] = chiTieu;
+            mangMin[m] = thuNhap;
+            mangMauMax[m] = '#e74c3c'; // Bị lạm chi -> Thanh ngoài biến thành màu Đỏ bao bọc
+            mangMauMin[m] = '#3498db'; // Thu nhập tụt vào trong màu Xanh
+        }
+    }
+
+    // Kiểm tra hủy instance cũ của riêng tab Báo cáo để không bị đè bộ nhớ
+    if (bieuDoBaoCaoInstance) {
+        bieuDoBaoCaoInstance.destroy();
+    }
+
+    // 3. Khởi tạo Chart.js mới cho tab Báo cáo
+    bieuDoBaoCaoInstance = new Chart(ctx, {
+        type: 'bar', 
+        data: {
+            labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            datasets: [
+                {
+                    type: 'line', 
+                    label: 'Tích lũy',
+                    data: mangTichLuy,
+                    borderColor: '#f1c40f',    
+                    backgroundColor: '#f1c40f',
+                    borderWidth: 1, 
+                    tension: 0.2, 
+                    pointRadius: 0,            
+                    pointHoverRadius: 0,       
+                    fill: false,
+                    grouped: false,
+                    order: 1 
+                },
+                {
+                    label: 'Thanh Trước',
+                    data: mangMin,
+                    backgroundColor: mangMauMin,
+                    barPercentage: 0.55, 
+                    categoryPercentage: 0.8,
+                    borderRadius: 4,
+                    grouped: false, 
+                    order: 2
+                },
+                {
+                    label: 'Thanh Sau',
+                    data: mangMax,
+                    backgroundColor: mangMauMax,
+                    barPercentage: 0.85, 
+                    categoryPercentage: 0.8, 
+                    borderRadius: 4,
+                    grouped: false, 
+                    order: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    top: 35 // Giữ nguyên khoảng đệm 35px lý tưởng của bạn
+                }
+            },
+            plugins: {
+                legend: { display: false }, 
+                tooltip: { enabled: false } 
+            },
+            scales: {
+                x: { 
+                    stacked: false,
+                    ticks: { maxRotation: 0, minRotation: 0, autoSkip: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    grace: '20%', 
+                    ticks: {
+                        callback: function(value) { 
+                            return (value / 1000000).toFixed(0) + 'tr'; 
+                        }
+                    }
+                }
+            }
+        },
+        plugins: [{
+            id: 'hienChuDauCotBaoCao',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                ctx.save();
+                
+                // Vẽ Legend Chú thích tùy biến (Thu nhập - Chi tiêu - Tích lũy)
+                ctx.textBaseline = 'middle';
+                ctx.font = 'bold 11px sans-serif';
+                
+                const txtThu = 'Thu nhập';
+                const txtChi = 'Chi tiêu';
+                const txtTl = 'Tích lũy';
+                
+                const wThu = ctx.measureText(txtThu).width;
+                const wChi = ctx.measureText(txtChi).width;
+                const wTl = ctx.measureText(txtTl).width;
+                
+                const boxSize = 10;        
+                const boxGap = 5;          
+                const khoangCachCum = 20;  
+                
+                const tongChieuRong = (boxSize + boxGap) * 3 + wThu + wChi + wTl + (khoangCachCum * 2);
+                let toaDoXChay = (chart.width - tongChieuRong) / 2; 
+                const toaDoYChuan = 12; 
+                
+                ctx.textAlign = 'left';
+                
+                // Cụm Thu nhập
+                ctx.fillStyle = '#3498db'; 
+                ctx.fillRect(toaDoXChay, toaDoYChuan - boxSize / 2, boxSize, boxSize);
+                toaDoXChay += boxSize + boxGap;
+                ctx.fillStyle = '#333333'; 
+                ctx.fillText(txtThu, toaDoXChay, toaDoYChuan);
+                toaDoXChay += wThu + khoangCachCum;
+                
+                // Cụm Chi tiêu
+                ctx.fillStyle = '#e74c3c'; 
+                ctx.fillRect(toaDoXChay, toaDoYChuan - boxSize / 2, boxSize, boxSize);
+                toaDoXChay += boxSize + boxGap;
+                ctx.fillStyle = '#333333';
+                ctx.fillText(txtChi, toaDoXChay, toaDoYChuan);
+                toaDoXChay += wChi + khoangCachCum;
+                
+                // Cụm Tích lũy
+                ctx.fillStyle = '#f1c40f'; 
+                ctx.fillRect(toaDoXChay, toaDoYChuan - boxSize / 2, boxSize, boxSize);
+                toaDoXChay += boxSize + boxGap;
+                ctx.fillStyle = '#333333';
+                ctx.fillText(txtTl, toaDoXChay, toaDoYChuan);
+
+                // Vẽ các khối số 3 tầng trên đầu cột
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 9px sans-serif';
+                
+                const meta = chart.getDatasetMeta(2);
+                
+                for (let i = 0; i < 12; i++) {
+                    const thu = mangThuNhapThucTe[i];
+                    const chi = mangChiTieuThucTe[i];
+                    const tl = mangTichLuy[i];
+                    
+                    if (thu === 0 && chi === 0) continue;
+                    
+                    const bar = meta.data[i];
+                    if (!bar) continue;
+                    
+                    const xPos = bar.x;
+                    let yPos = bar.y - 6; 
+                    
+                    const chuoiThu = (thu / 1000000).toFixed(1).replace('.', ',');
+                    const chuoiChi = (chi / 1000000).toFixed(1).replace('.', ',');
+                    const chuoiTl = (Math.abs(tl) / 1000000).toFixed(1).replace('.', ',');
+                    const dauTl = tl >= 0 ? '' : '-';
+                    
+                    // Dòng 3: Tích lũy (Vàng) - sử dụng tông màu đậm sậm tí cho rõ chữ trên nền trắng
+                    ctx.fillStyle = '#d4ac0d';
+                    ctx.fillText(dauTl + chuoiTl, xPos, yPos);
+                    
+                    // Dòng 2: Chi tiêu (Đỏ)
+                    ctx.fillStyle = '#e74c3c';
+                    ctx.fillText(chuoiChi, xPos, yPos - 11);
+                    
+                    // Dòng 1: Thu nhập (Xanh)
+                    ctx.fillStyle = '#3498db';
+                    ctx.fillText(chuoiThu, xPos, yPos - 22);
+                }
+                ctx.restore();
+            }
+        }]
+    });
+}
+
 </script>
 
 </div>
