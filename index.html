@@ -272,11 +272,10 @@
             <select id="select-ngay-chu-ky" style="padding: 10px; border-radius: 8px; border: 1px solid #ccd1d1; flex: 1; font-size: 14px; outline: none; background: #fff;"></select>
             <button id="nut-luu-chu-ky" style="padding: 10px 18px; background-color: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s;">Save</button>
         </div>
-    
-        <small id="ghi-chu-pham-vi-chu-ky" style="color: #2ecc71; font-weight: 500; display: block; margin-top: 8px; font-size: 12px; line-height: 1.4;">
-            *Đang tính toán phạm vi...*
+        <small style="color: #7f8c8d; display: block; margin-top: 8px; font-size: 12px; line-height: 1.4;">
+        *Ví dụ: Nếu chọn ngày 24, khi xem Tháng 6, hệ thống sẽ gom nhóm tính toán toàn bộ thu/chi từ ngày 25 tháng 5 đến hết ngày 24 tháng 6.*
         </small> 
-</div>
+    </div>
 </div>
 
     <nav class="menu-day-app menu dưới">
@@ -394,11 +393,7 @@
                     window.boSuoTapHanMuc = dataCH.hanMucThang || {};
                     
                     const selectNgay = document.getElementById('select-ngay-chu-ky');
-                    if (selectNgay) {selectNgay.value = window.ngayChotChuKy;
-                        const thangHienTai = window.thoiGianDangXem.getMonth() + 1;
-                        const namHienTai = window.thoiGianDangXem.getFullYear();
-                        capNhatHienThiGhiChuChuKy(window.ngayChotChuKy, thangHienTai, namHienTai);
-                    }
+                    if (selectNgay) selectNgay.value = window.ngayChotChuKy;
                 }
                 
                 // Tự động nhảy sang chu kỳ tháng tiếp theo nếu vượt quá ngày chốt
@@ -447,14 +442,6 @@
                 alert("Không thể lưu cấu hình: " + error.message);
             }
         });
-    // ➕ THÊM ĐOẠN NÀY VÀO NGAY ĐÂY:
-    selectNgayChuKy.addEventListener('change', (e) => {
-        const ngayDuocChon = e.target.value;
-        const thangHienTai = window.thoiGianDangXem.getMonth() + 1;
-        const namHienTai = window.thoiGianDangXem.getFullYear();
-        // Gọi hàm để cập nhật lại dòng chữ thông báo chu kỳ dưới chân
-        capNhatHienThiGhiChuChuKy(ngayDuocChon, thangHienTai, namHienTai);
-    });
     }
 
     // Chuyển đổi giao diện Đăng Nhập / Đăng Ký
@@ -637,14 +624,6 @@
             capNhatThanhHanMuc(window.duLieuSnapshotQuocTe); 
             capNhatToanBoGiaoDien(window.duLieuSnapshotQuocTe);
         }
-        // ➕ THÊM ĐOẠN NÀY VÀO CUỐI HÀM:
-    const oChonNgay = document.getElementById('select-ngay-chu-ky');
-    if (oChonNgay) {
-        const ngayHienTai = oChonNgay.value;
-        const thangMoi = window.thoiGianDangXem.getMonth() + 1;
-        const namMoi = window.thoiGianDangXem.getFullYear();
-        capNhatHienThiGhiChuChuKy(ngayHienTai, thangMoi, namMoi);
-    }
     } 
 
     function capNhatThanhHanMuc(docs) {
