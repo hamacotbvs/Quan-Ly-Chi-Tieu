@@ -757,7 +757,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    top: 30 // Khoảng trống vừa đủ cho hàng chú thích ngang
+                    top: 35 // Tăng nhẹ khoảng trống đỉnh để dòng chú thích mới đứng thoải mái
                 }
             },
             plugins: {
@@ -775,7 +775,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 },
                 y: {
                     beginAtZero: true,
-                    grace: '20%', // 🔑 Tự động tạo thêm 20% khoảng trống trên đỉnh để số không chạm trần
+                    grace: '20%', 
                     ticks: {
                         callback: function(value) { 
                             return (value / 1000000).toFixed(0) + 'tr'; 
@@ -790,38 +790,52 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 const { ctx } = chart;
                 ctx.save();
                 
-                // 🔑 1. VẼ CHÚ THÍCH HÀNG NGANG CĂN GIỮA TRÊN CÙNG (Dưới tiêu đề)
+                // 🔑 1. VẼ CỤM CHÚ THÍCH HÀNG NGANG: Ô MÀU + CHỮ VIẾT RÕ RÀNG
                 ctx.textBaseline = 'middle';
-                ctx.font = 'bold 12px sans-serif';
+                ctx.font = 'bold 11px sans-serif';
                 
-                const txtNS = 'NS';
-                const txtChi = 'Chi';
-                const txtCon = 'Còn';
+                const txtNS = 'Ngân sách';
+                const txtChi = 'Chi tiêu';
+                const txtCon = 'Còn lại';
                 
+                // Đo độ rộng thực tế của chữ để tính toán căn giữa chuẩn xác
                 const wNS = ctx.measureText(txtNS).width;
                 const wChi = ctx.measureText(txtChi).width;
                 const wCon = ctx.measureText(txtCon).width;
                 
-                const khoangCachChu = 25; // Khoảng cách giữa các chữ chú thích
-                const tongChieuRong = wNS + wChi + wCon + (khoangCachChu * 2);
+                const boxSize = 10;        // Kích thước ô vuông màu
+                const boxGap = 5;          // Khoảng cách từ ô vuông đến chữ đi kèm
+                const khoangCachCum = 20;  // Khoảng cách giữa các cụm (Cụm Ngân sách <-> Cụm Chi tiêu)
                 
-                let toaDoXChay = (chart.width - tongChieuRong) / 2;
-                const toaDoYChuan = 12; // Đặt sát mép trên của canvas
+                // Tổng chiều rộng của toàn bộ dải chú thích
+                const tongChieuRong = (boxSize + boxGap) * 3 + wNS + wChi + wCon + (khoangCachCum * 2);
+                
+                let toaDoXChay = (chart.width - tongChieuRong) / 2; // Điểm bắt đầu vẽ để nằm chính giữa
+                const toaDoYChuan = 12; // Vị trí nằm ngay dưới chữ Tiêu đề biểu đồ
                 
                 ctx.textAlign = 'left';
                 
-                // Vẽ chữ NS (Xanh)
-                ctx.fillStyle = '#3498db';
+                // --- Vẽ cụm 1: Ngân sách ---
+                ctx.fillStyle = '#3498db'; // Màu xanh
+                ctx.fillRect(toaDoXChay, toaDoYChuan - boxSize / 2, boxSize, boxSize);
+                toaDoXChay += boxSize + boxGap;
+                ctx.fillStyle = '#333333'; // Chữ màu tối cho dễ đọc
                 ctx.fillText(txtNS, toaDoXChay, toaDoYChuan);
-                toaDoXChay += wNS + khoangCachChu;
+                toaDoXChay += wNS + khoangCachCum;
                 
-                // Vẽ chữ Chi (Đỏ)
-                ctx.fillStyle = '#e74c3c';
+                // --- Vẽ cụm 2: Chi tiêu ---
+                ctx.fillStyle = '#e74c3c'; // Màu đỏ
+                ctx.fillRect(toaDoXChay, toaDoYChuan - boxSize / 2, boxSize, boxSize);
+                toaDoXChay += boxSize + boxGap;
+                ctx.fillStyle = '#333333';
                 ctx.fillText(txtChi, toaDoXChay, toaDoYChuan);
-                toaDoXChay += wChi + khoangCachChu;
+                toaDoXChay += wChi + khoangCachCum;
                 
-                // Vẽ chữ Còn (Vàng)
-                ctx.fillStyle = '#f1c40f';
+                // --- Vẽ cụm 3: Còn lại ---
+                ctx.fillStyle = '#f1c40f'; // Màu vàng
+                ctx.fillRect(toaDoXChay, toaDoYChuan - boxSize / 2, boxSize, boxSize);
+                toaDoXChay += boxSize + boxGap;
+                ctx.fillStyle = '#333333';
                 ctx.fillText(txtCon, toaDoXChay, toaDoYChuan);
 
                 // -------------------------------------------------------------
