@@ -303,6 +303,7 @@
     window.boSuoTapHanMuc = {}; // Thay vì localStorage, biến này sẽ được đồng bộ từ Firebase
     let checkKhoiTaoLanDau = true;
     let bieuDoInstance = null; // Biến giữ trạng thái biểu đồ tránh trùng lặp canvas
+    let bieuDoBaoCaoInstance = null; // ➕ THÊM MỚI dòng này để quản lý riêng biểu đồ tab Báo cáo
 
     // Hàm tính toán mốc thời gian chu kỳ tính toán
     function layRangeChuKy(anchorDate) {
@@ -643,6 +644,233 @@
         capNhatBieuDoBaoCaoNam(docs); // 🔥 CHÈN DÒNG NÀY VÀO ĐÂY: Để cứ có thay đổi hoặc chuyển tháng/năm là biểu đồ tự làm mới
     }
     window.capNhatChuHienThiThang();
+    // BIỂU ĐỒ NGÂN SÁCH THU CHI 12 THÁNG
+// Hàm xử lý gom dữ liệu 12 tháng theo CHU KỲ, vẽ biểu đồ đè lồng nhau và đường CÒN LẠI (Màu vàng, không chấm)
+function capNhatBieuDoBaoCaoNam(docs) {
+    const ctx = document.getElementById('bieuDoNganSach');
+    if (!ctx) return;
+
+    const namDangXem = window.thoiGianDangXem.getFullYear();
+    
+    const txtTieuDeBc = document.getElementById('tieu-de-bieu-do');
+    if (txtTieuDeBc) txtTieuDeBc.innerText = `Biểu đồ Ngân sách & Chi tiêu năm ${namDangXem}`;
+
+    const mangDaChiThucTe = Array(12).fill(0);
+    
+    docs.forEach(docItem => {
+        const data = docItem.data();
+        if (data.loai === 'chi' && data.thoiGian) {
+            const thoiGianMoc = parseChuoiThoiGian(data.thoiGian);
+            for (let m = 0; m < 12; m++) {
+                const ngayDaiDienThang = new Date(namDangXem, m, 1);
+                const chuKyMoc = layRangeChuKy(ngayDaiDienThang);
+                if (thoiGianMoc >= chuKyMoc.tuNgay && thoiGianMoc <= chuKyMoc.denNgay) {
+                    mangDaChiThucTe[m] += parseFloat(data.soTien) || 0;
+                    break; 
+                }
+            }
+        }
+    });
+
+    const mangMax = Array(12).fill(0);       
+    const mangMin = Array(12).fill(0);       
+    const mangConLai = Array(12).fill(0); 
+    const mangMauMax = Array(12).fill('');   
+    const mangMauMin = Array(12).fill('');   
+
+    for (let m = 0; m < 12; m++) {
+        const chuoiThangNam = `${namDangXem}-${String(m + 1).padStart(2, '0')}`;
+        const hanMuc = window.boSuoTapHanMuc[chuoiThangNam] || 0;
+        const daChi = mangDaChiThucTe[m];
+
+        mangConLai[m] = hanMuc - daChi; 
+
+        if (hanMuc >= daChi) {
+            mangMax[m] = hanMuc;
+            mangMin[m] = daChi;
+            mangMauMax[m] = '#3498db'; 
+            mangMauMin[m] = '#e74c3c'; 
+        } else {
+            mangMax[m] = daChi;
+            mangMin[m] = hanMuc;
+            mangMauMax[m] = '#e74c3c'; 
+            mangMauMin[m] = '#3498db'; 
+        }
+    }
+
+    if (bieuDoInstance) {
+        bieuDoInstance.destroy();
+    }
+
+    bieuDoInstance = new Chart(ctx, {
+        type: 'bar', 
+        data: {
+            labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            datasets: [
+                {
+                    type: 'line', 
+                    label: 'Còn lại',
+                    data: mangConLai,
+                    borderColor: '#f1c40f',    
+                    backgroundColor: '#f1c40f',
+                    borderWidth: 1, 
+                    tension: 0.2, 
+                    pointRadius: 0,            
+                    pointHoverRadius: 0,       
+                    fill: false,
+                    grouped: false,
+                    order: 1 
+                },
+                {
+                    label: 'Thanh Trước',
+                    data: mangMin,
+                    backgroundColor: mangMauMin,
+                    barPercentage: 0.55, 
+                    categoryPercentage: 0.8,
+                    borderRadius: 4,
+                    grouped: false, 
+                    order: 2
+                },
+                {
+                    label: 'Thanh Sau',
+                    data: mangMax,
+                    backgroundColor: mangMauMax,
+                    barPercentage: 0.85, 
+                    categoryPercentage: 0.8, 
+                    borderRadius: 4,
+                    grouped: false, 
+                    order: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    top: 35 // Tăng nhẹ khoảng trống đỉnh để dòng chú thích mới đứng thoải mái
+                }
+            },
+            plugins: {
+                legend: { display: false }, 
+                tooltip: { enabled: false } 
+            },
+            scales: {
+                x: { 
+                    stacked: false,
+                    ticks: {
+                        maxRotation: 0,
+                        minRotation: 0,
+                        autoSkip: false 
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grace: '20%', 
+                    ticks: {
+                        callback: function(value) { 
+                            return (value / 1000000).toFixed(0) + 'tr'; 
+                        }
+                    }
+                }
+            }
+        },
+        plugins: [{
+            id: 'hienChuDauCot',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                ctx.save();
+                
+                // 🔑 1. VẼ CỤM CHÚ THÍCH HÀNG NGANG: Ô MÀU + CHỮ VIẾT RÕ RÀNG
+                ctx.textBaseline = 'middle';
+                ctx.font = 'bold 11px sans-serif';
+                
+                const txtNS = 'Ngân sách';
+                const txtChi = 'Chi tiêu';
+                const txtCon = 'Còn lại';
+                
+                // Đo độ rộng thực tế của chữ để tính toán căn giữa chuẩn xác
+                const wNS = ctx.measureText(txtNS).width;
+                const wChi = ctx.measureText(txtChi).width;
+                const wCon = ctx.measureText(txtCon).width;
+                
+                const boxSize = 10;        // Kích thước ô vuông màu
+                const boxGap = 5;          // Khoảng cách từ ô vuông đến chữ đi kèm
+                const khoangCachCum = 20;  // Khoảng cách giữa các cụm (Cụm Ngân sách <-> Cụm Chi tiêu)
+                
+                // Tổng chiều rộng của toàn bộ dải chú thích
+                const tongChieuRong = (boxSize + boxGap) * 3 + wNS + wChi + wCon + (khoangCachCum * 2);
+                
+                let toaDoXChay = (chart.width - tongChieuRong) / 2; // Điểm bắt đầu vẽ để nằm chính giữa
+                const toaDoYChuan = 12; // Vị trí nằm ngay dưới chữ Tiêu đề biểu đồ
+                
+                ctx.textAlign = 'left';
+                
+                // --- Vẽ cụm 1: Ngân sách ---
+                ctx.fillStyle = '#3498db'; // Màu xanh
+                ctx.fillRect(toaDoXChay, toaDoYChuan - boxSize / 2, boxSize, boxSize);
+                toaDoXChay += boxSize + boxGap;
+                ctx.fillStyle = '#333333'; // Chữ màu tối cho dễ đọc
+                ctx.fillText(txtNS, toaDoXChay, toaDoYChuan);
+                toaDoXChay += wNS + khoangCachCum;
+                
+                // --- Vẽ cụm 2: Chi tiêu ---
+                ctx.fillStyle = '#e74c3c'; // Màu đỏ
+                ctx.fillRect(toaDoXChay, toaDoYChuan - boxSize / 2, boxSize, boxSize);
+                toaDoXChay += boxSize + boxGap;
+                ctx.fillStyle = '#333333';
+                ctx.fillText(txtChi, toaDoXChay, toaDoYChuan);
+                toaDoXChay += wChi + khoangCachCum;
+                
+                // --- Vẽ cụm 3: Còn lại ---
+                ctx.fillStyle = '#f1c40f'; // Màu vàng
+                ctx.fillRect(toaDoXChay, toaDoYChuan - boxSize / 2, boxSize, boxSize);
+                toaDoXChay += boxSize + boxGap;
+                ctx.fillStyle = '#333333';
+                ctx.fillText(txtCon, toaDoXChay, toaDoYChuan);
+
+                // -------------------------------------------------------------
+                // 2. VẼ CÁC SỐ TRÊN ĐẦU CỘT NHƯ CŨ
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 9px sans-serif';
+                
+                const meta = chart.getDatasetMeta(2);
+                
+                for (let i = 0; i < 12; i++) {
+                    const ns = window.boSuoTapHanMuc[`${namDangXem}-${String(i + 1).padStart(2, '0')}`] || 0;
+                    const ct = mangDaChiThucTe[i];
+                    const cl = mangConLai[i];
+                    
+                    if (ns === 0 && ct === 0) continue;
+                    
+                    const bar = meta.data[i];
+                    if (!bar) continue;
+                    
+                    const xPos = bar.x;
+                    let yPos = bar.y - 6; 
+                    
+                    const chuoiNs = (ns / 1000000).toFixed(1).replace('.', ',');
+                    const chuoiCt = (ct / 1000000).toFixed(1).replace('.', ',');
+                    const chuoiCl = (Math.abs(cl) / 1000000).toFixed(1).replace('.', ',');
+                    const dauCl = cl >= 0 ? '' : '-';
+                    
+                    // Vẽ dòng 3: Còn lại (Vàng)
+                    ctx.fillStyle = '#d4ac0d';
+                    ctx.fillText(dauCl + chuoiCl, xPos, yPos);
+                    
+                    // Vẽ dòng 2: Chi tiêu (Đỏ)
+                    ctx.fillStyle = '#e74c3c';
+                    ctx.fillText(chuoiCt, xPos, yPos - 11);
+                    
+                    // Vẽ dòng 1: Ngân sách (Xanh)
+                    ctx.fillStyle = '#3498db';
+                    ctx.fillText(chuoiNs, xPos, yPos - 22);
+                }
+                ctx.restore();
+            }
+        }]
+    });
+}
 
     // C.2 TAB LỊCH SỬ & ĐỔ DỮ LIỆU REALTIME
     const idHienThiSoDu = document.getElementById('so-du');
