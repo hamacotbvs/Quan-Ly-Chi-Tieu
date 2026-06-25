@@ -757,10 +757,9 @@ function capNhatBieuDoBaoCaoNam(docs) {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    top: 35 // Chừa khoảng trống phía trên vừa đủ cho 3 dòng chữ
+                    top: 30 // Khoảng trống vừa đủ cho hàng chú thích ngang
                 }
             },
-            // Đã xóa onClick và phần cập nhật thanh thông tin cũ
             plugins: {
                 legend: { display: false }, 
                 tooltip: { enabled: false } 
@@ -776,6 +775,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 },
                 y: {
                     beginAtZero: true,
+                    grace: '20%', // 🔑 Tự động tạo thêm 20% khoảng trống trên đỉnh để số không chạm trần
                     ticks: {
                         callback: function(value) { 
                             return (value / 1000000).toFixed(0) + 'tr'; 
@@ -787,21 +787,42 @@ function capNhatBieuDoBaoCaoNam(docs) {
         plugins: [{
             id: 'hienChuDauCot',
             afterDatasetsDraw(chart) {
-                const { ctx, chartArea: { left, top } } = chart;
+                const { ctx } = chart;
                 ctx.save();
                 
-                // 🔑 1. VẼ CHÚ THÍCH TRỤC TRÁI (Nằm ngay góc trên cùng bên trái của grid)
-                ctx.textAlign = 'right';
-                ctx.font = 'bold 10px sans-serif';
+                // 🔑 1. VẼ CHÚ THÍCH HÀNG NGANG CĂN GIỮA TRÊN CÙNG (Dưới tiêu đề)
+                ctx.textBaseline = 'middle';
+                ctx.font = 'bold 12px sans-serif';
                 
-                ctx.fillStyle = '#3498db'; // Màu xanh - Ngân sách
-                ctx.fillText('NS', left - 8, top - 24);
+                const txtNS = 'NS';
+                const txtChi = 'Chi';
+                const txtCon = 'Còn';
                 
-                ctx.fillStyle = '#e74c3c'; // Màu đỏ - Chi tiêu
-                ctx.fillText('Chi', left - 8, top - 13);
+                const wNS = ctx.measureText(txtNS).width;
+                const wChi = ctx.measureText(txtChi).width;
+                const wCon = ctx.measureText(txtCon).width;
                 
-                ctx.fillStyle = '#f1c40f'; // Màu vàng - Còn lại
-                ctx.fillText('Còn', left - 8, top - 2);
+                const khoangCachChu = 25; // Khoảng cách giữa các chữ chú thích
+                const tongChieuRong = wNS + wChi + wCon + (khoangCachChu * 2);
+                
+                let toaDoXChay = (chart.width - tongChieuRong) / 2;
+                const toaDoYChuan = 12; // Đặt sát mép trên của canvas
+                
+                ctx.textAlign = 'left';
+                
+                // Vẽ chữ NS (Xanh)
+                ctx.fillStyle = '#3498db';
+                ctx.fillText(txtNS, toaDoXChay, toaDoYChuan);
+                toaDoXChay += wNS + khoangCachChu;
+                
+                // Vẽ chữ Chi (Đỏ)
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillText(txtChi, toaDoXChay, toaDoYChuan);
+                toaDoXChay += wChi + khoangCachChu;
+                
+                // Vẽ chữ Còn (Vàng)
+                ctx.fillStyle = '#f1c40f';
+                ctx.fillText(txtCon, toaDoXChay, toaDoYChuan);
 
                 // -------------------------------------------------------------
                 // 2. VẼ CÁC SỐ TRÊN ĐẦU CỘT NHƯ CŨ
