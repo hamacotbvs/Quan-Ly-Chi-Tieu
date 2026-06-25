@@ -394,7 +394,11 @@
                     window.boSuoTapHanMuc = dataCH.hanMucThang || {};
                     
                     const selectNgay = document.getElementById('select-ngay-chu-ky');
-                    if (selectNgay) selectNgay.value = window.ngayChotChuKy;
+                    if (selectNgay) {selectNgay.value = window.ngayChotChuKy;
+                        const thangHienTai = window.thoiGianDangXem.getMonth() + 1;
+                        const namHienTai = window.thoiGianDangXem.getFullYear();
+                        capNhatHienThiGhiChuChuKy(window.ngayChotChuKy, thangHienTai, namHienTai);
+                    }
                 }
                 
                 // Tự động nhảy sang chu kỳ tháng tiếp theo nếu vượt quá ngày chốt
