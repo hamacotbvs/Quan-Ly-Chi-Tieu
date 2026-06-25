@@ -33,7 +33,7 @@
             .KHUNG-CHUA-APP {background-color: #f7f9fa;/* Nền APP là màu xám */width: 100%;max-width: 450px;/* Chiều rộng tối đa 450px (chuẩn điện thoại) */min-height: 100vh;/* Chiều cao tối thiểu 100% màn hình thiết bị */
                 box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tạo viền bóng mờ */position: relative;padding-bottom: 75px;/* Đẩy nội dung lên 75px để không bị thanh menu đáy đè lên */box-sizing: border-box;}
             /* 2.3 Quản lý ẩn/hiện các Tab nội dung */
-            .tab-menu-duoi {display: none; /* Ẩn mặc định:các tab(Home, Báo cáo...) */padding: 20px; /* Tạo khoảng cách từ rìa ứng dụng vào nội dung cho dễ nhìn */}
+            .tab-menu-duoi {display: none; /* Ẩn mặc định:các tab(Home, Báo cáo...) */padding: 5px 20px 20px 20px; /* Tạo khoảng cách từ rìa ứng dụng vào nội dung cho dễ nhìn */}
             .tab-menu-duoi.active {display: block; /* Chỉ tab nào được gắn thêm class "active" mới được hiện ra */}
     /* A.2 ĐỊNH DẠNG TỪNG TRANG */
         /* ==========================================================================
@@ -41,7 +41,7 @@
         ========================================================================== */
             /* 1.1 THANH HẠN MỨC CHI TIÊU TRONG THÁNG */
                 /* Khung bọc bên ngoài của vùng hạn mức */
-                .khung-han-muc-chi-tieu {margin-top: 15px;padding: 15px;background-color: #ffffff;border-radius: 12px;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);cursor: pointer;user-select: none;}
+                .khung-han-muc-chi-tieu {margin-top: 5px;padding: 15px;background-color: #ffffff;border-radius: 12px;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);cursor: pointer;user-select: none;}
                 /* Hàng tiêu đề trên cùng: Đẩy tiêu đề sang trái, cụm tháng sang phải */
                 .han-muc-hang-dau {display: flex;justify-content: space-between;align-items: center;margin-bottom: 12px;}
                 .han-muc-tieu-de {font-weight: bold;font-size: 14px;color: #333333;}
@@ -65,7 +65,7 @@
         II. TAB 2: LỊCH SỬ
         ========================================================================== */        
             /* 2.1 định dạng khung lịch sử */
-            .danh-sach-lich-su {margin-top: 20px;background-color: #ffffff;border-radius: 14px;padding: 16px;box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);border: 1px solid #edf2f4;}
+            .danh-sach-lich-su {margin-top: 5px;background-color: #ffffff;border-radius: 14px;padding: 16px;box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);border: 1px solid #edf2f4;}
             /* 2.2 định dạng phần tiêu đề lịch sử */
             .tieu-de-khung {font-size: 16px;color: #7f8c8d;border-bottom: 1px solid #edf2f4;padding-bottom: 10px;margin-bottom: 5px;font-weight: 600;}      
             /* 2.3 Định dạng từng dòng lịch sử (Cấu trúc Vuốt Chạm Swipe-to-Action) */
@@ -244,7 +244,7 @@
         <button id="nut-save" class="nut-bam-save">Cập nhật ví</button> </div>
 
     <div id="tab-report" class="tab-menu-duoi">
-        <div class="tieu-de-khung" style="margin-top: 10px;">Tổng quan tài chính cá nhân</div>
+        <div class="tieu-de-khung">Tổng quan tài chính cá nhân</div>
         <div class="khung-so-du-hien-tai"> 
             <div class="nhan">Số dư hiện tại</div> 
             <div class="so-tien-du-hien-tai"> <span id="so-du">0</span> </div> </div>
@@ -256,7 +256,7 @@
     </div>
 
     <div id="tab-tai-khoan" class="tab-menu-duoi">
-        <div class="tieu-de-khung" style="margin-top: 10px;">Thông tin cá nhân</div>
+        <div class="tieu-de-khung">Thông tin cá nhân</div>
         <div style="padding: 20px; text-align: center; background: white; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <div style="font-size: 45px; margin-bottom: 10px;">👤</div>
             <h3 style="margin: 5px 0;" id="ten-user-hien-thi">Đang tải...</h3>
