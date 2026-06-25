@@ -255,23 +255,28 @@
             <div class="vung-canvas-bieu-do"> <canvas id="bieuDoBaoCaoTaiChinh"></canvas> </div> </div>
     </div>
 
-    <div id="tab-tai-khoan" class="tab-menu-duoi">
-        <div class="tieu-de-khung">Thông tin cá nhân</div>
-        <div style="padding: 20px; text-align: center; background: white; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <div style="font-size: 45px; margin-bottom: 10px;">👤</div>
-            <h3 style="margin: 5px 0;" id="ten-user-hien-thi">Đang tải...</h3>
-            <p style="color: #777; font-size: 13px; margin: 5px 0;" id="email-user-hien-thi">Chưa đăng nhập</p></div> 
-<div id="vung-cau-hinh-chu-ky" style="margin-top: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 12px; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-    <label style="font-weight: 600; display: block; margin-bottom: 6px; color: #2c3e50; font-size: 14px;">📅 Ngày kết thúc chu kỳ tính toán:</label>
-    <div style="display: flex; gap: 10px;">
-        <select id="select-ngay-chu-ky" style="padding: 10px; border-radius: 8px; border: 1px solid #ccd1d1; flex: 1; font-size: 14px; outline: none; background: #fff;"></select>
-        <button id="nut-luu-chu-ky" style="padding: 10px 18px; background-color: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s;">Save</button>
-    </div>
-    <small style="color: #7f8c8d; display: block; margin-top: 6px; font-size: 12px; line-height: 1.4;">
+<div id="tab-tai-khoan" class="tab-menu-duoi">
+    <div class="tieu-de-khung">Thông tin cá nhân</div>
+    
+    <div style="padding: 20px; text-align: center; background: white; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <div style="font-size: 45px; margin-bottom: 10px;">👤</div>
+        <h3 style="margin: 5px 0;" id="ten-user-hien-thi">Đang tải...</h3>
+        <p style="color: #777; font-size: 13px; margin: 5px 0; margin-bottom: 15px;" id="email-user-hien-thi">Chưa đăng nhập</p>
+        
+        <button id="nut-dang-xuat-app" style="padding: 10px; background-color: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; width: 100%; transition: background 0.2s;">🔒 Đăng xuất</button>
+    </div> 
+
+    <div id="vung-cau-hinh-chu-ky" style="padding: 20px; background: white; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <label style="font-weight: 600; display: block; margin-bottom: 8px; color: #2c3e50; font-size: 14px;">📅 Ngày kết thúc chu kỳ tính toán:</label>
+        <div style="display: flex; gap: 10px;">
+            <select id="select-ngay-chu-ky" style="padding: 10px; border-radius: 8px; border: 1px solid #ccd1d1; flex: 1; font-size: 14px; outline: none; background: #fff;"></select>
+            <button id="nut-luu-chu-ky" style="padding: 10px 18px; background-color: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s;">Save</button>
+        </div>
+        <small style="color: #7f8c8d; display: block; margin-top: 8px; font-size: 12px; line-height: 1.4;">
         *Ví dụ: Nếu chọn ngày 24, khi xem Tháng 6, hệ thống sẽ gom nhóm tính toán toàn bộ thu/chi từ ngày 25 tháng 5 đến hết ngày 24 tháng 6.*
-    </small> 
-</div>
+        </small> 
     </div>
+</div>
 
     <nav class="menu-day-app menu dưới">
         <button class="nut-tab active" data-target="home">
