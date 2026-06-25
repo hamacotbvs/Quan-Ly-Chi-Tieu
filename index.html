@@ -800,11 +800,17 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 tooltip: { enabled: false } 
             },
             scales: {
-                x: { stacked: false },
+                x: { 
+                    stacked: false,
+                    // 🔑 ĐÃ CẬP NHẬT: Khóa góc quay bằng 0 để chữ T1, T2 luôn nằm thẳng đứng
+                    ticks: {
+                        maxRotation: 0,
+                        minRotation: 0
+                    }
+                },
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        // 🔑 ĐÃ SỬA: Chuyển sang hiển thị số tròn (toFixed(0)) và viết liền chữ tr
                         callback: function(value) { 
                             return (value / 1000000).toFixed(0) + 'tr'; 
                         }
