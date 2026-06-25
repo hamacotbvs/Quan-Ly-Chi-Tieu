@@ -58,7 +58,7 @@
                 #goi-y-han-muc {font-size: 11px;color: #999999;}
                 #chi-tieu-tren-han-muc {font-size: 12px;font-weight: 600;color: #444444;}
             /* 1.2 Giao diện khung biểu đồ năm */
-                .khung-bieu-do-nam {background: #ffffff; border-radius: 12px; padding: 15px; margin: 20px 0px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);}
+                .khung-bieu-do-nam {background: #ffffff; border-radius: 12px; padding: 15px; margin: 20px 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);}
                 #tieu-de-bieu-do {font-size: 15px; font-weight: 600; color: #2c3e50; margin-top: 0; margin-bottom: 15px; text-align: center;}
                 .vung-canvas-bieu-do {position: relative; height: 260px; width: 100%;}
         /* ==========================================================================
@@ -204,9 +204,10 @@
             </div>    
             <div class="han-muc-thanh-nen"> <div id="thanh-phat-trien-han-muc"></div></div>    
             <div class="han-muc-hang-duoi"> <div id="goi-y-han-muc">💡 Bấm vào đây để cài đặt hạn mức</div> <span id="chi-tieu-tren-han-muc">0 / Chưa nhập hạn mức</span> </div> </div>
-        <div id="khung-bao-bieu-do" style="background: #ffffff; border-radius: 12px; padding: 15px; margin: 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); box-sizing: border-box;">
+        <div id="khung-bao-bieu-do" style="background: #ffffff; border-radius: 16px; padding: 16px 16px 24px 16px; margin: 12px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); box-sizing: border-box;">
             <div id="tieu-de-bieu-do" style="font-size: 15px; font-weight: bold; text-align: center; margin-bottom: 12px; color: #1e293b;">Biểu đồ Ngân sách & Chi tiêu năm 2026</div>
-                <div style="position: relative; height: 260px; width: 100%;"> <canvas id="bieuDoNganSach"></canvas> </div> </div>
+                <div id="thanhThongTinBieuDo" style="margin-bottom: 12px;"></div>
+                <div style="position: relative; height: 260px; width: 100%;"> <canvas id="bieuDoNganSach"></canvas> </div> </div> </div>
     <div id="tab-lich-su" class="tab-menu-duoi">
         <div class="khung-so-du-hien-tai"> 
             <div class="nhan">Số dư hiện tại</div> 
