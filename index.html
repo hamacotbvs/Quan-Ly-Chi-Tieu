@@ -436,20 +436,27 @@ onAuthStateChanged(auth, async (user) => {
             }
         });
 
-    // 🔥 SỬA LẠI ĐOẠN ẨN LOADING NÀY ĐỂ TẠO ĐỘ TRỄ VÀ HIỆU ỨNG MỜ DẦN MƯỢT MÀ:
+    } else {
+        // 🟢 ĐOẠN NÀY BỊ THIẾU TRONG CODE CỦA BẠN - ĐÃ BÙ LẠI CHUẨN XÁC:
+        if (manHinhAuth) manHinhAuth.style.display = 'flex';
+        if (khungAppChinh) khungAppChinh.style.display = 'none';
+        if (huyTheoDoiThuChi) { huyTheoDoiThuChi(); huyTheoDoiThuChi = null; } 
+        if (huyTheoDoiCauHinh) { huyTheoDoiCauHinh(); huyTheoDoiCauHinh = null; } 
+    } 
+
+    // 🔥 ẨN LOADING CÓ ĐỘ TRỄ (Đặt đúng vị trí kết thúc kiểm tra trạng thái login)
     if (manHinhLoading) {
-        // Ép giữ màn hình chờ ít nhất 400ms để người dùng kịp cảm nhận và app load xong biểu đồ ngầm
         setTimeout(() => {
             manHinhLoading.style.opacity = '0';
             manHinhLoading.style.transition = 'opacity 0.3s ease'; // Hiệu ứng mờ dần trong 0.3 giây
             
-            // Sau khi mờ hẳn thì mới chính thức ẩn display đi để không che khuất app
+            // Sau khi mờ hẳn thì mới chính thức ẩn hẳn display
             setTimeout(() => {
                 manHinhLoading.style.display = 'none';
             }, 300);
         }, 400); 
     }
-}; // Ký tự đóng hàm onAuthStateChanged
+}); // Ký tự đóng chuẩn hàm onAuthStateChanged
 
 // Lưu ngày chốt chu kỳ
 const selectNgayChuKy = document.getElementById('select-ngay-chu-ky');
