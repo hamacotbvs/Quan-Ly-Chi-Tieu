@@ -303,7 +303,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, deleteDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updateProfile, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     // Tạo danh sách từ ngày 1 đến ngày 31 cho thẻ select
     const selectChuKy = document.getElementById('select-ngay-chu-ky');
@@ -351,6 +351,14 @@
     const app = initializeApp(firebaseConfig); 
     const db = getFirestore(app);
     const auth = getAuth(app); 
+    // 🔥 THÊM ĐOẠN NÀY VÀO NGAY ĐÂY: Ép hệ thống lưu tài khoản vào bộ nhớ máy vĩnh viễn
+    setPersistence(auth, browserLocalPersistence)
+        .then(() => {
+            console.log("Đã cấu hình duy trì đăng nhập lâu dài thành công.");
+        })
+        .catch((error) => {
+            console.error("Lỗi thiết lập duy trì đăng nhập:", error);
+        });
     const datathuchi = collection(db, "giao_dich_business");
     
     let huyTheoDoiThuChi = null;
