@@ -1367,6 +1367,23 @@ function capNhatBieuDoTabBaoCaoTaiChinh(docs) {
         }]
     });
 }
+    // SỬA LỖI KẸT MÀN HÌNH - TỰ ĐỘNG HẠ KHUNG HÌNH VỀ VỊ TRÍ CŨ KHI ẨN BÀN PHÍM
+    document.querySelectorAll('input, select, textarea').forEach(element => {
+        element.addEventListener('blur', () => {
+            setTimeout(() => {
+                // Ép iOS vẽ lại toàn bộ body bằng cách thay đổi tạm thời overflow
+                document.body.style.overflow = 'hidden';
+                
+                // Cuộn về 0 để reset
+                window.scrollTo(0, 0);
+                
+                // Trả lại trạng thái cũ ngay lập tức
+                setTimeout(() => {
+                    document.body.style.overflow = '';
+                }, 50);
+            }, 150); // Đợi bàn phím đóng xong mới chạy
+        });
+    });
 
 </script>
 
