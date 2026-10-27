@@ -831,7 +831,7 @@ function capNhatBieuDoBaoCaoNam(docs) {
                     const phutSys = String(now.getMinutes()).padStart(2, '0');
                     const giaySys = String(now.getSeconds()).padStart(2, '0');
                     const chuoiHeThong = `${namSys}-${thangSys}-${ngaySys} ${gioSys}:${phutSys}:${giaySys}`;
-                    let customDocId = `${tenUserHienTai}-${loai}-${chuoiThoiGianGop}-${chuoiHeThong}`.toUpperCase();
+                    let customDocId = `${tenUserHienTai}-${loai}-${chuoiThoiGianGop} ${chuoiHeThong}`.toUpperCase();
                     await setDoc(doc(db, "giao_dich_business", customDocId), duLieuGiaoDich);
                 }
 
