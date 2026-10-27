@@ -77,13 +77,9 @@
 
 // Lắng nghe trạng thái đăng nhập hệ thống
 onAuthStateChanged(auth, async (user) => {
-    // ➕ Lấy thẻ màn hình chờ (Loading) ra xử lý trước
-    const manHinhLoading = document.getElementById('man-hinh-loading');
-
     if (user) {
         if (manHinhAuth) manHinhAuth.style.display = 'none';
         if (khungAppChinh) khungAppChinh.style.display = 'block';
-        
         // ➕ Ép màn hình trả về vị trí gốc ban đầu (Hủy mọi vết phóng to lỗi khi nhấn ô nhập liệu cũ)
         window.scrollTo(0, 0);
         
@@ -137,18 +133,6 @@ onAuthStateChanged(auth, async (user) => {
         if (huyTheoDoiCauHinh) { huyTheoDoiCauHinh(); huyTheoDoiCauHinh = null; } 
     } 
 
-    // 🔥 ẨN LOADING CÓ ĐỘ TRỄ (Đặt đúng vị trí kết thúc kiểm tra trạng thái login)
-    if (manHinhLoading) {
-        setTimeout(() => {
-            manHinhLoading.style.opacity = '0';
-            manHinhLoading.style.transition = 'opacity 0.3s ease'; // Hiệu ứng mờ dần trong 0.3 giây
-            
-            // Sau khi mờ hẳn thì mới chính thức ẩn hẳn display
-            setTimeout(() => {
-                manHinhLoading.style.display = 'none';
-            }, 300);
-        }, 200); 
-    }
 }); // Ký tự đóng chuẩn hàm onAuthStateChanged
 
 // Lưu ngày chốt chu kỳ
