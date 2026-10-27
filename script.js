@@ -147,7 +147,7 @@ onAuthStateChanged(auth, async (user) => {
             setTimeout(() => {
                 manHinhLoading.style.display = 'none';
             }, 300);
-        }, 400); 
+        }, 200); 
     }
 }); // Ký tự đóng chuẩn hàm onAuthStateChanged
 
