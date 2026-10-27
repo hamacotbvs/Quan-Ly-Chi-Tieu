@@ -204,8 +204,8 @@ if (nutHanhDongAuth) {
                     alert("Mật khẩu nhập lại không trùng khớp!");
                     return;
                 }
-                if (password.length < 3) {
-                    alert("Mật khẩu bảo mật phải từ 3 ký tự trở lên!");
+                if (password.length < 6) {
+                    alert("Mật khẩu bảo mật phải từ 6 ký tự trở lên!");
                     return;
                 }
                 const userCredential = await createUserWithEmailAndPassword(auth, emailDinhDanh, password);
