@@ -823,7 +823,8 @@ function capNhatBieuDoBaoCaoNam(docs) {
                         idnutsave.innerText = "Cập nhật ví";
                 } else {
                     // Thêm giao dịch mới
-                    let customDocId = `${tenUserHienTai}-${loai}-${chuoiThoiGianGop}-${Date.now()}`.toUpperCase();
+                    let thoiGianSach = chuoiThoiGianGop.replace(/[- :]/g, ''); // Biến "2026-10-27 21:14" thành "202610272114"
+                    let customDocId = `${tenUserHienTai}-${loai}-${thoiGianSach}-${Date.now()}`.toUpperCase();
                     await setDoc(doc(db, "giao_dich_business", customDocId), duLieuGiaoDich);
                 }
 
