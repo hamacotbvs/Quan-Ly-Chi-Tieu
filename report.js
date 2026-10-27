@@ -1,14 +1,14 @@
-import { db, auth, layRangeChuKy, parseChuoiThoiGian } from './auth-config.js';
-import { doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { db, auth, datathuchi, layRangeChuKy, parseChuoiThoiGian } from './config.js';
+import { doc, setDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { capNhatToanBoGiaoDien } from './transaction.js';
 
-let huyTheoDoiThuChi = null;
-let huyTheoDoiCauHinh = null;
 let checkKhoiTaoLanDau = true;
 let bieuDoInstance = null; 
 let bieuDoBaoCaoInstance = null; 
+let huyTheoDoiThuChi = null;
+let huyTheoDoiCauHinh = null;
 
-// Lắng nghe trạng thái đăng nhập hệ thống
 onAuthStateChanged(auth, async (user) => {
     const manHinhAuth = document.getElementById('man-hinh-auth');
     const khungAppChinh = document.getElementById('khung-chua-app-chinh');
@@ -31,7 +31,6 @@ onAuthStateChanged(auth, async (user) => {
                 const dataCH = docSnap.data();
                 window.ngayChotChuKy = dataCH.ngayChot || 25;
                 window.boSuoTapHanMuc = dataCH.hanMucThang || {};
-                
                 const selectNgay = document.getElementById('select-ngay-chu-ky');
                 if (selectNgay) selectNgay.value = window.ngayChotChuKy;
             }
@@ -72,7 +71,6 @@ function kichHoatHeThongDuLieuRealtime(user) {
     });
 }
 
-// Lưu ngày chốt chu kỳ
 const selectNgayChuKy = document.getElementById('select-ngay-chu-ky');
 const nutLuuChuKy = document.getElementById('nut-luu-chu-ky');
 if (nutLuuChuKy && selectNgayChuKy) {
@@ -95,8 +93,6 @@ if (nutLuuChuKy && selectNgayChuKy) {
     }); 
 }
 
-// Xử lý nút Đăng Nhập / Đăng Ký & Quên mật khẩu
-const isLoginMode = true; 
 const authTieuDe = document.getElementById('auth-tieu-de');
 const authGhiChu = document.getElementById('auth-ghi-chu');
 const inputAuthUsername = document.getElementById('auth-username');
@@ -106,6 +102,7 @@ const inputAuthRePassword = document.getElementById('auth-re-password');
 const nutHanhDongAuth = document.getElementById('nut-hanh-dong-auth');
 const linkQuenMk = document.getElementById('link-quen-mk');
 const linkChuyenTrang = document.getElementById('link-chuyen-trang');
+let isLoginMode = true; 
 
 if (linkChuyenTrang) {
     linkChuyenTrang.addEventListener('click', (e) => {
@@ -133,10 +130,7 @@ if (nutHanhDongAuth) {
     nutHanhDongAuth.addEventListener('click', async () => {
         let userInput = inputAuthUsername.value.trim().toLowerCase().replace(/\s+/g, '');
         const password = inputAuthPassword.value;
-        if (!userInput || !password) {
-            alert("Vui lòng điền đầy đủ User và Mật khẩu!");
-            return;
-        }
+        if (!userInput || !password) { alert("Vui lòng điền đầy đủ User và Mật khẩu!"); return; }
         const emailDinhDanh = `${userInput}@quanlychitieu.phumai.vn`;
         try {
             if (isLoginMode) {
@@ -144,7 +138,7 @@ if (nutHanhDongAuth) {
             } else {
                 const rePassword = inputAuthRePassword.value;
                 if (password !== rePassword) { alert("Mật khẩu nhập lại không trùng khớp!"); return; }
-                if (password.length < 6) { alert("Mật khẩu bảo mật phải từ 6 ký tự trở lên!"); return; }
+                if (password.length < 6) { alert("Mật khẩu phải từ 6 ký tự trở lên!"); return; }
                 const userCredential = await createUserWithEmailAndPassword(auth, emailDinhDanh, password);
                 await updateProfile(userCredential.user, { displayName: userInput });
                 alert("Đăng ký tài khoản thành công!");
@@ -159,13 +153,11 @@ if (linkQuenMk) {
     linkQuenMk.addEventListener('click', async (e) => {
         e.preventDefault();
         const email = inputAuthUsername.value.trim();
-        if (!email || !email.includes('@')) { alert("Vui lòng nhập chính xác Email của bạn!"); return; }
+        if (!email || !email.includes('@')) { alert("Vui lòng nhập chính xác Email!"); return; }
         try {
             await sendPasswordResetEmail(auth, email);
             alert(`Hệ thống đã gửi liên kết đặt lại mật khẩu vào hòm thư: ${email}`);
-        } catch (error) {
-            alert("Không thể gửi email: " + error.message);
-        }
+        } catch (error) { alert("Không thể gửi email: " + error.message); }
     });
 }
 
@@ -179,7 +171,6 @@ function tichHopNutDangXuat() {
     }
 }
 
-// Nút làm mới app
 const idNutLamMoi = document.getElementById('NUT-LAM-MOI-APP');
 if (idNutLamMoi) {
     idNutLamMoi.addEventListener('click', () => {
@@ -189,7 +180,6 @@ if (idNutLamMoi) {
     });
 }
 
-// Chuyển tab
 const cacNutTab = document.querySelectorAll('.nut-tab');
 cacNutTab.forEach(nut => {
     nut.addEventListener('click', () => {
@@ -202,11 +192,6 @@ cacNutTab.forEach(nut => {
         if (vungNoiDungMucTieu) vungNoiDungMucTieu.classList.add('active'); 
     }); 
 });
-
-// Quản lý hạn mức
-const txtChu = document.getElementById('chi-tieu-tren-han-muc');
-const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
-const txtGoiY = document.getElementById('goi-y-han-muc');
 
 document.getElementById('vung-han-muc-chi-tieu')?.addEventListener('click', async () => {
     if (!auth.currentUser) { alert("Phiên đăng nhập đã hết hạn!"); return; }
@@ -246,33 +231,36 @@ function capNhatThanhHanMuc(docs) {
     const fMat = d => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
     const txtGhiChu = document.getElementById('ghi-chu-pham-vi-chu-ky');
     if (txtGhiChu) {txtGhiChu.innerText = `*Chu kỳ: Từ ngày ${fMat(chuKyMoc.tuNgay)} đến ngày ${fMat(chuKyMoc.denNgay)}.*`;}
+    
     docs.forEach(docItem => {
         const data = docItem.data(); 
         const thoiGianMoc = parseChuoiThoiGian(data.thoiGian);
         if (thoiGianMoc >= chuKyMoc.tuNgay && thoiGianMoc <= chuKyMoc.denNgay && data.loai === 'chi') {tongDaChi += parseFloat(data.soTien) || 0;}
     }); 
+
+    const txtChu = document.getElementById('chi-tieu-tren-han-muc');
+    const thanhPhanTram = document.getElementById('thanh-phat-trien-han-muc');
+    const txtGoiY = document.getElementById('goi-y-han-muc');
     let hanMucThangDangXem = window.boSuoTapHanMuc[thangDangXem] || 0;
-    if (!txtChu || !thanhPhanTram) return;
-    if (hanMucThangDangXem === 0) {
-        txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')} đ / Chưa đặt`; 
-        thanhPhanTram.style.width = '0%'; 
-        if (txtGoiY) { txtGoiY.innerText = "💡 Bấm vào đây để cài đặt hạn mức tháng"; txtGoiY.style.color = '#999999'; }
-        return;
-    }
-    let phanTram = (tongDaChi / hanMucThangDangXem) * 100; 
-    txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')}/${hanMucThangDangXem.toLocaleString('vi-VN')}đ`; 
-    thanhPhanTram.style.width = `${phanTram > 100 ? 100 : phanTram}%`;
-    if (phanTram >= 100) {
-        thanhPhanTram.style.backgroundColor = '#e74c3c'; 
-    } else {
-        thanhPhanTram.style.backgroundColor = '#2ecc71'; 
+    
+    if (txtChu && thanhPhanTram) {
+        if (hanMucThangDangXem === 0) {
+            txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')} đ / Chưa đặt`; 
+            thanhPhanTram.style.width = '0%'; 
+            if (txtGoiY) { txtGoiY.innerText = "💡 Bấm vào đây để cài đặt hạn mức tháng"; txtGoiY.style.color = '#999999'; }
+        } else {
+            let phanTram = (tongDaChi / hanMucThangDangXem) * 100; 
+            txtChu.innerText = `${tongDaChi.toLocaleString('vi-VN')}/${hanMucThangDangXem.toLocaleString('vi-VN')}đ`; 
+            thanhPhanTram.style.width = `${phanTram > 100 ? 100 : phanTram}%`;
+            if (phanTram >= 100) { thanhPhanTram.style.backgroundColor = '#e74c3c'; } 
+            else { thanhPhanTram.style.backgroundColor = '#2ecc71'; }
+        }
     }
     capNhatBieuDoBaoCaoNam(docs); 
     capNhatBieuDoTabBaoCaoTaiChinh(docs); 
 }
 window.capNhatChuHienThiThang();
 
-// BIỂU ĐỒ 12 THÁNG & BÁO CÁO
 function capNhatBieuDoBaoCaoNam(docs) {
     const ctx = document.getElementById('bieuDoNganSach');
     if (!ctx) return;
@@ -296,11 +284,8 @@ function capNhatBieuDoBaoCaoNam(docs) {
         }
     });
 
-    const mangMax = Array(12).fill(0);      
-    const mangMin = Array(12).fill(0);      
-    const mangConLai = Array(12).fill(0); 
-    const mangMauMax = Array(12).fill('');   
-    const mangMauMin = Array(12).fill('');   
+    const mangMax = Array(12).fill(0), mangMin = Array(12).fill(0), mangConLai = Array(12).fill(0); 
+    const mangMauMax = Array(12).fill(''), mangMauMin = Array(12).fill('');   
 
     for (let m = 0; m < 12; m++) {
         const chuoiThangNam = `${namDangXem}-${String(m + 1).padStart(2, '0')}`;
@@ -406,11 +391,8 @@ function capNhatBieuDoTabBaoCaoTaiChinh(docs) {
         }
     });
 
-    const mangMax = Array(12).fill(0);      
-    const mangMin = Array(12).fill(0);      
-    const mangTichLuy = Array(12).fill(0); 
-    const mangMauMax = Array(12).fill('');   
-    const mangMauMin = Array(12).fill('');   
+    const mangMax = Array(12).fill(0), mangMin = Array(12).fill(0), mangTichLuy = Array(12).fill(0); 
+    const mangMauMax = Array(12).fill(''), mangMauMin = Array(12).fill('');   
 
     for (let m = 0; m < 12; m++) {
         const thuNhap = mangThuNhapThucTe[m];
@@ -487,7 +469,6 @@ function capNhatBieuDoTabBaoCaoTaiChinh(docs) {
     });
 }
 
-// Chống kẹt màn hình iOS
 document.querySelectorAll('input, select, textarea').forEach(element => {
     element.addEventListener('blur', () => {
         setTimeout(() => {
