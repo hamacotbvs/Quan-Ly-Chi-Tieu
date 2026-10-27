@@ -804,10 +804,29 @@ function capNhatBieuDoBaoCaoNam(docs) {
             }
             try {
                 if (window.idGiaoDichDangSua) {
-                    await updateDoc(doc(db, "giao_dich_business", window.idGiaoDichDangSua), {ten: ten, soTien: soTien, loai: loai, danhMuc: danhMuc, thoiGian: chuoiThoiGianGop, userId: auth.currentUser.uid}); 
-                    window.idGiaoDichDangSua = null; idnutsave.innerText = "Ghi đè / Thêm mới";
+                    // --- KHI SỬA GIAO DỊCH ---
+                    await updateDoc(doc(db, "giao_dich_business", window.idGiaoDichDangSua), {
+                        ten: ten, 
+                        soTien: soTien, 
+                        loai: loai, 
+                        danhMuc: danhMuc, 
+                        thoiGian: chuoiThoiGianGop, 
+                        userId: auth.currentUser.uid,
+                        tenUser: auth.currentUser.displayName
+                    }); 
+                    window.idGiaoDichDangSua = null; 
+                    idnutsave.innerText = "Ghi đè / Thêm mới";
                 } else {
-                    await addDoc(datathuchi, {ten: ten, soTien: soTien, loai: loai, danhMuc: danhMuc, thoiGian: chuoiThoiGianGop, userId: auth.currentUser.uid});
+                    // --- KHI THÊM MỚI GIAO DỊCH ---
+                    await addDoc(datathuchi, {
+                        ten: ten, 
+                        soTien: soTien, 
+                        loai: loai, 
+                        danhMuc: danhMuc, 
+                        thoiGian: chuoiThoiGianGop, 
+                        userId: auth.currentUser.uid,
+                        tenUser: auth.currentUser.displayName
+                    });
                 }
                 if (idTen) idTen.value = ''; if (idSoTien) idSoTien.value = ''; 
                 if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):'; 
