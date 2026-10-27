@@ -802,39 +802,46 @@ function capNhatBieuDoBaoCaoNam(docs) {
             if (ten === '' || isNaN(soTien) || soTien <= 0 || !ngayNhap || !gioNhap) {
                 alert('Vui lòng kiểm tra lại thông tin hợp lệ!'); return;
             }
+            let tenUserHienTai = auth.currentUser.displayName;
+            if (!tenUserHienTai && auth.currentUser.email) {
+                tenUserHienTai = auth.currentUser.email.split('@')[0];
+            }
+            const duLieuGiaoDich = {
+            ten: ten, 
+            soTien: soTien, 
+            loai: loai, 
+            danhMuc: danhMuc, 
+            thoiGian: chuoiThoiGianGop, 
+            userId: auth.currentUser.uid,       // Mã định danh UID
+            tenUser: tenUserHienTai            // Tên user rõ ràng (VD: phumai)
+            };
             try {
                 if (window.idGiaoDichDangSua) {
                     // --- KHI SỬA GIAO DỊCH ---
-                    await updateDoc(doc(db, "giao_dich_business", window.idGiaoDichDangSua), {
-                        ten: ten, 
-                        soTien: soTien, 
-                        loai: loai, 
-                        danhMuc: danhMuc, 
-                        thoiGian: chuoiThoiGianGop, 
-                        userId: auth.currentUser.uid,
-                        tenUser: auth.currentUser.displayName
-                    }); 
-                    window.idGiaoDichDangSua = null; 
-                    idnutsave.innerText = "Ghi đè / Thêm mới";
+                    await updateDoc(doc(db, "giao_dich_business", window.idGiaoDichDangSua), duLieuGiaoDich);
+                        window.idGiaoDichDangSua = null; 
+                        idnutsave.innerText = "Cập nhật ví";
                 } else {
-                    // --- KHI THÊM MỚI GIAO DỊCH ---
-                    await addDoc(datathuchi, {
-                        ten: ten, 
-                        soTien: soTien, 
-                        loai: loai, 
-                        danhMuc: danhMuc, 
-                        thoiGian: chuoiThoiGianGop, 
-                        userId: auth.currentUser.uid,
-                        tenUser: auth.currentUser.displayName
-                    });
+                    // Thêm giao dịch mới
+                    await addDoc(datathuchi, duLieuGiaoDich);
                 }
-                if (idTen) idTen.value = ''; if (idSoTien) idSoTien.value = ''; 
+
+                // Reset lại form nhập liệu
+                if (idTen) idTen.value = ''; 
+                if (idSoTien) idSoTien.value = ''; 
                 if (labelSoTien) labelSoTien.innerText = 'Số tiền (đ):'; 
+                
                 const bayGioSauLuu = new Date();
                 if (inputNgay) inputNgay.value = `${bayGioSauLuu.getFullYear()}-${String(bayGioSauLuu.getMonth() + 1).padStart(2, '0')}-${String(bayGioSauLuu.getDate()).padStart(2, '0')}`;
                 if (inputGio) inputGio.value = `${String(bayGioSauLuu.getHours()).padStart(2, '0')}:${String(bayGioSauLuu.getMinutes()).padStart(2, '0')}`;
+                
+                // Quay về tab Home
                 if (nutHome) nutHome.click();
-            } catch (loi) { alert("Không thể ghi nhận giao dịch!"); } 
+
+            } catch (loi) { 
+                console.error("Lỗi khi ghi dữ liệu:", loi);
+                alert("Không thể ghi nhận giao dịch: " + loi.message); 
+            } 
         });
     }
     // C.4 TAB BÁO CÁO
