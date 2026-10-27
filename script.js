@@ -203,15 +203,17 @@ if (linkChuyenTrang) {
 // Xử lý nút Đăng Nhập hoặc Đăng Ký
 if (nutHanhDongAuth) {
     nutHanhDongAuth.addEventListener('click', async () => {
-        const email = inputAuthUsername.value.trim();
+        let userInput = inputAuthUsername.value.trim().toLowerCase().replace(/\s+/g, '');
         const password = inputAuthPassword.value;
-        if (!email || !password) {
-            alert("Vui lòng điền đầy đủ Email và Mật khẩu!");
+        if (!userInput || !password) {
+            alert("Vui lòng điền đầy đủ User và Mật khẩu!");
             return;
         }
+        // 🔑 KỸ THUẬT QUY ĐỔI: Tự động gán đuôi để tương thích với Firebase Auth
+        const emailDinhDanh = `${userInput}@quanlychitieu.phumai.vn`;
         try {
             if (isLoginMode) {
-                await signInWithEmailAndPassword(auth, email, password);
+                await signInWithEmailAndPassword(auth, emailDinhDanh, password);
             } else {
                 const rePassword = inputAuthRePassword.value;
                 if (password !== rePassword) {
@@ -222,18 +224,20 @@ if (nutHanhDongAuth) {
                     alert("Mật khẩu bảo mật phải từ 3 ký tự trở lên!");
                     return;
                 }
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                await updateProfile(userCredential.user, { displayName: email.split('@')[0] });
+                const userCredential = await createUserWithEmailAndPassword(auth, emailDinhDanh, password);
+                await updateProfile(userCredential.user, { displayName: userInput });
                 alert("Đăng ký tài khoản thành công!");
             }
         } catch (error) {
-            if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+            if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential' || error.code === 'auth/invalid-email') {
                 alert("Tài khoản hoặc mật khẩu không chính xác!");
+            } else if (error.code === 'auth/email-already-in-use') {
+                alert("Tên đăng nhập này đã có người sử dụng, vui lòng chọn tên khác!");
             } else {
                 alert("Thao tác thất bại: " + error.message);
             }
         }
-    });
+    }); }
 }
 
 // Xử lý nút "Quên mật khẩu"
