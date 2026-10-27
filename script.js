@@ -823,7 +823,6 @@ function capNhatBieuDoBaoCaoNam(docs) {
                         idnutsave.innerText = "Cập nhật ví";
                 } else {
                     // Thêm giao dịch mới
-                    let thoiGianSach = chuoiThoiGianGop.replace(/[- :]/g, ''); // Biến "2026-10-27 21:14" thành "202610272114"
                     const now = new Date();
                     const namSys = now.getFullYear();
                     const thangSys = String(now.getMonth() + 1).padStart(2, '0');
@@ -831,8 +830,8 @@ function capNhatBieuDoBaoCaoNam(docs) {
                     const gioSys = String(now.getHours()).padStart(2, '0');
                     const phutSys = String(now.getMinutes()).padStart(2, '0');
                     const giaySys = String(now.getSeconds()).padStart(2, '0');
-                    const chuoiHeThong = `${namSys}${thangSys}${ngaySys}_${gioSys}${phutSys}${giaySys}`;
-                    let customDocId = `${tenUserHienTai}-${loai}-${thoiGianSach}-${chuoiHeThong}`.toUpperCase();
+                    const chuoiHeThong = `${namSys}-${thangSys}-${ngaySys} ${gioSys}:${phutSys}:${giaySys}`;
+                    let customDocId = `${tenUserHienTai}-${loai}-${chuoiThoiGianGop}-${chuoiHeThong}`.toUpperCase();
                     await setDoc(doc(db, "giao_dich_business", customDocId), duLieuGiaoDich);
                 }
 
