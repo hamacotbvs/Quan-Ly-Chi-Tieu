@@ -168,18 +168,18 @@ if (linkChuyenTrang) {
         isLoginMode = !isLoginMode;
         if (isLoginMode) {
             authTieuDe.innerText = "Đăng nhập tài khoản";
-            authGhiChu.innerText = "Sử dụng Gmail để đăng ký";
+            authGhiChu.innerText = "Đăng nhập bằng tên tài khoản";
             vungNhapLaiMatKhau.style.display = "none";
             nutHanhDongAuth.innerText = "Đăng Nhập";
             linkQuenMk.style.display = "inline";
-            linkChuyenTrang.innerText = "Chưa có tài khoản? Đăng ký";
+            linkChuyenTrang.innerText = 'Chưa có tài khoản? <span class="chu-dang-ky">Đăng ký</span>';
         } else {
             authTieuDe.innerText = "Đăng ký tài khoản";
             authGhiChu.innerText = "Ứng dụng quản lý thu chi cá nhân";
             vungNhapLaiMatKhau.style.display = "block";
             nutHanhDongAuth.innerText = "Đăng Ký Ngay";
             linkQuenMk.style.display = "none";
-            linkChuyenTrang.innerText = "Đã có tài khoản? Đăng nhập";
+            linkChuyenTrang.innerText = 'Đã có tài khoản? <span class="chu-dang-ky">Đăng nhập</span>';
         }
     });
 }
@@ -221,7 +221,7 @@ if (nutHanhDongAuth) {
                 alert("Thao tác thất bại: " + error.message);
             }
         }
-    }); }
+    });
 }
 
 // Xử lý nút "Quên mật khẩu"
