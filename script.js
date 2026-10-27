@@ -824,7 +824,15 @@ function capNhatBieuDoBaoCaoNam(docs) {
                 } else {
                     // Thêm giao dịch mới
                     let thoiGianSach = chuoiThoiGianGop.replace(/[- :]/g, ''); // Biến "2026-10-27 21:14" thành "202610272114"
-                    let customDocId = `${tenUserHienTai}-${loai}-${thoiGianSach}-${Date.now()}`.toUpperCase();
+                    const now = new Date();
+                    const namSys = now.getFullYear();
+                    const thangSys = String(now.getMonth() + 1).padStart(2, '0');
+                    const ngaySys = String(now.getDate()).padStart(2, '0');
+                    const gioSys = String(now.getHours()).padStart(2, '0');
+                    const phutSys = String(now.getMinutes()).padStart(2, '0');
+                    const giaySys = String(now.getSeconds()).padStart(2, '0');
+                    const chuoiHeThong = `${namSys}${thangSys}${ngaySys}_${gioSys}${phutSys}${giaySys}`;
+                    let customDocId = `${tenUserHienTai}-${loai}-${thoiGianSach}-${chuoiHeThong}`.toUpperCase();
                     await setDoc(doc(db, "giao_dich_business", customDocId), duLieuGiaoDich);
                 }
 
