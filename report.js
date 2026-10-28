@@ -23,6 +23,7 @@ import { doc, onSnapshot, query, where, setDoc, deleteDoc, updateDoc } from "htt
             const txtEmailUser = document.getElementById('email-user-hien-thi');
             if (txtTenUser) txtTenUser.innerText = user.displayName || user.email.split('@')[0];
             if (txtEmailUser) txtEmailUser.innerText = user.email;
+            tichHopNutDangXuat(); 
             
             // Tải cấu hình ngày chốt và HẠN MỨC từ bảng cau_hinh_user realtime
             const docRefCauHinh = doc(db, "cau_hinh_user", user.uid);
