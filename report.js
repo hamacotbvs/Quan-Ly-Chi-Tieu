@@ -12,6 +12,8 @@ import { doc, onSnapshot, query, where, setDoc, deleteDoc, updateDoc } from "htt
 
 // Lắng nghe trạng thái đăng nhập hệ thống
     onAuthStateChanged(auth, async (user) => {
+        const manHinhAuth = document.getElementById('man-hinh-auth');
+        const khungAppChinh = document.getElementById('khung-chua-app-chinh');
         if (user) {
             if (manHinhAuth) manHinhAuth.style.display = 'none';
             if (khungAppChinh) khungAppChinh.style.display = 'block';
